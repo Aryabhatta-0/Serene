@@ -6,14 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@fontsource-variable/atkinson-hyperlegible-next": "5.3.0",
     "next": "14.2.35",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.0",
     "@types/node": "20.14.10",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
