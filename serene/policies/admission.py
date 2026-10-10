@@ -35,6 +35,7 @@ from serene.domain.events import (
     ExperimentBlocked,
     ExperimentClassified,
     ExperimentCompleted,
+    ExperimentOutcomeTimedOut,
     ExperimentProposed,
     ExperimentStarted,
     HypothesisProposed,
@@ -45,9 +46,11 @@ from serene.domain.events import (
     LearningRecorded,
     LearningStatusChanged,
     LearningSuperseded,
+    MemoryDreamStageRecorded,
     MemoryPatchCommitted,
     MemoryPatchProposed,
     MemoryPatchRejected,
+    MemoryPatchReviewed,
     ObservationReported,
     ObservationStructured,
     OutcomeReported,
@@ -304,6 +307,8 @@ def admission_violations(draft: EventDraft, state: KernelState, now: datetime) -
             if patch_status != "PROPOSED":
                 return [f"ALREADY_DECIDED:{patch_status}"]
             return []
+        case ExperimentOutcomeTimedOut() | MemoryPatchReviewed() | MemoryDreamStageRecorded():
+            return ["POLICY_NOT_IMPLEMENTED"]  # fail closed until the owning policy lands
         case _:
             # EVIDENCE_REQUESTED and PROMOTION_REQUESTED carry no authority.
             return []

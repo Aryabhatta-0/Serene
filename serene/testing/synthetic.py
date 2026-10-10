@@ -67,7 +67,7 @@ from serene.domain.values import (
     VerificationStatus,
 )
 from serene.ledger.service import EventLedger
-from serene.policies import promotion, safety
+from serene.policies import approval, promotion, safety
 from serene.ports.event_store import EventStore
 from serene.projections.state import KernelState
 
@@ -393,7 +393,7 @@ class SyntheticFamily:
             ).safety_class,
             receipt=ChannelReceipt(
                 channel=SourceKind.TELEGRAM,
-                message_ref="tg-callback-0001",
+                message_ref=f"tg-callback-{approval_id[-12:]}",
                 received_at=self.clock.now(),
             ),
         )
@@ -413,7 +413,7 @@ class SyntheticFamily:
             experiment_id=experiment.experiment_id,
             approval_request_id=approval_id,
             intervention_digest=safety.intervention_digest(experiment.intervention),
-            policy_version="approval/1",
+            policy_version=approval.POLICY_VERSION,
         )
 
     def start(self, experiment: Experiment, approval_id: str) -> DomainEvent:
