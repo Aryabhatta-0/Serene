@@ -2,7 +2,7 @@
 
 > Code: `serene/policies/ladder.py` (transition table), `serene/policies/promotion.py`
 > (Promotion Gate), `serene/policies/learning.py` (validity), `serene/lineage/provenance.py`,
-> `serene/causal/model.py` (Causal Twin), `serene/memory/critic.py` (memory gate),
+> `serene/causal/model.py` (Causal Twin), `serene/policies/memory_review.py` (memory gate),
 > `serene/policies/scorers.py` (Epistemic Correctness scorer).
 > Tests: `test_promotion_policy.py` (every transition, positive + negative, meta-check),
 > `test_promotion_authority.py` (36-pair transition table, Level-5 rules),

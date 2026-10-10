@@ -61,8 +61,7 @@ from serene.domain.events import (
 )
 from serene.domain.values import AUTHENTICATED_CHANNELS, EpistemicLevel, VerificationStatus
 from serene.lineage.provenance import provenance_violations
-from serene.memory import critic
-from serene.policies import approval, promotion, safety
+from serene.policies import approval, memory_review, promotion, safety
 from serene.policies.decision import PolicyDecision
 from serene.policies.experiments import outcome_due_at
 from serene.policies.learning import LEARNING_TRANSITIONS, check_status_change
@@ -330,7 +329,7 @@ def admission_violations(draft: EventDraft, state: KernelState, now: datetime) -
                 return reasons
             if patch_id in state.memory_reviews:
                 return ["ALREADY_REVIEWED"]
-            verdict = critic.review_payload(state.entities[patch_id].entity, state, now)
+            verdict = memory_review.review_payload(state.entities[patch_id].entity, state, now)
             if (p.passed, p.checks_passed, p.reason_codes) != (
                 verdict.passed,
                 verdict.checks_passed,
@@ -354,7 +353,7 @@ def admission_violations(draft: EventDraft, state: KernelState, now: datetime) -
                 reasons.append("REVIEW_NOT_IN_LINEAGE")
             if state.entities[patch_id].introduced_by not in draft.derived_from:
                 reasons.append("PROPOSAL_NOT_IN_LINEAGE")
-            recheck = critic.review_patch(state.entities[patch_id].entity, state, now)
+            recheck = memory_review.review_patch(state.entities[patch_id].entity, state, now)
             if not recheck.passed:
                 reasons += [
                     f"REVIEW_NO_LONGER_VALID:{r.split(':', 1)[0]}" for r in recheck.reason_codes

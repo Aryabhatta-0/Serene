@@ -14,7 +14,7 @@ version-controlled. Document format: [SCHEMA.md](SCHEMA.md).
 | `investigations/` | Summaries of investigations | `hyp_` | 3 HYPOTHESIS |
 | `decisions/` | Parent-approved interventions | `exp_` with a granted approval | 3 |
 
-The directory fixes the subject kind and the minimum level (`serene/memory/rules.py`).
+The directory fixes the subject kind and the minimum level (`serene/policies/memory_review.py`).
 Withdrawing a document (`DEPRECATE`) needs no promotion authority.
 
 ## Layers

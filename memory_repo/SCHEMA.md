@@ -1,6 +1,6 @@
 # Memory document format (`serene_memory: 1`)
 
-Code: `serene/memory/document.py` (render / strict parse), `serene/memory/diff.py`.
+Code: `serene/policies/memory_format.py` (render / strict parse, full-context diff).
 
 ```markdown
 ---
@@ -23,7 +23,7 @@ On weekday daycare pickups, a five-minute heads-up before leaving went calmly.
 
 | Field | Filled by | Checked by the Critic against |
 | --- | --- | --- |
-| `kind` | directory | `serene/memory/rules.py` |
+| `kind` | directory | `serene/policies/memory_review.py` |
 | `subject` | Dreamer's choice, must exist | ledger entity; must be in the patch's `derived_from` |
 | `level` | code | subject's ledger level |
 | `status` | code | effective status (learnings: time + validity signals) |
