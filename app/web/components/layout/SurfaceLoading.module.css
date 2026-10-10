@@ -1,0 +1,52 @@
+.loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+  max-width: var(--measure);
+  color: var(--rule-strong);
+}
+
+.header,
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.title {
+  width: 40%;
+  margin-bottom: var(--space-3);
+}
+
+.lead {
+  width: 90%;
+}
+
+.leadShort {
+  width: 60%;
+}
+
+.row {
+  width: 100%;
+}
+
+.rowShort {
+  width: 70%;
+}
+
+/* Delay the pulse so quick loads never flash an animation. */
+.loading :global(svg) {
+  animation: pulse 1.6s ease-in-out 400ms infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading :global(svg) {
+    animation: none;
+  }
+}
