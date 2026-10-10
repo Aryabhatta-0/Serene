@@ -19,6 +19,7 @@ from serene.domain.events import (
 )
 from serene.domain.values import SourceKind
 from serene.ledger import AdmissionRejected
+from serene.policies.approval import AMBER_MIN_DELIBERATION
 from serene.policies.safety import (
     FORBIDDEN_CATEGORIES,
     classify_intervention,
@@ -215,6 +216,7 @@ def test_amber_grant_must_acknowledge_the_amber_class(family: SyntheticFamily) -
                 source=family.source(SourceKind.TELEGRAM),
             )
         )
+    family.clock.advance(AMBER_MIN_DELIBERATION)  # AMBER needs a deliberate, not reflexive, grant
     family.grant(exp, apr)  # the correct acknowledgement succeeds
     family.start(exp, apr)
 
