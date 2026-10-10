@@ -1,4 +1,4 @@
-# Morrow Evaluation
+# Serene Evaluation
 
 Inspect AI harness and deterministic scorers. See `docs/evaluation.md`.
 

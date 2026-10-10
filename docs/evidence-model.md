@@ -1,10 +1,14 @@
-# Morrow Evidence Model
+# Serene Evidence Model
 
-> **Status:** design specification. Implemented by issues #7, #13–#17, #21.
+> **Status:** lineage (#7) and the ladder/gate (#17) are implemented — see
+> [epistemic-model.md](epistemic-model.md). The `EvidenceBrowser` /
+> `EvidenceVerifier` contracts exist in `serene/ports/evidence.py`; acquisition
+> policy, browser and verifier implementations (#13–#16) and caregiver
+> disagreement (#21) are branch A.
 
 ## 1. Principle
 
-Evidence, not eloquence, decides what Morrow believes. Two questions are always
+Evidence, not eloquence, decides what Serene believes. Two questions are always
 answerable: *what supports this?* and *what would change our mind?*
 
 ## 2. Evidence acquisition pipeline
@@ -30,7 +34,7 @@ External Evidence Verifier                 (#16)
 
 ## 3. Information value is ordinal
 
-Morrow does **not** invent a numeric expected-information-gain score. It ranks
+Serene does **not** invent a numeric expected-information-gain score. It ranks
 the smallest missing observation as HIGH, MEDIUM or LOW value. This is honest
 about uncertainty and keeps the policy deterministic and testable.
 
@@ -67,6 +71,6 @@ complete lineage is not trustworthy and cannot be promoted.
 
 ## 7. Caregiver disagreement
 
-When caregivers disagree, Morrow preserves **separate observer reports** and
+When caregivers disagree, Serene preserves **separate observer reports** and
 exposes the disagreement as context (#21). It never averages reports into a
 fake truth and never invents reliability scores.

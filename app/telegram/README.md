@@ -1,8 +1,8 @@
 # app/telegram
 
-Morrow-side boundary for the Telegram surface. Hermes (the runtime) owns the
+Serene-side boundary for the Telegram surface. Hermes (the runtime) owns the
 Telegram bot, scheduling and message transport; this directory holds the
-Morrow-owned tool/adapter contracts that Hermes calls into.
+Serene-owned tool/adapter contracts that Hermes calls into.
 
 Nothing is implemented yet.
 

@@ -1,6 +1,6 @@
-# Morrow Memory Repo
+# Serene Memory Repo
 
-Durable memory for Morrow, stored as **Git + Markdown**. This is intentionally
+Durable memory for Serene, stored as **Git + Markdown**. This is intentionally
 not a vector store: memory must be human-readable, diffable, reviewable and
 version-controlled.
 

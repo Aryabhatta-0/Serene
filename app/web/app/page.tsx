@@ -1,4 +1,4 @@
-// Morrow web shell (bootstrap). The five primary surfaces are placeholders;
+// Serene web shell (bootstrap). The five primary surfaces are placeholders;
 // they are implemented by the M3 issues (#34-#39). Nothing here fakes data.
 
 const SURFACES = [
@@ -12,13 +12,13 @@ const SURFACES = [
 export default function Home() {
   return (
     <main style={{ fontFamily: "system-ui, sans-serif", padding: "2rem" }}>
-      <h1>Morrow</h1>
+      <h1>Serene</h1>
       <p>
         A self-correcting family intelligence agent. Bootstrap shell only &mdash;
         no feature is implemented yet.
       </p>
       <p>
-        <em>what happened != what Morrow remembers != what Morrow believes</em>
+        <em>what happened != what Serene remembers != what Serene believes</em>
       </p>
       <ul>
         {SURFACES.map((s) => (

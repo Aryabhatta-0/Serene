@@ -1,127 +1,171 @@
-# Morrow Architecture
+# Serene Architecture
 
-> **Status:** design specification for the MVP. No component below is fully
-> implemented yet; each maps to issues in the tracker.
+> **Status:** the Domain Kernel, event ledger, projections, ports and the
+> deterministic trust foundation are implemented (see "Implemented vs planned").
+> Hermes wiring, investigation loop, Telegram, Dream and UI are planned work on
+> the two branches in [parallel-handoff.md](parallel-handoff.md).
 
 ## 1. Thesis
 
-Morrow must not confuse three different things:
-
 ```
-what happened   !=   what Morrow remembers   !=   what Morrow believes
-(experience)         (memory)                     (belief)
+what happened   !=   what Serene remembers   !=   what Serene believes
+(ledger events)      (memory_repo, Git+MD)        (projections over the ledger)
 ```
 
-Most assistant systems collapse these into one vector store, which makes it
-impossible to answer *"why do you believe this?"*. Morrow keeps them in
-separate substrates with an explicit authority pipeline between them.
+**Core rule: models handle uncertainty; deterministic code handles authority.**
+A model may interpret a parent's message, propose a pattern, a hypothesis, an
+experiment or a memory patch. It can never decide that evidence is valid, that
+a belief is promoted, that an intervention is safe, that a parent approved, or
+that memory changes.
 
-## 2. Authority pipeline
+## 2. Layers and the dependency rule
 
 ```
-LLM proposes -> Code validates -> Evidence supports -> Parent authorizes
- -> Experiments test -> Promotion Gate decides -> Dreaming consolidates
+                 +-----------------------------------------------+
+                 |   serene.adapters  (replaceable infrastructure) |
+                 |   hermes/ postgres neatlogs_sink cfoai clock     |
+                 |   in_memory_event_store                          |
+                 +----------------------+------------------------+
+                                        | implements
+                 +----------------------v------------------------+
+                 |   serene.ports  (stable Protocols)             |
+                 |   AgentRuntime EventStore EvidenceBrowser      |
+                 |   EvidenceVerifier MemoryRepository Clock      |
+                 |   ObservabilitySink CostModel                  |
+                 +----------------------+------------------------+
+                                        | used by
+   +------------------------------------v-----------------------------------+
+   |  Domain Kernel (Pydantic v2 only; no Hermes, no SDKs, no adapters)       |
+   |                                                                         |
+   |  serene.ledger        append_event / verify_hash_chain /                |
+   |                       get_events_for_child / replay_events              |
+   |  serene.policies      admission, promotion gate, safety, approval,      |
+   |                       acquisition ordering                              |
+   |  serene.projections   KernelState fold + 5 read projections             |
+   |  serene.lineage       hashing, chain verification, provenance, tracing  |
+   |  serene.observability SafeTelemetry (redaction + failure isolation)     |
+   |  serene.domain        entities, value objects, closed event taxonomy,   |
+   |                       canonical JSON                                    |
+   +-------------------------------------------------------------------------+
 ```
 
-Each stage has an owner and a failure mode:
+Dependencies point inward only: `domain <- lineage <- projections <- policies
+<- ledger`; `ports` depend on `domain`; `adapters` depend on everything above
+them and nothing depends on `adapters`. `tests/test_architecture_boundaries.py`
+fails the build if any kernel module imports Hermes, an adapter, psycopg,
+neatlogs, Inspect AI or a model SDK, and checks in a fresh interpreter that
+importing the kernel loads none of them.
 
-| Stage | Owner | On failure |
+## 3. Ownership of reasoning, execution, trust and authority
+
+| Concern | Owner | Notes |
 | --- | --- | --- |
-| Propose | LLM / Hermes | Rejected as malformed |
-| Validate | Domain Kernel (Pydantic v2) | Reject (fail closed) |
-| Evidence supports | Verifier + lineage | `EvidenceRejected` |
-| Parent authorizes | Approval lifecycle | `PARKED_UNRESOLVED` |
-| Experiments test | Safety policy + N-of-1 lifecycle | Policy blocks |
-| Promote | Deterministic Promotion Gate | No promotion |
-| Consolidate | Dream + Critic + Memory Committer | Patch rejected with reason |
+| Interpretation / planning | Model via `AgentRuntime` (Hermes adapter) | Returns typed proposals (`AgentProposal` union) or `Abstain` / `NeedEvidence` |
+| Side effects (browse, message, schedule) | Hermes behind `EvidenceBrowser` / gateway adapters | Bounded by request contracts (domains, fields, max actions, forbidden actions) |
+| Trust of inputs | Kernel validation + `EvidenceVerifier` | Telegram/browser/model text is data; only verifier verdicts mark evidence VERIFIED/REJECTED |
+| Epistemic authority | `policies.promotion` | Rung-by-rung; model rationale never consulted |
+| Safety authority | `policies.safety` | GREEN/AMBER/RED; RED fails closed everywhere |
+| Approval authority | Parent, recorded as `APPROVAL_GRANTED` from an authenticated channel | Bound to approver, intervention digest, expiry, single use |
+| Truth / history | `serene.domain_events` ledger | Append-only, hash-chained; projections are disposable |
+| Memory writes | Memory Committer (branch B) via `MemoryRepository.commit` | Ledger-backed authorization only |
 
-The LLM can *request* promotion, but only the Promotion Gate *authorizes* it.
+Every ledger append passes, in order: closed-taxonomy + payload-schema check →
+actor-kind and verification-status permissions → hash-chain verification of the
+existing stream (a tampered stream accepts nothing) → ancestor check →
+**stateful admission** (`policies.admission`) → sealing → compare-and-set append.
+Admission *recomputes* the decision for every authority-bearing event, so even a
+`POLICY`-attributed `PROMOTION_GRANTED`, `EXPERIMENT_CLASSIFIED` or
+`EXPERIMENT_STARTED` is refused if the deterministic policy would not produce it.
 
-## 3. Components
+## 4. Hermes boundary
 
-### 3.1 Hermes runtime
-Owns orchestration, Telegram, tool execution, scheduling, browser and model
-routing. Hermes talks to Morrow only through the **Domain Kernel boundary**
-(issue #2): adapter + tool interfaces. The kernel owns semantics and authority
-and must remain replaceable-runtime compatible.
+Hermes (NousResearch/hermes-agent, pinned to tag `v2026.9.24`) is replaceable
+infrastructure for reasoning, tools, skills, the Telegram gateway, the browser
+and model routing.
 
-### 3.2 Domain Kernel (`morrow/domain`)
-Canonical Pydantic v2 schemas: Observation, Evidence, Pattern, Hypothesis,
-Investigation, Experiment, Trial, Outcome, Learning, MemoryPatch. Strict
-validation and schema versioning. **No unstructured authority-bearing LLM
-output may enter here.**
-
-### 3.3 Event Ledger (`morrow/ledger` via projections/lineage)
-Append-only `domain_events` table with `source`, `actor`, `occurred_at`,
-`recorded_at`, `derived_from[]`, verification status. Tamper-evident hash chain:
-canonical serialization, `prev_event_hash`, `payload_hash`, `event_hash`, plus
-`append_event()` and `verify_hash_chain()`. Raw history is preserved.
-
-### 3.4 Projections (`morrow/projections`)
-Read state (`current_child_state`, `active_investigations`,
-`active_hypotheses`, `pending_approvals`, `active_learnings`) is derived by
-deterministic replay. The UI never reads the ledger directly as a view model
-(issue #33). Projections can be deleted and rebuilt.
-
-### 3.5 Lineage (`morrow/lineage`)
-Every derived object carries `derived_from[]`, creator, method, model version,
-verification status, supersession and source IDs. Lineage is the mechanism
-behind *"why do you believe this?"*.
-
-### 3.6 Memory (`morrow/memory`) — Git + Markdown
-The Memory Repo is a Git repository of Markdown files
-(`memory_repo/{child,caregivers,routines,patterns,investigations,decisions,learnings}`).
-Simple file read/search, proposed patches, diffs and commits. **No embeddings in
-the MVP.** Only the single-writer Memory Committer may modify it.
-
-### 3.7 Dream pipeline
-`ORIENT -> CONSOLIDATE -> REFLECT -> CHALLENGE -> VERIFY -> PROPOSE PATCH`.
-Dreaming may propose but never directly mutate trusted memory. The Dream Critic
-runs contradiction search, lineage verification and Promotion Gate validation
-before any patch can be committed.
-
-### 3.8 Causal / epistemic engine (`morrow/causal`)
-Deterministic Causal Twin: candidate variables/edges, confounders, support,
-counterevidence, intervention, comparison, outcomes, bounded scope. **No DoWhy**
-or other external causal library in the MVP.
-
-## 4. Epistemic ladder
-
-```
-Raw Evidence -> Observation -> Pattern -> Hypothesis -> Tested Hypothesis
- -> Contextual Learning
-```
-
-No level may be skipped silently. The maximum permitted level is computed by
-the deterministic Promotion Gate from structured evidence.
-
-## 5. Excluded technology and rationale
-
-| Excluded | Why not in the MVP |
+| Hermes may | Hermes must never |
 | --- | --- |
-| Graphiti, Supermemory, Vektori, Mem0, Hindsight | Memory must be inspectable Git + Markdown with a single writer; external memory stores hide the write path |
-| OpenClaw | Hermes is the frozen runtime |
-| LangGraph, Temporal, Restate, Hatchet, DBOS | Orchestration is Hermes-owned; durable-workflow frameworks add authority the kernel must retain |
+| Run bounded reasoning for an `AgentTask` and return `AgentRunResult` proposals | Append authority events (taxonomy forbids `AGENT` actors on grants, starts, verification, learnings, memory commits) |
+| Drive the browser for an `EvidenceBrowseRequest` | Mark evidence VERIFIED, or verify its own acquisitions |
+| Deliver Telegram messages; relay parent callbacks to the channel adapter | Turn message text into an approval (approval requires a channel receipt from the authenticated adapter, on `TELEGRAM`/`WEB_APP` source) |
+| Keep its own conversational memory | Be read as Serene memory or belief (its memory is context, never authority) |
+
+Only `serene/adapters/hermes/` may import Hermes. The current adapter fails
+closed (`HermesNotConfigured`) until branch A implements it.
+
+## 5. Two representative trajectories
+
+**Happy path** (executed by `serene.testing.build_full_ladder`, 23 events):
+parent report on Telegram (`OBSERVATION_REPORTED`, VERIFIED as a first-hand
+channel-authenticated report) → model-structured observations (L1) → pattern
+over ≥2 occasions (L2) → investigation → hypothesis with alternatives and
+falsification criteria (L3) → experiment proposed → `EXPERIMENT_CLASSIFIED`
+GREEN → `APPROVAL_REQUESTED` → parent `APPROVAL_GRANTED` with channel receipt →
+`EXPERIMENT_STARTED` (admission recomputed) → outcome reports → completed →
+`PROMOTION_GRANTED` 3→4 → `PROMOTION_GRANTED` 4→5 → `LEARNING_RECORDED`
+(scoped, 60-day review window, parent reviewer).
+
+**Denied path** (`tests/test_safety_and_approval.py`): a model proposes a
+calming supplement. Classification is RED; a `POLICY`-attributed approval
+request claiming GREEN is refused (`SAFETY_CLASS_MISMATCH`,
+`RED_CANNOT_BE_APPROVED`); a parent grant for a non-existent request is
+refused; `EXPERIMENT_STARTED` is refused with `RED_FAIL_CLOSED` + `NO_APPROVAL`.
+Each refusal raises `AdmissionRejected` and leaves the stream byte-identical.
+
+## 6. State ownership
+
+| Data | Store | Authority |
+| --- | --- | --- |
+| Domain events | `serene.domain_events` (Supabase Postgres) | Truth; append-only, hash-chained per child |
+| Read models | `serene.projection_state` / in-process `KernelState` | Disposable; rebuilt by replay |
+| Durable reviewed knowledge | `memory_repo/` (Git + Markdown) | Written only by the Memory Committer (branch B) |
+| Runtime conversation / scratch | Hermes | Advisory context only |
+| Telemetry | neatlogs | Opaque ids only; never read back for decisions |
+
+## 7. Integrity and concurrency
+
+- Per-child hash chain: `prev_event_hash`, `payload_hash`, `event_hash` over
+  canonical JSON ([event-model.md](event-model.md)).
+- Writers use compare-and-set on the stream head (`ConcurrencyConflict` on a
+  stale head) plus a per-child advisory lock in Postgres; unique
+  `(child_id, sequence)` and `(child_id, prev_event_hash)` prevent forks.
+- Postgres triggers reject UPDATE / DELETE / TRUNCATE and any insert that does
+  not extend the head. A superuser can still bypass triggers; that is detected
+  by `verify_hash_chain` (tested in `tests/test_postgres_ledger.py`).
+
+## 8. Decisions
+
+| # | Decision | Alternatives | Why | Limitation / fallback |
+| --- | --- | --- | --- | --- |
+| D1 | One hash chain **per child** | Global chain | Independent verification per family, no cross-family contention, aligns with RLS scope | Cross-child ordering is not provable (not needed) |
+| D2 | Ledger **re-runs policy** on authority events | Trust POLICY-attributed events | A buggy/compromised caller cannot record a grant the gate would deny | Replay per append is O(n); add snapshotting when streams grow |
+| D3 | Canonical JSON bans floats, NUL, naive datetimes | Accept and normalize | Byte-identical hashing across Python and Postgres jsonb | Quantities use integers (e.g. micro-USD) |
+| D4 | Kernel is Pydantic-only; Hermes behind ports | Build on Hermes primitives | Runtime is replaceable; authority stays testable without a model | Adapter work duplicates some Hermes plumbing |
+| D5 | Ledger lives in a non-exposed `serene` schema with RLS deny-by-default | `public` schema + PostgREST | No accidental API exposure of child data before #8 | Clients go through the service-role backend |
+| D6 | Real-Postgres tests via `pgserver` locally, service container in CI | Docker-only `supabase start` | Works on machines without Docker; same SQL as Supabase | PG16 locally vs PG17 in CI/Supabase |
+| D7 | Information value and acquisition order are **ordinal** | Numeric expected information gain | No fake precision; deterministic | Coarser ranking |
+| D8 | No statistical causal inference | DoWhy-style estimation | Out of scope; N-of-1 support is recorded, not estimated | Level 4 means "tested with supporting outcome", not "causal effect estimated" |
+
+## 9. Implemented vs planned
+
+Implemented here: domain contracts (#1), ledger + hash chain + taxonomy (#3, #4,
+#5), projections (#6), lineage validation/tracing (#7), ladder + gate + every
+transition tested (#17, #18, #19), GREEN/AMBER/RED + forbidden RED (#22, #23),
+approval lifecycle core (#24), ports incl. `AgentRuntime` / `EvidenceBrowser` /
+`EvidenceVerifier` contracts (#2, #15 contracts only), neatlogs seam (#52),
+cfo.ai seam (#55), Inspect AI scaffold (#41), CI gates (#58), secret/PII scan (#59).
+
+Planned: see [parallel-handoff.md](parallel-handoff.md).
+
+## 10. Excluded technology (MVP)
+
+| Excluded | Why |
+| --- | --- |
+| Graphiti, Supermemory, Vektori, Mem0, Hindsight | Memory must be inspectable Git + Markdown with a single writer |
+| OpenClaw | Hermes is the runtime |
+| LangGraph, Temporal, Restate, Hatchet, DBOS | Orchestration is Hermes-owned; the kernel retains authority |
 | Ax | Prompts are not the authority boundary |
-| DoWhy, pgmpy, Cleanlab | The causal/epistemic engine must be deterministic and custom, not a black box |
-| OPA, OpenFGA, SpiceDB | Authorization is Supabase RLS + Code, kept small and auditable |
+| DoWhy, pgmpy, Cleanlab | The epistemic engine is deterministic and custom |
+| OPA, OpenFGA, SpiceDB | Authorization is Supabase RLS + kernel code |
 | SurrealDB, ElectricSQL | Supabase/PostgreSQL is canonical |
 | PostHog, Jev | neatlogs + Entire + cfo.ai cover observability, provenance and economics |
-
-## 6. Data flow (investigation, happy path)
-
-1. Parent sends a Telegram message -> Hermes -> `ObservationReported` (raw preserved).
-2. Domain Kernel independently creates `ObservationStructured` (never overwrites raw).
-3. Investigation state machine advances; contextual retrieval loads experience,
-   memory and current belief state **without collapsing the three layers**.
-4. Competing hypotheses are retained with supporting evidence, counterevidence,
-   scope and known confounders.
-5. Minimum Sufficient Childhood Data policy names the smallest missing
-   observation; evidence acquisition priority orders it (Safety first).
-6. `EvidenceBrowser` performs bounded acquisition; the External Evidence Verifier
-   emits `EvidenceVerified` or `EvidenceRejected`.
-7. Promotion Gate computes the permitted epistemic level.
-8. If an intervention is warranted: safety classification -> approval lifecycle
-   -> N-of-1 experiment -> outcome -> Promotion Gate.
-9. Dream proposes patches; Critic verifies; Memory Committer commits or rejects.
-10. Causal Twin and projections update; UI reflects state via Realtime.

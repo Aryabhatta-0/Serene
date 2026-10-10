@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Morrow",
+  title: "Serene",
   description: "A self-correcting family intelligence agent.",
 };
 

@@ -34,6 +34,10 @@ yarn-error.log*
 Thumbs.db
 desktop.ini
 
-# Morrow runtime artifacts
+# Serene runtime artifacts
 eval/reports/*.local.*
 *.local.json
+
+# Serene local artifacts
+eval/reports/local/
+.hypothesis/

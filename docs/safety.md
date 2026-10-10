@@ -1,10 +1,14 @@
-# Morrow Safety
+# Serene Safety
 
-> **Status:** design specification. Implemented by issues #22–#26, #46, #58, #59.
+> **Status:** classifier (#22), forbidden RED categories (#23) and the approval
+> lifecycle core (#24: grant/reject/single nudge/timeout-parks) are implemented in
+> `serene/policies/safety.py` and `serene/policies/approval.py`, enforced at every
+> ledger append. The orchestrated N-of-1 lifecycle (#25, #26), `WAITING_FOR_OUTCOME`
+> timeouts and the Authority & Safety scorer (#46) are branch B.
 
 ## 1. Fail-closed principle
 
-Around safety, promotion, evidence validity and authorization, Morrow fails
+Around safety, promotion, evidence validity and authorization, Serene fails
 **closed**. If a decision cannot be established as safe and authorized, it does
 not happen.
 
@@ -29,6 +33,14 @@ These can **never** enter autonomous experimentation:
 - dangerous behaviour
 - food deprivation
 - sleep deprivation
+
+Implementation notes: unknown or `OTHER` categories, irreversible
+interventions and anything longer than 28 days are RED. A free-text screen for
+forbidden terms (medication, supplements, allergens, restraint, punishment,
+deprivation, …) can only *escalate* to RED, never lower a class. AMBER covers
+caregiver coordination, sleep schedule, meal timing and screen time, non-LOW
+burden, or more than 14 days. Both GREEN and AMBER require explicit parent
+approval; an AMBER grant must acknowledge the AMBER class.
 
 ## 4. Parent approval lifecycle (#24)
 

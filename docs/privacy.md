@@ -1,6 +1,8 @@
-# Morrow Privacy
+# Serene Privacy
 
-> **Status:** design specification. Implemented by issues #8, #52, #59.
+> **Status:** telemetry redaction, synthetic-only test data, secret/PII scanning
+> and the database deny-by-default boundary are implemented. Parent/caregiver
+> scoped RLS policies are issue #8 (branch A/B follow-up, see handoff).
 
 ## 1. Data ownership
 
@@ -8,39 +10,60 @@ A child's data belongs to the **parent**. Access is explicit and scoped.
 
 | Principal | Access |
 | --- | --- |
-| Parent | Full access to their child's data |
-| Caregiver | Explicit, narrow scopes only (least privilege) |
-| Backend services | Service-scoped access (service role), never parent UI paths |
-| Evaluation / tests | **Synthetic data only** |
+| Parent | Full access to their child's data (policies: #8) |
+| Caregiver | Explicit, narrow scopes only (#8) |
+| Backend services | Service role; the only path to `serene.*` today |
+| Evaluation / tests | **Synthetic data only** (`serene.testing`) |
 
-## 2. Row Level Security (#8)
+## 2. Database boundary (implemented)
 
-Supabase Postgres RLS enforces the boundary:
+- The ledger and projections live in a dedicated `serene` schema that is not
+  exposed through PostgREST.
+- RLS is **enabled with no end-user policies** on both tables: `anon` and
+  `authenticated` are denied by default and have all privileges revoked.
+- `service_role` may `SELECT`/`INSERT` the ledger; `UPDATE`/`DELETE`/`TRUNCATE`
+  are revoked and also blocked by triggers.
 
-- Parent owns child data; policies key on the authenticated parent.
-- Caregivers receive explicit scopes (e.g. a single routine, a time window).
-- Backend/service operations use the service-scoped role, isolated from
-  end-user credentials.
-- Evaluation runs against synthetic child data; no real child data in CI, tests
-  or eval fixtures.
+## 3. Privacy-safe observability (implemented, #52 partial)
 
-## 3. PII-safe observability (#52)
+All telemetry passes through `serene.observability.SafeTelemetry`:
 
-neatlogs tracing records context IDs, hypotheses, tool selection/args, browser
-actions, verification, failures/retries, state, tokens, latency and cost —
-**without unnecessary child PII**. Redaction is applied at the logging boundary,
-not left to callers.
+- **Allow-listed keys only** (event type, ids, sequence, actor/source kind,
+  decision, reason codes, policy version, …).
+- **Token-like values only**: any value with whitespace or free text is dropped,
+  so report text, hypotheses and narratives cannot leak by accident even under an
+  allow-listed key.
+- **Child ids are pseudonymized** with a keyed HMAC
+  (`SERENE_TELEMETRY_PSEUDONYM_KEY`) or dropped when no key is configured.
+- **Failure isolation**: any sink exception is swallowed and counted; ledger
+  outcomes are byte-identical with a crashing sink (tested).
+- Redaction is applied centrally in `SafeTelemetry.emit`; kernel code never
+  talks to a sink directly, so callers cannot bypass it.
 
-## 4. Secrets and logging audit (#59)
+The neatlogs adapter (`serene/adapters/neatlogs_sink.py`) only receives these
+redacted attributes, sets them as `serene.*` span attributes and is a no-op
+without `NEATLOGS_API_KEY`. `capture_logs` is disabled.
 
-- No credentials in the repository.
-- `.env.example` documents every variable with empty values.
-- Demo and evaluation use synthetic child data.
-- Logs are PII-safe by construction and documented.
-- Secret handling (loading, rotation, scope) is documented.
+## 4. Data minimisation in the domain
 
-## 5. Non-goals
+- Actors are opaque ids (`act_…`); no names or contact details in any schema.
+- Raw evidence content is stored once, in the ledger payload, with a content
+  digest; projections never copy raw text (tested).
+- Model provenance records provider/model/prompt version, never prompts or
+  private reasoning.
 
-Morrow is not a clinical or diagnostic product, and the MVP is not built for
-production child data at scale — it is a research-grade demonstration of
-trustworthy, evidence-bound reasoning under a strict privacy boundary.
+## 5. Secrets and logging audit (#59 partial)
+
+- `.env.example` documents every variable read by `serene/`, `scripts/`,
+  `eval/` with empty secret values (tested).
+- `scripts/secret_scan.py` scans tracked and untracked files for credential
+  formats and personal email addresses; it runs in CI and in the test suite.
+- Hermes keeps its own secrets in `HERMES_HOME/.env`; cfo.ai uses browser OAuth;
+  Entire uses `entire login`. None of these credentials touch the repository.
+- Entire is configured with `push_sessions: false` because this repository is
+  public: agent session transcripts are not pushed unless a human opts in.
+
+## 6. Non-goals
+
+Serene is not a clinical or diagnostic product, and the MVP is not built for
+production child data at scale.

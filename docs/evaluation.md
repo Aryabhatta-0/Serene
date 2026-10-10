@@ -1,14 +1,24 @@
-# Morrow Evaluation
+# Serene Evaluation
 
 > **Status:** design specification. Implemented by issues #41–#51, #53, #58.
 
 ## 1. Goal
 
-Prove that Morrow's epistemic architecture beats ordinary assistant/memory
+Prove that Serene's epistemic architecture beats ordinary assistant/memory
 approaches — **using equivalent information, model and tool budgets** — and
 guard against regressions deterministically.
 
 ## 2. Harness (#41)
+
+Scaffold implemented: `eval/tasks/kernel_invariants.py` runs five frozen,
+deterministic kernel scenarios (full ladder, level skip, unverified evidence, RED
+with forged approval, tampered history) with an external exact-match scorer and
+no model calls:
+
+```bash
+uv run inspect eval eval/tasks/kernel_invariants.py --model mockllm/model
+```
+
 
 Built on **Inspect AI** with frozen scenarios, deterministic execution and
 structured output capture. The evaluated agent must **never grade itself**;
@@ -18,10 +28,10 @@ scoring is done by deterministic scorers over captured structure.
 
 | Baseline | What it is | What it lacks |
 | --- | --- | --- |
-| A — Plain Hermes (#42) | Same model/task/information/basic tools | Morrow epistemic architecture |
+| A — Plain Hermes (#42) | Same model/task/information/basic tools | Serene epistemic architecture |
 | B — Hermes + ordinary memory/RAG (#43) | Same history, browser, model, tool budget | Ladder, Promotion Gate, lineage governance, controlled investigation loop, Dream verification, experiment policy |
 
-Morrow is only interesting if it beats these at equal budget.
+Serene is only interesting if it beats these at equal budget.
 
 ## 4. Scenarios (#44, #45)
 

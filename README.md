@@ -1,112 +1,107 @@
-# Morrow
+# Serene
 
-Morrow is a **self-correcting family intelligence agent**. It helps a parent
-understand what is actually happening with their child — and, critically,
-*why it believes what it believes*.
+Serene is a **self-correcting, evidence-bound family intelligence agent**. It
+helps a parent understand what is actually happening with their child, and
+can always answer *why it believes what it believes*.
 
-Morrow is built around one rule:
+> **Models handle uncertainty; deterministic code handles authority.**
+>
+> what happened != what Serene remembers != what Serene believes
 
-> **What happened != what Morrow remembers != what Morrow believes.**
-
-Three layers are kept separate on purpose:
-
-| Layer | Substrate | Meaning |
-| --- | --- | --- |
-| Experience | Postgres experience tables | Raw, timestamped happenings |
-| Memory | Git + Markdown `memory_repo/` | Durable, reviewed, versioned knowledge |
-| Belief | Causal Twin / investigation state | Currently held, evidence-bound hypotheses |
+(The repository is still named `morrow`; the product, package and docs are Serene.)
 
 ## Trust boundary
 
 ```
-LLM proposes -> Code validates -> Evidence supports -> Parent authorizes
- -> Experiments test -> Promotion Gate decides -> Dreaming consolidates
+model proposes -> kernel validates -> evidence supports -> parent authorizes
+ -> experiments test -> Promotion Gate decides -> Dreaming consolidates
 ```
 
-The LLM **never** independently controls:
-
-- epistemic promotion
-- safety decisions
-- parent authorization
-- evidence validity
-- memory promotion
-- causal truth
-
-Every important belief must answer: *"Why do you believe this?"*
+The model never controls epistemic promotion, safety decisions, parent
+authorization, evidence validity or memory writes. Those live in the Serene
+Domain Kernel, which depends on Pydantic only and never on the agent runtime.
 
 ## Status
 
-**Bootstrap only.** This repository currently contains the architecture, the
-documentation, the project/CI scaffolding, and a complete implementation
-backlog (see Issues). No feature is implemented yet — modules under `morrow/`
-declare their contract and link to the issue that will implement them. Nothing
-here pretends to work.
+The **foundation** is implemented and tested:
 
-## Stack (frozen for the MVP)
+- strict Pydantic v2 domain contracts (Evidence → Observation → Pattern →
+  Hypothesis → Experiment/Trial/Outcome → Learning, Investigation, MemoryPatch)
+  with full provenance and supersession lineage;
+- an append-only, per-child **hash-chained event ledger** (34-type closed
+  taxonomy) with `append_event`, `verify_hash_chain`, `get_events_for_child`,
+  `replay_events`, backed by a Supabase/Postgres migration with append-only
+  triggers and RLS deny-by-default;
+- five rebuildable projections (delete + replay = identical bytes);
+- a fail-closed **Promotion Gate** (no level skipping), GREEN/AMBER/RED safety
+  classification (RED fails closed), and an approval lifecycle that exists only
+  as ledger state;
+- ports for `AgentRuntime`, `EventStore`, `EvidenceBrowser`, `EvidenceVerifier`,
+  `MemoryRepository`, `ObservabilitySink`, `Clock` (+ `CostModel`), with Hermes,
+  Postgres, neatlogs and cfo.ai behind adapters;
+- 144 tests (incl. real PostgreSQL and Hypothesis invariants), strict mypy,
+  CI with no secrets, an Inspect AI scaffold, secret/PII scanning.
 
-Hermes (runtime, Telegram, tools, scheduling, browser, model routing) ·
-Python + Pydantic v2 (Domain Kernel) · Supabase/PostgreSQL (canonical state) ·
-immutable hash-chained Event Ledger · Postgres projections · Git + Markdown
-(Memory Repo) · custom Dream pipeline · deterministic Promotion Gate ·
-Hermes Browser behind `EvidenceBrowser` · custom deterministic causal/epistemic
-engine · Next.js · React Flow · Supabase Realtime · Inspect AI + deterministic
-scorers · neatlogs · Entire · cfo.ai · XState only if it materially simplifies
-UI state.
+Not yet built: Hermes wiring, investigation loop, Telegram, Dream, UI. See
+[docs/parallel-handoff.md](docs/parallel-handoff.md) for the two next branches.
 
-Deliberately **excluded** from the MVP (see `docs/architecture.md`): Graphiti,
-Supermemory, Vektori, Mem0, Hindsight, OpenClaw, LangGraph, Temporal, Restate,
-Hatchet, DBOS, Ax, DoWhy, OPA, SurrealDB, OpenFGA, SpiceDB, pgmpy, Cleanlab,
-ElectricSQL, PostHog, Jev.
+## Quick start
+
+```bash
+uv sync --locked --all-extras --group dev
+uv run pytest
+uv run python scripts/ledger_selfcheck.py
+uv run inspect eval eval/tasks/kernel_invariants.py --model mockllm/model
+```
+
+Full setup, pinned versions and the manual auth steps (Hermes, cfo.ai, Entire,
+neatlogs, Supabase) are in [docs/setup.md](docs/setup.md). Copy `.env.example`
+to `.env` locally; **never commit `.env`**.
 
 ## Repository layout
 
 ```
-app/web            Next.js web application (five surfaces)
-app/telegram       Morrow-side Hermes/Telegram tool boundary
-morrow/domain      Canonical Pydantic schemas + authority semantics
-morrow/policies    Deterministic policies (safety, evidence, Promotion Gate)
-morrow/causal      Deterministic causal / epistemic engine (Causal Twin)
-morrow/lineage     Evidence / provenance lineage
-morrow/projections Rebuildable read-side projections
-morrow/memory      Git-backed Memory Repo + Dream pipeline
-morrow/tools       Bounded tool contracts (EvidenceBrowser, ...)
-memory_repo/       Git + Markdown durable memory (child, caregivers, ...)
-eval/              Inspect AI harness, scenarios, baselines, scorers, reports
-docs/              Architecture, evaluation, safety, evidence, privacy
-tests/             Deterministic tests
+serene/domain        Canonical Pydantic v2 contracts, closed event taxonomy, canonical JSON
+serene/lineage       Hashing, hash-chain verification, provenance validation, lineage tracing
+serene/projections   Deterministic replay into KernelState + five read projections
+serene/policies      Admission, Promotion Gate, safety, approval, acquisition ordering
+serene/ledger        EventLedger: append / verify / read / replay
+serene/ports         Stable Protocols the kernel depends on
+serene/adapters      Hermes, Postgres/Supabase, neatlogs, cfo.ai, clock, in-memory store
+serene/observability Privacy-safe, failure-isolated telemetry
+serene/testing       Deterministic synthetic-family builder (synthetic data only)
+serene/causal        Causal Twin (planned, #27)
+serene/memory        Memory Repo + Dream (planned, #28-#32)
+supabase/            config.toml + migrations (serene.domain_events, serene.projection_state)
+memory_repo/         Git + Markdown durable memory
+eval/                Inspect AI tasks, scenarios, baselines, scorers, reports
+app/web              Next.js shell (placeholder)
+app/telegram         Telegram boundary notes (branch A)
+scripts/             bootstrap, ledger self-check, secret scan
+docs/                architecture, event model, epistemic model, evidence, safety,
+                     privacy, evaluation, setup, parallel handoff
+tests/               Deterministic, adversarial and property tests
 ```
 
 ## Documentation
 
-- [docs/architecture.md](docs/architecture.md) — components, authority boundaries, data flow
-- [docs/evidence-model.md](docs/evidence-model.md) — evidence ladder, browser, verifier, lineage
+- [docs/architecture.md](docs/architecture.md) — layers, Hermes boundary, ownership, decisions
+- [docs/event-model.md](docs/event-model.md) — envelope, hashing, taxonomy, admission rules
+- [docs/epistemic-model.md](docs/epistemic-model.md) — ladder and promotion rules
+- [docs/evidence-model.md](docs/evidence-model.md) — acquisition, browser, verifier
 - [docs/safety.md](docs/safety.md) — GREEN/AMBER/RED, forbidden interventions, approvals
-- [docs/privacy.md](docs/privacy.md) — RLS, access scopes, synthetic data, PII-safe logs
+- [docs/privacy.md](docs/privacy.md) — data boundary, telemetry redaction, secrets
 - [docs/evaluation.md](docs/evaluation.md) — Inspect AI harness, baselines, scorers
-
-## Development
-
-```bash
-# Python (Domain Kernel + policies + tests)
-python -m venv .venv && . .venv/Scripts/activate   # Windows
-pip install -e ".[dev]"
-pytest
-
-# Web
-npm --prefix app/web install
-npm --prefix app/web run typecheck
-```
-
-Copy `.env.example` to `.env` and fill in locally. **Never commit `.env`.**
+- [docs/setup.md](docs/setup.md) — toolchain, pins, manual steps
+- [docs/parallel-handoff.md](docs/parallel-handoff.md) — the two next branches
 
 ## Engineering principles
 
-- Do not optimize for LOC; do not build speculative abstractions.
-- Explicit deterministic policies around authority.
-- No LLM-as-judge where structured deterministic scoring is possible.
 - Fail closed around safety, promotion, evidence validity and authorization.
 - Preserve raw history; derive rebuildable projections.
-- Level-5 learnings always carry bounded scope + expiry/review semantics.
-- Every consequential intervention requires explicit parent approval.
-- Every Dream produces proposed patches, never silent rewrites.
-- Use synthetic child data in automated tests and evaluation.
+- Level-5 learnings always carry bounded scope and review/expiry semantics.
+- Every consequential intervention requires explicit parent approval, recorded
+  as ledger state from an authenticated channel.
+- Dreaming proposes patches; it never silently rewrites memory.
+- Synthetic child data only in tests, evaluation and demos.
+- No LLM-as-judge where structured deterministic scoring is possible.

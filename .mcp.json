@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "cfoai": {
+      "type": "http",
+      "url": "https://api.cfo.ai/mcp"
+    }
+  }
+}
