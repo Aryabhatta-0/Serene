@@ -26,6 +26,7 @@ from serene.domain.events import (
     ApprovalRejected,
     ApprovalRequested,
     ApprovalTimedOut,
+    DreamStage,
     EventDraft,
     EventType,
     EvidenceAcquired,
@@ -60,6 +61,7 @@ from serene.domain.events import (
 )
 from serene.domain.values import AUTHENTICATED_CHANNELS, EpistemicLevel, VerificationStatus
 from serene.lineage.provenance import provenance_violations
+from serene.memory import critic
 from serene.policies import approval, promotion, safety
 from serene.policies.decision import PolicyDecision
 from serene.policies.experiments import outcome_due_at
@@ -103,6 +105,15 @@ def _check_evidence(draft: EventDraft, ev: Evidence, state: KernelState) -> list
     if ev.source != draft.source:
         reasons.append("SOURCE_MISMATCH")
     return reasons
+
+
+def _undecided_patch(patch_id: str, state: KernelState) -> list[str]:
+    patch_status = state.memory_patches.get(patch_id)
+    if patch_status is None:
+        return ["UNKNOWN_PATCH"]
+    if patch_status != "PROPOSED":
+        return [f"ALREADY_DECIDED:{patch_status}"]
+    return []
 
 
 def admission_violations(draft: EventDraft, state: KernelState, now: datetime) -> list[str]:
@@ -312,15 +323,61 @@ def admission_violations(draft: EventDraft, state: KernelState, now: datetime) -
                 if not active:
                     reasons.append("REQUIRES_ACTIVE_LEARNING")
             return reasons
-        case MemoryPatchCommitted(patch_id=patch_id) | MemoryPatchRejected(patch_id=patch_id):
-            patch_status = state.memory_patches.get(patch_id)
-            if patch_status is None:
-                return ["UNKNOWN_PATCH"]
-            if patch_status != "PROPOSED":
-                return [f"ALREADY_DECIDED:{patch_status}"]
-            return []
-        case MemoryPatchReviewed() | MemoryDreamStageRecorded():
-            return ["POLICY_NOT_IMPLEMENTED"]  # fail closed until the owning policy lands
+        case MemoryPatchReviewed(patch_id=patch_id):
+            # The verdict must be exactly the deterministic Critic's, at this ledger head.
+            reasons = _undecided_patch(patch_id, state)
+            if reasons:
+                return reasons
+            if patch_id in state.memory_reviews:
+                return ["ALREADY_REVIEWED"]
+            verdict = critic.review_payload(state.entities[patch_id].entity, state, now)
+            if (p.passed, p.checks_passed, p.reason_codes) != (
+                verdict.passed,
+                verdict.checks_passed,
+                verdict.reason_codes,
+            ):
+                reasons.append("VERDICT_MISMATCH")
+            if p.critic_version != verdict.critic_version:
+                reasons.append("CRITIC_VERSION_MISMATCH")
+            if p.facts_digest != verdict.facts_digest:
+                reasons.append("STALE_FACTS_DIGEST")
+            return reasons
+        case MemoryPatchCommitted(patch_id=patch_id):
+            # Single writer: only after a passed review that still holds right now.
+            reasons = _undecided_patch(patch_id, state)
+            if reasons:
+                return reasons
+            review = state.memory_reviews.get(patch_id)
+            if review is None or not review.passed:
+                return ["NO_PASSED_REVIEW"]
+            if review.event_id not in draft.derived_from:
+                reasons.append("REVIEW_NOT_IN_LINEAGE")
+            if state.entities[patch_id].introduced_by not in draft.derived_from:
+                reasons.append("PROPOSAL_NOT_IN_LINEAGE")
+            recheck = critic.review_patch(state.entities[patch_id].entity, state, now)
+            if not recheck.passed:
+                reasons += [
+                    f"REVIEW_NO_LONGER_VALID:{r.split(':', 1)[0]}" for r in recheck.reason_codes
+                ]
+            if p.commit_sha in state.memory_commits.values():
+                reasons.append("COMMIT_ALREADY_RECORDED")
+            return reasons
+        case MemoryPatchRejected(patch_id=patch_id):
+            return _undecided_patch(patch_id, state)
+        case MemoryDreamStageRecorded(dream_run_id=run_id, stage=stage, input_ids=input_ids):
+            recorded = state.dream_runs.get(run_id, [])
+            order = list(DreamStage)
+            reasons = []
+            if len(recorded) >= len(order):
+                reasons.append("RUN_ALREADY_COMPLETE")
+            elif stage is not order[len(recorded)]:
+                reasons.append(f"STAGE_OUT_OF_ORDER:{order[len(recorded)].value}")
+            reasons += [f"UNKNOWN_INPUT:{i}" for i in input_ids if i not in state.entities]
+            if stage is DreamStage.PROPOSE_PATCH:
+                reasons += [
+                    f"NOT_A_PROPOSED_PATCH:{i}" for i in input_ids if i not in state.memory_patches
+                ]
+            return reasons  # fail closed until the owning policy lands
         case _:
             # EVIDENCE_REQUESTED and PROMOTION_REQUESTED carry no authority.
             return []
