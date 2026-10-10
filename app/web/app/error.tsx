@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { Page } from "@/components/layout/Page";
-import styles from "./error.module.css";
 
 export default function SurfaceError({
   error,
@@ -21,7 +20,7 @@ export default function SurfaceError({
       <EmptyState title="Nothing was changed">
         <p>Showing a page never changes your family’s record. You can try again.</p>
         <p>
-          <button type="button" className={styles.retry} onClick={reset}>
+          <button type="button" className="button" onClick={reset}>
             Try again
           </button>
         </p>

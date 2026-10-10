@@ -1,12 +1,11 @@
 .empty {
   display: grid;
-  grid-template-columns: 10px minmax(0, 1fr);
+  grid-template-columns: var(--mark-size) minmax(0, 1fr);
   column-gap: var(--space-5);
   max-width: var(--measure);
 }
 
 .line {
-  position: relative;
   color: var(--rule-strong);
 }
 
@@ -15,15 +14,10 @@
   flex-direction: column;
   gap: var(--space-3);
   padding-block: var(--space-2);
+  color: var(--ink-muted);
 }
 
 .title {
   font-size: var(--text-xl);
-}
-
-.text {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  color: var(--ink-muted);
+  color: var(--ink);
 }

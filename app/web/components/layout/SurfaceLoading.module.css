@@ -6,36 +6,31 @@
   color: var(--rule-strong);
 }
 
-.header,
-.body {
+.group {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
 }
 
-.loading .title {
+.title {
   width: 40%;
   margin-bottom: var(--space-3);
 }
 
-.loading .lead {
+.lead {
   width: 90%;
 }
 
-.loading .leadShort {
+.leadShort {
   width: 60%;
 }
 
-.loading .row {
-  width: 100%;
-}
-
-.loading .rowShort {
+.rowShort {
   width: 70%;
 }
 
 /* Delay the pulse so quick loads never flash an animation. */
-.loading :global(svg) {
+.loading svg {
   animation: pulse 1.6s ease-in-out 400ms infinite;
 }
 
@@ -46,7 +41,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .loading :global(svg) {
+  .loading svg {
     animation: none;
   }
 }

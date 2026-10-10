@@ -5,31 +5,33 @@ import { SurfaceNav } from "./SurfaceNav";
 import { Wordmark } from "./Wordmark";
 import styles from "./MobileMenu.module.css";
 
-// Must match the 45rem breakpoint in AppShell.module.css, where the inline
-// top-bar nav takes over from this menu.
-const INLINE_NAV_QUERY = "(min-width: 45rem)";
-
 export function MobileMenu() {
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const pressedBackdrop = useRef(false);
   const [open, setOpen] = useState(false);
 
   const close = () => dialogRef.current?.close();
 
+  // When the layout hides this menu (the inline nav has taken over), close
+  // the sheet so an invisible modal can never trap the page. Watching the
+  // trigger keeps the breakpoint in CSS alone.
   useEffect(() => {
-    const query = window.matchMedia(INLINE_NAV_QUERY);
-    const onChange = () => {
-      if (query.matches) dialogRef.current?.close();
-    };
-    query.addEventListener("change", onChange);
-    return () => query.removeEventListener("change", onChange);
+    const trigger = triggerRef.current;
+    if (!trigger) return;
+    const observer = new ResizeObserver(([entry]) => {
+      if (entry.contentRect.width === 0) dialogRef.current?.close();
+    });
+    observer.observe(trigger);
+    return () => observer.disconnect();
   }, []);
 
   return (
     <>
       <button
+        ref={triggerRef}
         type="button"
-        className={styles.trigger}
+        className={`button ${styles.trigger}`}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls="surface-menu"
@@ -69,7 +71,7 @@ export function MobileMenu() {
               Close
             </button>
           </div>
-          <SurfaceNav variant="sheet" label="Surfaces" onNavigate={close} />
+          <SurfaceNav variant="sheet" onNavigate={close} />
         </div>
       </dialog>
     </>

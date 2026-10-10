@@ -14,14 +14,12 @@ export function EmptyState({ title, children }: EmptyStateProps) {
   const headingId = useId();
   return (
     <section className={styles.empty} aria-labelledby={headingId}>
-      <span className={styles.line}>
-        <LineMark certainty="unknown" orientation="vertical" />
-      </span>
+      <LineMark certainty="unknown" orientation="vertical" className={styles.line} />
       <div className={styles.body}>
         <h2 id={headingId} className={styles.title}>
           {title}
         </h2>
-        <div className={styles.text}>{children}</div>
+        {children}
       </div>
     </section>
   );

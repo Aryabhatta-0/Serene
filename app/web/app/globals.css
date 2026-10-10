@@ -22,13 +22,11 @@
   --rule: #c2cec9;
   --rule-strong: #8fa29d;
   --accent: #a2620a;
-  --accent-ink: #7d4a05;
-  --accent-wash: #f4e7cf;
   --selection: #f2d9a8;
 
   /* Type: one hyperlegible family; a fixed scale at a 1.2 ratio. */
-  --font-sans: "Atkinson Hyperlegible Next Variable", ui-sans-serif, system-ui,
-    -apple-system, "Segoe UI", sans-serif;
+  --font-sans: var(--font-atkinson), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
   --text-xs: 0.8125rem;
   --text-sm: 0.875rem;
   --text-md: 1rem;
@@ -37,6 +35,7 @@
   --text-2xl: 1.75rem;
   --text-3xl: 2.125rem;
   --leading-tight: 1.2;
+  --leading-snug: 1.4;
   --leading-body: 1.55;
 
   /* Space: 4px base. */
@@ -51,6 +50,8 @@
 
   --measure: 64ch;
   --radius: 6px;
+  --tap-target: 2.75rem;
+  --mark-size: 10px;
   --rail-width: 16rem;
   --topbar-height: 3.5rem;
 
@@ -76,8 +77,6 @@
     --rule: #2c3b38;
     --rule-strong: #4f625e;
     --accent: #e3a540;
-    --accent-ink: #f0bd66;
-    --accent-wash: #2e2512;
     --selection: #5a4413;
     --shadow-sheet: 0 12px 32px -12px rgb(0 0 0 / 0.6);
   }
@@ -157,6 +156,31 @@ ol {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 2px;
+}
+
+/* The one bordered button; components add only their own differences. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-target);
+  padding-inline: var(--space-4);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--ground-raised);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) ease, background-color var(--dur-fast) ease;
+}
+
+.button:hover {
+  border-color: var(--ink-muted);
+}
+
+.button:active {
+  background: var(--ground-sunken);
 }
 
 .visually-hidden {

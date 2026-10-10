@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { Page } from "@/components/layout/Page";
-import { LineKey } from "@/components/notation/LineKey";
+import { LineKey, type LineKeyEntry } from "@/components/notation/LineKey";
 
 export const metadata: Metadata = { title: "Causal Twin" };
 
-const LINK_KEY = [
+const LINK_KEY: readonly LineKeyEntry[] = [
   {
     certainty: "unknown",
     term: "Hypothesis",
@@ -26,7 +26,7 @@ const LINK_KEY = [
     term: "Refuted",
     description: "Tested and contradicted. Kept on the map so the correction stays visible.",
   },
-] as const;
+];
 
 export default function CausalTwinPage() {
   return (

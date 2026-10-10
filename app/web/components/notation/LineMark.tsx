@@ -7,7 +7,6 @@ export type Certainty = "unknown" | "observed" | "tested" | "refuted";
 
 type LineMarkProps = {
   certainty: Certainty;
-  /** A vertical mark fills its nearest positioned ancestor. */
   orientation?: "horizontal" | "vertical";
   className?: string;
 };

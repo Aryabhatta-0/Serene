@@ -20,7 +20,7 @@
 
 .lead {
   font-size: var(--text-lg);
-  line-height: 1.5;
+  line-height: var(--leading-body);
   color: var(--ink-muted);
 }
 

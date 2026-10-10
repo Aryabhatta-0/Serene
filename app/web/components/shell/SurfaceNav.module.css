@@ -2,6 +2,9 @@
  * The surfaces sit on one survey line. Unvisited stretches are dotted; the
  * current surface is drawn solid in the accent, and settles into place when
  * the route changes. That stroke is the shell's one authored motion.
+ *
+ * The rail and sheet run the line vertically; the bar runs it under the
+ * labels. --settle-from and --settle-origin give the stroke its axis.
  */
 
 .list {
@@ -9,11 +12,12 @@
 }
 
 .link {
-  position: relative;
+  --settle-from: 1 0;
+  --settle-origin: top;
   display: grid;
-  grid-template-columns: 10px 1fr;
+  grid-template-columns: var(--mark-size) 1fr;
   column-gap: var(--space-3);
-  min-height: 2.75rem;
+  min-height: var(--tap-target);
   padding-inline-end: var(--space-3);
   color: var(--ink-muted);
   text-decoration: none;
@@ -21,17 +25,13 @@
   transition: color var(--dur-fast) ease, background-color var(--dur-fast) ease;
 }
 
-.link:hover {
-  color: var(--ink);
-}
-
+.link:hover,
 .link[aria-current="page"] {
   color: var(--ink);
 }
 
 .marker {
   position: relative;
-  display: block;
   color: var(--rule-strong);
   transition: color var(--dur-fast) ease;
 }
@@ -48,13 +48,13 @@
   width: 3px;
   border-radius: 2px;
   background: var(--accent);
-  transform: scaleY(0);
-  transform-origin: top;
+  scale: var(--settle-from);
+  transform-origin: var(--settle-origin);
 }
 
 .link[aria-current="page"] .marker::after {
-  transform: none;
-  animation: settle-y var(--dur-settle) var(--ease-out);
+  scale: none;
+  animation: settle var(--dur-settle) var(--ease-out);
 }
 
 .text {
@@ -78,16 +78,16 @@
 .summary {
   font-size: var(--text-sm);
   color: var(--ink-muted);
-  line-height: 1.4;
+  line-height: var(--leading-snug);
 }
 
-/* Desktop rail -------------------------------------------------------- */
+/* Desktop rail */
 
 .rail .link:hover {
   background: color-mix(in srgb, var(--ground-raised) 70%, transparent);
 }
 
-/* Tablet top bar: the line runs under the labels instead. */
+/* Tablet top bar: the line runs under the labels. */
 
 .bar .list {
   display: flex;
@@ -95,17 +95,16 @@
 }
 
 .bar .link {
+  --settle-from: 0 1;
+  --settle-origin: left;
   grid-template-columns: auto;
-  grid-template-rows: 1fr 10px;
+  grid-template-rows: 1fr var(--mark-size);
   padding-inline: 0;
   border-radius: 2px;
 }
 
-/* Size each item by its label; the line then stretches to match. */
 .bar .marker {
   grid-row: 2;
-  inline-size: 0;
-  min-inline-size: 100%;
 }
 
 .bar .text {
@@ -123,16 +122,9 @@
   inset-inline: 0;
   width: auto;
   height: 3px;
-  transform: scaleX(0);
-  transform-origin: left;
 }
 
-.bar .link[aria-current="page"] .marker::after {
-  transform: none;
-  animation-name: settle-x;
-}
-
-/* Mobile sheet: the rail, with room for what each surface is for. */
+/* Phone sheet: the rail, with room for what each surface is for. */
 
 .sheet .link {
   min-height: 4rem;
@@ -147,14 +139,8 @@
   font-size: var(--text-lg);
 }
 
-@keyframes settle-y {
+@keyframes settle {
   from {
-    transform: scaleY(0);
-  }
-}
-
-@keyframes settle-x {
-  from {
-    transform: scaleX(0);
+    scale: var(--settle-from);
   }
 }

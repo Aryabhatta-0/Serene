@@ -1,19 +1,21 @@
-/* Colour is inherited, so each context decides how loud the line is. */
+/*
+ * `contain: size` drops the SVG's default 300x150 box, so a mark takes the
+ * length of whatever box it sits in. Default sizes sit in :where() so a
+ * caller's single class always wins. Colour is inherited from the context.
+ */
 .mark {
   display: block;
   overflow: visible;
+  contain: size;
 }
 
-.horizontal {
+:where(.horizontal) {
   width: 100%;
-  height: 10px;
+  height: var(--mark-size);
 }
 
-/* SVG has no intrinsic height, so a vertical mark fills a positioned parent. */
-.vertical {
-  position: absolute;
-  inset: 0;
-  width: 100%;
+:where(.vertical) {
+  width: var(--mark-size);
   height: 100%;
 }
 

@@ -2,13 +2,13 @@
 // of truth for navigation; adding a sixth surface is a product decision, not a
 // routing detail. Copy here describes what a surface is for, never its data.
 
-export type Surface = {
+type Surface = {
   href: string;
   label: string;
   summary: string;
 };
 
-export const SURFACES = [
+export const SURFACES: readonly Surface[] = [
   {
     href: "/today",
     label: "Today",
@@ -34,7 +34,7 @@ export const SURFACES = [
     label: "Causal Twin",
     summary: "A map of what may influence what, drawn by how well it is known.",
   },
-] as const satisfies readonly Surface[];
+];
 
 export function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);

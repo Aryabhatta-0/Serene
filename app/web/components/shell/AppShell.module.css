@@ -118,6 +118,6 @@
 
 .tagline {
   font-size: var(--text-xs);
-  line-height: 1.45;
+  line-height: var(--leading-snug);
   color: var(--ink-faint);
 }

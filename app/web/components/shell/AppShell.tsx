@@ -17,7 +17,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <header className={styles.rail}>
         <Wordmark />
-        <SurfaceNav variant="rail" label="Surfaces" />
+        <SurfaceNav variant="rail" />
         <div className={styles.railFooter}>
           <RecordStatus />
           <p className={styles.tagline}>
@@ -30,7 +30,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className={styles.topbar}>
         <Wordmark />
         <div className={styles.barNav}>
-          <SurfaceNav variant="bar" label="Surfaces" />
+          <SurfaceNav variant="bar" />
         </div>
         <div className={styles.menu}>
           <MobileMenu />

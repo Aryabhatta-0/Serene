@@ -4,7 +4,7 @@
   gap: var(--space-2);
   align-items: start;
   font-size: var(--text-sm);
-  line-height: 1.4;
+  line-height: var(--leading-snug);
 }
 
 .ring {
@@ -21,7 +21,6 @@
 .title {
   display: block;
   font-weight: 600;
-  color: var(--ink);
 }
 
 .detail {
