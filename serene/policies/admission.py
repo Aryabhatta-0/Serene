@@ -26,6 +26,7 @@ from serene.domain.events import (
     ApprovalRejected,
     ApprovalRequested,
     ApprovalTimedOut,
+    DreamStage,
     EventDraft,
     EventType,
     EvidenceAcquired,
@@ -35,6 +36,7 @@ from serene.domain.events import (
     ExperimentBlocked,
     ExperimentClassified,
     ExperimentCompleted,
+    ExperimentOutcomeTimedOut,
     ExperimentProposed,
     ExperimentStarted,
     HypothesisProposed,
@@ -45,9 +47,11 @@ from serene.domain.events import (
     LearningRecorded,
     LearningStatusChanged,
     LearningSuperseded,
+    MemoryDreamStageRecorded,
     MemoryPatchCommitted,
     MemoryPatchProposed,
     MemoryPatchRejected,
+    MemoryPatchReviewed,
     ObservationReported,
     ObservationStructured,
     OutcomeReported,
@@ -57,8 +61,10 @@ from serene.domain.events import (
 )
 from serene.domain.values import AUTHENTICATED_CHANNELS, EpistemicLevel, VerificationStatus
 from serene.lineage.provenance import provenance_violations
-from serene.policies import approval, promotion, safety
+from serene.policies import approval, memory_review, promotion, safety
 from serene.policies.decision import PolicyDecision
+from serene.policies.experiments import outcome_due_at
+from serene.policies.learning import LEARNING_TRANSITIONS, check_status_change
 from serene.projections.state import ExperimentStatus, KernelState, LifecycleStatus
 
 _I = InvestigationStatus
@@ -76,14 +82,7 @@ INVESTIGATION_TRANSITIONS: Final[dict[InvestigationStatus, frozenset[Investigati
     _I.CLOSED: frozenset(),
 }
 
-_LS = LearningStatus
-LEARNING_TRANSITIONS: Final[dict[LearningStatus, frozenset[LearningStatus]]] = {
-    _LS.ACTIVE: frozenset({_LS.NEEDS_REVIEW, _LS.NEEDS_RETEST, _LS.STALE, _LS.DEPRECATED}),
-    _LS.NEEDS_REVIEW: frozenset({_LS.ACTIVE, _LS.NEEDS_RETEST, _LS.STALE, _LS.DEPRECATED}),
-    _LS.NEEDS_RETEST: frozenset({_LS.ACTIVE, _LS.STALE, _LS.DEPRECATED}),
-    _LS.STALE: frozenset({_LS.NEEDS_RETEST, _LS.DEPRECATED}),
-    _LS.DEPRECATED: frozenset(),
-}
+__all__ = ["INVESTIGATION_TRANSITIONS", "LEARNING_TRANSITIONS", "admission_violations"]
 
 _EXTERNAL_EVIDENCE = frozenset({EvidenceKind.DOCUMENT, EvidenceKind.BROWSER_CAPTURE})
 
@@ -105,6 +104,15 @@ def _check_evidence(draft: EventDraft, ev: Evidence, state: KernelState) -> list
     if ev.source != draft.source:
         reasons.append("SOURCE_MISMATCH")
     return reasons
+
+
+def _undecided_patch(patch_id: str, state: KernelState) -> list[str]:
+    patch_status = state.memory_patches.get(patch_id)
+    if patch_status is None:
+        return ["UNKNOWN_PATCH"]
+    if patch_status != "PROPOSED":
+        return [f"ALREADY_DECIDED:{patch_status}"]
+    return []
 
 
 def admission_violations(draft: EventDraft, state: KernelState, now: datetime) -> list[str]:
@@ -157,20 +165,20 @@ def admission_violations(draft: EventDraft, state: KernelState, now: datetime) -
                 return ["UNKNOWN_OUTCOME"]
             return [] if OutcomeResult.CONTRADICTS in results else ["NO_CONTRADICTING_OUTCOME"]
         case PromotionDecisionRecord():
-            if et is EventType.PROMOTION_DENIED:
-                return []
-            request = promotion.PromotionRequest(
-                subject_id=p.subject_id,
-                from_level=p.from_level,
-                to_level=p.to_level,
-                requested_by=draft.actor,
-                rationale="ledger admission recheck",
+            # Grants and denials alike must be exactly what the gate computes now.
+            expected_type, expected = promotion.decide_promotion(
+                p.subject_id, p.from_level, p.to_level, state
             )
-            decision = promotion.evaluate_promotion(request, state)
-            reasons = _reasons(decision)
-            if decision.allowed and p.facts_digest != promotion.facts_digest(
-                p.subject_id, decision, state
-            ):
+            if et is EventType.PROMOTION_GRANTED and expected_type is not et:
+                return list(expected.reason_codes)
+            if et is EventType.PROMOTION_DENIED and expected_type is not et:
+                return ["DENIAL_NOT_JUSTIFIED"]
+            reasons = []
+            if p.reason_codes != expected.reason_codes:
+                reasons.append("REASON_CODES_MISMATCH")
+            if p.policy_version != expected.policy_version:
+                reasons.append("POLICY_VERSION_MISMATCH")
+            if p.facts_digest != expected.facts_digest:
                 reasons.append("STALE_FACTS_DIGEST")
             return reasons
         case InvestigationOpened(investigation=inv):
@@ -219,9 +227,14 @@ def admission_violations(draft: EventDraft, state: KernelState, now: datetime) -
                 reasons.append("INTERVENTION_DIGEST_MISMATCH")
             return reasons
         case ExperimentBlocked(experiment_id=exp_id):
-            return [] if exp_id in state.experiments else ["UNKNOWN_EXPERIMENT"]
+            record = state.experiments.get(exp_id)
+            if record is None:
+                return ["UNKNOWN_EXPERIMENT"]
+            if record.status not in {ExperimentStatus.PROPOSED, ExperimentStatus.CLASSIFIED}:
+                return [f"CANNOT_BLOCK:{record.status.value}"]
+            return []
         case ApprovalRequested():
-            return _reasons(approval.check_approval_request(p, state))
+            return _reasons(approval.check_approval_request(p, state, now))
         case ApprovalNudged():
             return _reasons(approval.check_approval_nudge(p, state))
         case ApprovalGranted() | ApprovalRejected():
@@ -243,6 +256,10 @@ def admission_violations(draft: EventDraft, state: KernelState, now: datetime) -
                 reasons.append("UNKNOWN_EXPERIMENT")
             elif record.status is not ExperimentStatus.STARTED:
                 reasons.append(f"EXPERIMENT_NOT_RUNNING:{record.status.value}")
+            else:
+                due = outcome_due_at(record)
+                if due is None or now >= due:
+                    reasons.append("OUTCOME_WINDOW_CLOSED")
             if entity.entity_id in state.entities:
                 reasons.append("DUPLICATE_ENTITY")
             reasons += provenance_violations(entity, state)
@@ -267,17 +284,25 @@ def admission_violations(draft: EventDraft, state: KernelState, now: datetime) -
             if record.status in {ExperimentStatus.COMPLETED, ExperimentStatus.ABANDONED}:
                 return [f"ALREADY_TERMINAL:{record.status.value}"]
             return []
+        case ExperimentOutcomeTimedOut(experiment_id=exp_id, outcome_due_at=claimed_due):
+            record = state.experiments.get(exp_id)
+            if record is None:
+                return ["UNKNOWN_EXPERIMENT"]
+            if record.status is not ExperimentStatus.STARTED:
+                return [f"NOT_WAITING_FOR_OUTCOME:{record.status.value}"]
+            due = outcome_due_at(record)
+            reasons = []
+            if record.outcome_ids:
+                reasons.append("OUTCOMES_REPORTED_COMPLETE_INSTEAD")
+            if due is None or claimed_due != due:
+                reasons.append("DEADLINE_MISMATCH")
+            if due is None or now < due:
+                reasons.append("NOT_YET_DUE")
+            return reasons
         case LearningRecorded(learning=learning, promotion_event_id=promotion_id):
             return _reasons(promotion.check_learning(learning, promotion_id, state, now))
-        case LearningStatusChanged(learning_id=lrn_id, from_status=frm, to_status=to):
-            learning_record = state.learnings.get(lrn_id)
-            if learning_record is None:
-                return ["UNKNOWN_LEARNING"]
-            if learning_record.status != frm:
-                return [f"STALE_STATUS:{learning_record.status.value}"]
-            if to not in LEARNING_TRANSITIONS[frm]:
-                return [f"ILLEGAL_TRANSITION:{frm.value}_TO_{to.value}"]
-            return []
+        case LearningStatusChanged():
+            return _reasons(check_status_change(p, state, now))
         case LearningSuperseded(learning_id=old, superseded_by=new):
             reasons = [f"UNKNOWN_LEARNING:{x}" for x in (old, new) if x not in state.learnings]
             if old == new:
@@ -297,13 +322,61 @@ def admission_violations(draft: EventDraft, state: KernelState, now: datetime) -
                 if not active:
                     reasons.append("REQUIRES_ACTIVE_LEARNING")
             return reasons
-        case MemoryPatchCommitted(patch_id=patch_id) | MemoryPatchRejected(patch_id=patch_id):
-            patch_status = state.memory_patches.get(patch_id)
-            if patch_status is None:
-                return ["UNKNOWN_PATCH"]
-            if patch_status != "PROPOSED":
-                return [f"ALREADY_DECIDED:{patch_status}"]
-            return []
+        case MemoryPatchReviewed(patch_id=patch_id):
+            # The verdict must be exactly the deterministic Critic's, at this ledger head.
+            reasons = _undecided_patch(patch_id, state)
+            if reasons:
+                return reasons
+            if patch_id in state.memory_reviews:
+                return ["ALREADY_REVIEWED"]
+            verdict = memory_review.review_payload(state.entities[patch_id].entity, state, now)
+            if (p.passed, p.checks_passed, p.reason_codes) != (
+                verdict.passed,
+                verdict.checks_passed,
+                verdict.reason_codes,
+            ):
+                reasons.append("VERDICT_MISMATCH")
+            if p.critic_version != verdict.critic_version:
+                reasons.append("CRITIC_VERSION_MISMATCH")
+            if p.facts_digest != verdict.facts_digest:
+                reasons.append("STALE_FACTS_DIGEST")
+            return reasons
+        case MemoryPatchCommitted(patch_id=patch_id):
+            # Single writer: only after a passed review that still holds right now.
+            reasons = _undecided_patch(patch_id, state)
+            if reasons:
+                return reasons
+            review = state.memory_reviews.get(patch_id)
+            if review is None or not review.passed:
+                return ["NO_PASSED_REVIEW"]
+            if review.event_id not in draft.derived_from:
+                reasons.append("REVIEW_NOT_IN_LINEAGE")
+            if state.entities[patch_id].introduced_by not in draft.derived_from:
+                reasons.append("PROPOSAL_NOT_IN_LINEAGE")
+            recheck = memory_review.review_patch(state.entities[patch_id].entity, state, now)
+            if not recheck.passed:
+                reasons += [
+                    f"REVIEW_NO_LONGER_VALID:{r.split(':', 1)[0]}" for r in recheck.reason_codes
+                ]
+            if p.commit_sha in state.memory_commits.values():
+                reasons.append("COMMIT_ALREADY_RECORDED")
+            return reasons
+        case MemoryPatchRejected(patch_id=patch_id):
+            return _undecided_patch(patch_id, state)
+        case MemoryDreamStageRecorded(dream_run_id=run_id, stage=stage, input_ids=input_ids):
+            recorded = state.dream_runs.get(run_id, [])
+            order = list(DreamStage)
+            reasons = []
+            if len(recorded) >= len(order):
+                reasons.append("RUN_ALREADY_COMPLETE")
+            elif stage is not order[len(recorded)]:
+                reasons.append(f"STAGE_OUT_OF_ORDER:{order[len(recorded)].value}")
+            reasons += [f"UNKNOWN_INPUT:{i}" for i in input_ids if i not in state.entities]
+            if stage is DreamStage.PROPOSE_PATCH:
+                reasons += [
+                    f"NOT_A_PROPOSED_PATCH:{i}" for i in input_ids if i not in state.memory_patches
+                ]
+            return reasons  # fail closed until the owning policy lands
         case _:
             # EVIDENCE_REQUESTED and PROMOTION_REQUESTED carry no authority.
             return []

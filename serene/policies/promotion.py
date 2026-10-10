@@ -1,16 +1,24 @@
-"""Fail-closed Promotion Gate over the epistemic ladder (issues #17, #18).
+"""Fail-closed Promotion Gate over the epistemic ladder (issues #17, #18, #20).
 
 0 RAW_EVIDENCE -> 1 OBSERVATION -> 2 PATTERN -> 3 HYPOTHESIS
   -> 4 TESTED_HYPOTHESIS -> 5 CONTEXTUAL_LEARNING
 
 Rungs 1-3 are reached by *introducing* a new entity whose parents sit exactly
 one rung below (`check_introduction`). Rungs 4-5 are promotions of an existing
-hypothesis (`evaluate_promotion`, `check_learning`). The model may request a
-level; only these functions decide. Model rationale text is never consulted.
+hypothesis (`evaluate_promotion`, `check_learning`). Every legal move is listed
+in `serene.policies.ladder.TRANSITIONS`; anything else fails closed before any
+evidence is examined. The model may request a level; only these functions
+decide. Model rationale text is never consulted.
+
+Level 5 additionally requires complete verified provenance, counterevidence
+consideration (no contradicting outcome anywhere, every cited experiment's
+outcomes cited, confounders listed, no equally-tested rival), scope bounded by
+the contexts actually tested, and validity/review metadata.
 """
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any, Final
 
@@ -23,11 +31,21 @@ from serene.domain.entities import (
     Observation,
     OutcomeResult,
     Pattern,
+    ReviewMetadata,
+    ValidityWindow,
 )
-from serene.domain.events import SafetyClass
-from serene.domain.values import ActorRef, EpistemicLevel, VerificationStatus
+from serene.domain.events import EventType, PromotionDecisionRecord, SafetyClass
+from serene.domain.values import (
+    ActorRef,
+    DerivationMethod,
+    EpistemicLevel,
+    Provenance,
+    Scope,
+    VerificationStatus,
+)
 from serene.lineage.provenance import provenance_violations, trace_lineage
 from serene.policies.decision import PolicyDecision
+from serene.policies.ladder import promotion_violation
 from serene.policies.safety import classify_intervention
 from serene.projections.state import (
     ApprovalState,
@@ -36,8 +54,9 @@ from serene.projections.state import (
     LifecycleStatus,
 )
 
-POLICY_VERSION: Final = "promotion/1"
+POLICY_VERSION: Final = "promotion/2"
 MAX_LEARNING_VALIDITY: Final = timedelta(days=180)
+DEFAULT_LEARNING_REVIEW: Final = timedelta(days=60)
 
 _L = EpistemicLevel
 
@@ -137,7 +156,8 @@ def check_introduction(entity: Any, state: KernelState) -> PolicyDecision:
     return _decision(reasons)
 
 
-def _lineage_reasons(subject_id: str, state: KernelState) -> list[str]:
+def lineage_reasons(subject_id: str, state: KernelState) -> list[str]:
+    """Complete, verified, unrejected lineage from `subject_id` down to raw evidence."""
     trace = trace_lineage(subject_id, state)
     reasons = [f"MISSING_ANCESTOR:{m}" for m in trace.missing]
     if not trace.raw_evidence:
@@ -152,7 +172,7 @@ def _lineage_reasons(subject_id: str, state: KernelState) -> list[str]:
     return reasons
 
 
-def _tested_experiments(hypothesis_id: str, state: KernelState) -> list[str]:
+def tested_experiments(hypothesis_id: str, state: KernelState) -> list[str]:
     """Completed experiments for the hypothesis that ran under a granted, non-RED approval."""
     tested: list[str] = []
     for exp_id, record in sorted(state.experiments.items()):
@@ -171,6 +191,87 @@ def _tested_experiments(hypothesis_id: str, state: KernelState) -> list[str]:
     return tested
 
 
+@dataclass(frozen=True, slots=True)
+class Counterevidence:
+    """Everything in the ledger that speaks against a hypothesis. Never summarized away."""
+
+    contradicting_outcomes: tuple[str, ...]
+    inconclusive_outcomes: tuple[str, ...]
+    counter_evidence_ids: tuple[str, ...]
+    counter_observation_ids: tuple[str, ...]
+    unresolved_competitors: tuple[str, ...]
+
+    @property
+    def all_ids(self) -> tuple[str, ...]:
+        return tuple(
+            sorted(
+                {
+                    *self.contradicting_outcomes,
+                    *self.inconclusive_outcomes,
+                    *self.counter_evidence_ids,
+                    *self.counter_observation_ids,
+                }
+            )
+        )
+
+
+def _outcomes_for(hypothesis_id: str, state: KernelState) -> list[tuple[str, OutcomeResult]]:
+    """Every reported outcome on any experiment of the hypothesis, whatever its status."""
+    out: list[tuple[str, OutcomeResult]] = []
+    for record in state.experiments.values():
+        if record.experiment.hypothesis_id != hypothesis_id:
+            continue
+        for outcome_id in record.outcome_ids:
+            out.append((outcome_id, state.entities[outcome_id].entity.result))
+    return sorted(out)
+
+
+def counterevidence_for(hypothesis_id: str, state: KernelState) -> Counterevidence:
+    record = state.entities.get(hypothesis_id)
+    if record is None:
+        return Counterevidence((), (), (), (), ())
+    hypothesis = record.entity
+    outcomes = _outcomes_for(hypothesis_id, state)
+    counter_obs: set[str] = set()
+    for pattern_id in hypothesis.pattern_ids:
+        pattern = state.entities.get(pattern_id)
+        if pattern is not None:
+            counter_obs |= set(pattern.entity.counter_observation_ids)
+    rivals = set(hypothesis.competing_hypothesis_ids) | set(
+        state.investigation_hypotheses.get(hypothesis.investigation_id, [])
+    )
+    rivals.discard(hypothesis_id)
+    unresolved = sorted(
+        rival
+        for rival in rivals
+        if rival in state.entities
+        and state.entities[rival].status is LifecycleStatus.ACTIVE
+        and state.hypothesis_levels.get(rival, _L.HYPOTHESIS) >= _L.TESTED_HYPOTHESIS
+    )
+    return Counterevidence(
+        contradicting_outcomes=tuple(o for o, r in outcomes if r is OutcomeResult.CONTRADICTS),
+        inconclusive_outcomes=tuple(o for o, r in outcomes if r is OutcomeResult.INCONCLUSIVE),
+        counter_evidence_ids=tuple(sorted(hypothesis.counter_evidence_ids)),
+        counter_observation_ids=tuple(sorted(counter_obs)),
+        unresolved_competitors=tuple(unresolved),
+    )
+
+
+def _counterevidence_reasons(
+    hypothesis_id: str, to_level: EpistemicLevel, state: KernelState
+) -> list[str]:
+    counter = counterevidence_for(hypothesis_id, state)
+    reasons: list[str] = []
+    if counter.contradicting_outcomes:
+        reasons.append("CONTRADICTING_OUTCOME")
+    if to_level >= _L.CONTEXTUAL_LEARNING:
+        hypothesis = state.entities[hypothesis_id].entity
+        if not hypothesis.known_confounders:
+            reasons.append("NO_CONFOUNDERS_CONSIDERED")
+        reasons += [f"UNRESOLVED_COMPETITOR:{c}" for c in counter.unresolved_competitors]
+    return reasons
+
+
 def evaluate_promotion(request: PromotionRequest, state: KernelState) -> PolicyDecision:
     """Decide a promotion of an existing hypothesis (3->4 or 4->5).
 
@@ -184,23 +285,22 @@ def evaluate_promotion(request: PromotionRequest, state: KernelState) -> PolicyD
 def _promotion_reasons(
     subject_id: str, from_level: EpistemicLevel, to_level: EpistemicLevel, state: KernelState
 ) -> list[str]:
-    reasons: list[str] = []
-    if to_level != from_level + 1:
-        return ["LEVEL_SKIP" if to_level > from_level else "NOT_A_PROMOTION"]
-    if to_level not in (_L.TESTED_HYPOTHESIS, _L.CONTEXTUAL_LEARNING):
-        return ["PROMOTION_VIA_INTRODUCTION_ONLY"]
+    violation = promotion_violation(from_level, to_level)
+    if violation is not None:
+        return [violation]
 
     current = state.hypothesis_levels.get(subject_id)
     if current is None:
         return ["UNKNOWN_SUBJECT"]
+    reasons: list[str] = []
     if current != from_level:
         reasons.append(f"LEVEL_MISMATCH:{current.name}")
     record = state.entities[subject_id]
     if record.status is not LifecycleStatus.ACTIVE:
         reasons.append("SUBJECT_INACTIVE")
-    reasons += _lineage_reasons(subject_id, state)
+    reasons += lineage_reasons(subject_id, state)
 
-    tested = _tested_experiments(subject_id, state)
+    tested = tested_experiments(subject_id, state)
     if not tested:
         reasons.append("NO_APPROVED_COMPLETED_EXPERIMENT")
     results = [
@@ -210,9 +310,25 @@ def _promotion_reasons(
     ]
     if OutcomeResult.SUPPORTS not in results:
         reasons.append("NO_SUPPORTING_OUTCOME")
-    if OutcomeResult.CONTRADICTS in results:
-        reasons.append("CONTRADICTING_OUTCOME")
+    reasons += _counterevidence_reasons(subject_id, to_level, state)
     return reasons
+
+
+def decide_promotion(
+    subject_id: str, from_level: EpistemicLevel, to_level: EpistemicLevel, state: KernelState
+) -> tuple[EventType, PromotionDecisionRecord]:
+    """The gate's recorded verdict: PROMOTION_GRANTED or PROMOTION_DENIED, bound to the head."""
+    decision = _decision(_promotion_reasons(subject_id, from_level, to_level, state))
+    record = PromotionDecisionRecord(
+        subject_id=subject_id,
+        from_level=from_level,
+        to_level=to_level,
+        reason_codes=decision.reason_codes,
+        policy_version=decision.policy_version,
+        facts_digest=facts_digest(subject_id, decision, state),
+    )
+    event_type = EventType.PROMOTION_GRANTED if decision.allowed else EventType.PROMOTION_DENIED
+    return event_type, record
 
 
 def check_learning(
@@ -238,6 +354,9 @@ def check_learning(
     if learning.hypothesis_id not in learning.provenance.derived_from:
         reasons.append("HYPOTHESIS_NOT_IN_LINEAGE")
     reasons += provenance_violations(learning, state)
+    for parent in learning.provenance.derived_from:
+        if parent in state.entities:
+            reasons += lineage_reasons(parent, state)
 
     hypothesis_record = state.entities.get(learning.hypothesis_id)
     if hypothesis_record is not None:
@@ -247,15 +366,28 @@ def check_learning(
             reasons.append("SCOPE_BROADENED")
         if hypothesis_record.status is not LifecycleStatus.ACTIVE:
             reasons.append("SUBJECT_INACTIVE")
+        reasons += _counterevidence_reasons(learning.hypothesis_id, _L.CONTEXTUAL_LEARNING, state)
 
-    tested = set(_tested_experiments(learning.hypothesis_id, state))
+    tested = set(tested_experiments(learning.hypothesis_id, state))
+    tested_contexts: set[str] = set()
     for exp_id in learning.experiment_ids:
         if exp_id not in tested:
             reasons.append(f"UNTESTED_EXPERIMENT:{exp_id}")
+        else:
+            tested_contexts |= set(state.experiments[exp_id].experiment.scope.contexts)
+            # No cherry-picking: every outcome of a cited experiment must be cited.
+            for outcome_id in state.experiments[exp_id].outcome_ids:
+                if outcome_id not in learning.outcome_ids:
+                    reasons.append(f"OUTCOME_OMITTED:{outcome_id}")
+    if set(learning.scope.contexts) - tested_contexts:
+        reasons.append("SCOPE_EXCEEDS_TESTED_CONTEXTS")
     known_outcomes = {o for e in tested for o in state.experiments[e].outcome_ids}
     for outcome_id in learning.outcome_ids:
         if outcome_id not in known_outcomes:
             reasons.append(f"UNKNOWN_OUTCOME:{outcome_id}")
+    cited = [state.entities[o].entity.result for o in learning.outcome_ids if o in known_outcomes]
+    if OutcomeResult.SUPPORTS not in cited:
+        reasons.append("NO_SUPPORTING_OUTCOME_CITED")
 
     window = learning.validity
     if window.review_after - window.valid_from > MAX_LEARNING_VALIDITY:
@@ -265,6 +397,52 @@ def check_learning(
     if window.valid_from > now:
         reasons.append("VALIDITY_STARTS_IN_FUTURE")
     return _decision(reasons)
+
+
+def build_learning_candidate(
+    hypothesis_id: str,
+    state: KernelState,
+    *,
+    learning_id: str,
+    created_by: ActorRef,
+    reviewer: ActorRef,
+    now: datetime,
+    review_period: timedelta = DEFAULT_LEARNING_REVIEW,
+) -> Learning:
+    """The policy-built Level-5 candidate: scope = contexts actually tested, bounded validity.
+
+    Nothing here comes from model text except the hypothesis statement it restates.
+    `check_learning` still decides admission.
+    """
+    hypothesis = state.entities[hypothesis_id].entity
+    tested = tested_experiments(hypothesis_id, state)
+    outcomes = [o for exp_id in tested for o in state.experiments[exp_id].outcome_ids]
+    tested_contexts = {c for e in tested for c in state.experiments[e].experiment.scope.contexts}
+    contexts = tuple(c for c in hypothesis.scope.contexts if c in tested_contexts)
+    parents = (hypothesis_id, *tested, *outcomes)
+    sources: list[str] = []
+    for parent in parents:
+        sources.extend(state.entities[parent].entity.provenance.source_ids)
+    triggers = (*hypothesis.known_confounders, *hypothesis.falsification_criteria)[:8]
+    return Learning(
+        child_id=hypothesis.child_id,
+        provenance=Provenance(
+            created_by=created_by,
+            created_at=now,
+            method=DerivationMethod.DETERMINISTIC_RULE,
+            derived_from=parents,
+            source_ids=tuple(dict.fromkeys(sources)),
+            verification_status=VerificationStatus.VERIFIED,
+        ),
+        learning_id=learning_id,
+        hypothesis_id=hypothesis_id,
+        experiment_ids=tuple(tested),
+        outcome_ids=tuple(outcomes),
+        statement=hypothesis.statement,
+        scope=Scope(child_id=hypothesis.child_id, contexts=contexts or hypothesis.scope.contexts),
+        validity=ValidityWindow(valid_from=now, review_after=now + review_period),
+        review=ReviewMetadata(reviewer=reviewer, retest_triggers=triggers),
+    )
 
 
 def max_permitted_level(hypothesis_id: str, state: KernelState) -> EpistemicLevel | None:

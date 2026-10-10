@@ -15,9 +15,10 @@ SQL = "\n".join(
 
 
 def _check_list(column: str) -> set[str]:
-    match = re.search(column + r"\s+in\s*\((.*?)\)\)", SQL, flags=re.S)
-    assert match, column
-    return set(re.findall(r"'([A-Za-z_]+)'", match.group(1)))
+    # Later migrations regenerate a constraint; the most recent definition is in force.
+    matches = re.findall(column + r"\s+in\s*\((.*?)\)\)", SQL, flags=re.S)
+    assert matches, column
+    return set(re.findall(r"'([A-Za-z_]+)'", matches[-1]))
 
 
 def test_event_type_constraint_matches_taxonomy() -> None:

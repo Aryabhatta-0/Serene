@@ -157,6 +157,16 @@ cfo.ai seam (#55), Inspect AI scaffold (#41), CI gates (#58), secret/PII scan (#
 
 Planned: see [parallel-handoff.md](parallel-handoff.md).
 
+Branch B (`feat/trust-experiments-memory`) adds: explicit ladder transition
+table and strengthened Promotion Gate incl. Level-5 counterevidence rules
+(#17-#20), approval binding + AMBER escalation (#24), N-of-1 lifecycle with
+`WAITING_FOR_OUTCOME` timeout (`serene/experiments`, #25, #26), learning
+validity (#20), Causal Twin relationship state (`serene/causal`, #27), Git +
+Markdown memory with Critic, single-writer Memory Committer and Dream
+(`serene/memory`, `serene/adapters/git_memory.py`, #28-#32), parent/caregiver
+RLS (#8), Authority & Safety and Epistemic Correctness scorers (#46, #47) and
+the cfo.ai cost-constrained acquisition decision (#55).
+
 ## 10. Excluded technology (MVP)
 
 | Excluded | Why |

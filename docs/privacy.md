@@ -1,8 +1,8 @@
 # Serene Privacy
 
-> **Status:** telemetry redaction, synthetic-only test data, secret/PII scanning
-> and the database deny-by-default boundary are implemented. Parent/caregiver
-> scoped RLS policies are issue #8 (branch A/B follow-up, see handoff).
+> **Status:** telemetry redaction, synthetic-only test data, secret/PII scanning,
+> the database deny-by-default boundary and parent/caregiver-scoped RLS (#8,
+> `supabase/migrations/20261011120000_serene_rls_access.sql`) are implemented.
 
 ## 1. Data ownership
 
@@ -10,10 +10,10 @@ A child's data belongs to the **parent**. Access is explicit and scoped.
 
 | Principal | Access |
 | --- | --- |
-| Parent | Full access to their child's data (policies: #8) |
-| Caregiver | Explicit, narrow scopes only (#8) |
-| Backend services | Service role; the only path to `serene.*` today |
-| Evaluation / tests | **Synthetic data only** (`serene.testing`) |
+| Parent | Reads everything about a child they are a guardian of (`serene.child_guardians`) |
+| Caregiver | Only `observations:read` / `experiments:read` / `learnings:read` for one child, granted by its parent, expiring (<= 180 days), revocable |
+| Backend services | `service_role`: the only writer of the ledger and of guardianship |
+| Evaluation / tests | **Synthetic data only**: `serene_eval` sees `SYNTHETIC` children only |
 
 ## 2. Database boundary (implemented)
 
@@ -23,6 +23,16 @@ A child's data belongs to the **parent**. Access is explicit and scoped.
   `authenticated` are denied by default and have all privileges revoked.
 - `service_role` may `SELECT`/`INSERT` the ledger; `UPDATE`/`DELETE`/`TRUNCATE`
   are revoked and also blocked by triggers.
+
+### 2.1 Scoped access (#8)
+
+End-user identity is the JWT `sub` claim (`serene.request_user_id()`, the value
+Supabase's `auth.uid()` reads). End users can never insert, update or delete
+ledger rows, claim guardianship or change a child's data class. Approvals,
+evidence, hypotheses, promotions and memory events are parent-only. A parent can
+grant or revoke a caregiver scope for their own child only; a caregiver cannot
+grant themselves or widen a scope. Adversarial cross-child / caregiver /
+service-role / evaluation tests: `tests/test_rls.py`.
 
 ## 3. Privacy-safe observability (implemented, #52 partial)
 

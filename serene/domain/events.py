@@ -93,6 +93,7 @@ class EventType(StrEnum):
     OUTCOME_REPORTED = "OUTCOME_REPORTED"
     EXPERIMENT_COMPLETED = "EXPERIMENT_COMPLETED"
     EXPERIMENT_ABANDONED = "EXPERIMENT_ABANDONED"
+    EXPERIMENT_OUTCOME_TIMED_OUT = "EXPERIMENT_OUTCOME_TIMED_OUT"
     # approval
     APPROVAL_REQUESTED = "APPROVAL_REQUESTED"
     APPROVAL_NUDGED = "APPROVAL_NUDGED"
@@ -107,6 +108,8 @@ class EventType(StrEnum):
     MEMORY_PATCH_PROPOSED = "MEMORY_PATCH_PROPOSED"
     MEMORY_PATCH_COMMITTED = "MEMORY_PATCH_COMMITTED"
     MEMORY_PATCH_REJECTED = "MEMORY_PATCH_REJECTED"
+    MEMORY_PATCH_REVIEWED = "MEMORY_PATCH_REVIEWED"
+    MEMORY_DREAM_STAGE_RECORDED = "MEMORY_DREAM_STAGE_RECORDED"
 
 
 # ----------------------------------------------------------------- payloads
@@ -258,6 +261,14 @@ class ExperimentAbandoned(_Payload):
     reason_codes: tuple[ReasonCode, ...] = Field(min_length=1)
 
 
+class ExperimentOutcomeTimedOut(_Payload):
+    """WAITING_FOR_OUTCOME expired with no outcome: the experiment is abandoned, never inferred."""
+
+    experiment_id: ExperimentId
+    outcome_due_at: UtcDatetime
+    policy_version: ShortText
+
+
 class ApprovalRequested(_Payload):
     approval_request_id: ApprovalRequestId
     experiment_id: ExperimentId
@@ -331,6 +342,44 @@ class MemoryPatchRejected(_Payload):
     reason_codes: tuple[ReasonCode, ...] = Field(min_length=1)
 
 
+class MemoryCheck(StrEnum):
+    DOCUMENT_FORMAT = "DOCUMENT_FORMAT"
+    CONTRADICTION_SEARCH = "CONTRADICTION_SEARCH"
+    LINEAGE = "LINEAGE"
+    PROMOTION_GATE = "PROMOTION_GATE"
+
+
+class MemoryPatchReviewed(_Payload):
+    """Deterministic Critic + provenance verifier + gate verdict on one proposed patch."""
+
+    patch_id: MemoryPatchId
+    passed: bool
+    checks_passed: tuple[MemoryCheck, ...] = Field(max_length=8)
+    reason_codes: tuple[ReasonCode, ...] = Field(min_length=1, max_length=64)
+    critic_version: ShortText
+    facts_digest: Sha256Hex
+
+
+class DreamStage(StrEnum):
+    ORIENT = "ORIENT"
+    CONSOLIDATE = "CONSOLIDATE"
+    REFLECT = "REFLECT"
+    CHALLENGE = "CHALLENGE"
+    VERIFY = "VERIFY"
+    PROPOSE_PATCH = "PROPOSE_PATCH"
+
+
+class MemoryDreamStageRecorded(_Payload):
+    """One stage of a Dream run. Traceability only: a stage record carries no authority."""
+
+    dream_run_id: Sha256Hex
+    stage: DreamStage
+    input_ids: tuple[EntityId, ...] = Field(default=(), max_length=256)
+    output_digest: Sha256Hex
+    item_count: int = Field(ge=0, le=256)
+    reason_codes: tuple[ReasonCode, ...] = Field(default=(), max_length=64)
+
+
 # ----------------------------------------------------------------- taxonomy
 @dataclass(frozen=True, slots=True)
 class EventSpec:
@@ -392,6 +441,9 @@ EVENT_TAXONOMY: Final[dict[EventType, EventSpec]] = {
     EventType.OUTCOME_REPORTED: _spec(OutcomeReported, {_A.PARENT, _A.CAREGIVER}, _CLAIM),
     EventType.EXPERIMENT_COMPLETED: _spec(ExperimentCompleted, {_A.POLICY}, _NA),
     EventType.EXPERIMENT_ABANDONED: _spec(ExperimentAbandoned, {_A.PARENT, _A.POLICY}, _NA),
+    EventType.EXPERIMENT_OUTCOME_TIMED_OUT: _spec(
+        ExperimentOutcomeTimedOut, {_A.SYSTEM, _A.POLICY}, _NA
+    ),
     EventType.APPROVAL_REQUESTED: _spec(ApprovalRequested, {_A.POLICY}, _NA),
     EventType.APPROVAL_NUDGED: _spec(ApprovalNudged, {_A.SYSTEM}, _NA),
     EventType.APPROVAL_GRANTED: _spec(ApprovalGranted, {_A.PARENT}, _NA),
@@ -405,6 +457,8 @@ EVENT_TAXONOMY: Final[dict[EventType, EventSpec]] = {
     ),
     EventType.MEMORY_PATCH_COMMITTED: _spec(MemoryPatchCommitted, {_A.MEMORY_COMMITTER}, _NA),
     EventType.MEMORY_PATCH_REJECTED: _spec(MemoryPatchRejected, {_A.MEMORY_COMMITTER}, _NA),
+    EventType.MEMORY_PATCH_REVIEWED: _spec(MemoryPatchReviewed, {_A.POLICY}, _NA),
+    EventType.MEMORY_DREAM_STAGE_RECORDED: _spec(MemoryDreamStageRecorded, {_A.SYSTEM}, _NA),
 }
 
 EventPayload = _Payload

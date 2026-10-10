@@ -28,6 +28,7 @@ from serene.domain.events import (
     ApprovalRequested,
     ApprovalTimedOut,
     DomainEvent,
+    DreamStage,
     EventType,
     EvidenceAcquired,
     EvidenceRejected,
@@ -36,6 +37,7 @@ from serene.domain.events import (
     ExperimentBlocked,
     ExperimentClassified,
     ExperimentCompleted,
+    ExperimentOutcomeTimedOut,
     ExperimentProposed,
     ExperimentStarted,
     HypothesisProposed,
@@ -46,9 +48,11 @@ from serene.domain.events import (
     LearningRecorded,
     LearningStatusChanged,
     LearningSuperseded,
+    MemoryDreamStageRecorded,
     MemoryPatchCommitted,
     MemoryPatchProposed,
     MemoryPatchRejected,
+    MemoryPatchReviewed,
     ObservationReported,
     ObservationStructured,
     OutcomeReported,
@@ -99,6 +103,7 @@ class EntityRecord:
     entity: Any
     status: LifecycleStatus = LifecycleStatus.ACTIVE
     superseded_by: str | None = None
+    introduced_at: datetime | None = None  # ledger recorded_at of the introducing event
 
 
 @dataclass(slots=True)
@@ -109,6 +114,8 @@ class ExperimentRecord:
     intervention_digest: str | None = None
     approval_request_id: str | None = None
     outcome_ids: list[str] = field(default_factory=list)
+    started_at: datetime | None = None
+    outcome_timed_out: bool = False
 
 
 @dataclass(slots=True)
@@ -122,6 +129,8 @@ class ApprovalRecord:
     state: ApprovalState = ApprovalState.PENDING
     nudges: int = 0
     consumed_by: str | None = None
+    requested_at: datetime | None = None
+    receipt_key: str | None = None
 
 
 @dataclass(slots=True)
@@ -143,6 +152,15 @@ class LearningRecord:
     contexts: tuple[str, ...]
     hypothesis_id: str
     superseded_by: str | None = None
+    active_since: datetime | None = None
+    status_changed_at: datetime | None = None
+
+
+@dataclass(slots=True)
+class MemoryReviewRecord:
+    event_id: str
+    passed: bool
+    reason_codes: tuple[str, ...]
 
 
 @dataclass(slots=True)
@@ -160,6 +178,10 @@ class KernelState:
     promotions: dict[str, PromotionRecord] = field(default_factory=dict)
     learnings: dict[str, LearningRecord] = field(default_factory=dict)
     memory_patches: dict[str, str] = field(default_factory=dict)
+    memory_reviews: dict[str, MemoryReviewRecord] = field(default_factory=dict)
+    memory_commits: dict[str, str] = field(default_factory=dict)
+    dream_runs: dict[str, list[DreamStage]] = field(default_factory=dict)
+    channel_receipts: dict[str, str] = field(default_factory=dict)
 
     def clone(self) -> KernelState:
         return copy.deepcopy(self)
@@ -175,6 +197,11 @@ class KernelState:
         return None if record is None else record.level
 
 
+def receipt_key(channel: str, message_ref: str) -> str:
+    """Identity of one authenticated channel callback; each may authorize at most one decision."""
+    return f"{channel}:{message_ref}"
+
+
 def _register(state: KernelState, entity: Any, event: DomainEvent) -> None:
     state.entities[entity.entity_id] = EntityRecord(
         entity_id=entity.entity_id,
@@ -183,6 +210,7 @@ def _register(state: KernelState, entity: Any, event: DomainEvent) -> None:
         introduced_by=event.event_id,
         verification_status=event.verification_status,
         entity=entity,
+        introduced_at=event.recorded_at,
     )
 
 
@@ -249,6 +277,7 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
                 safety_class=payload.safety_class,
                 requested_of=payload.requested_of,
                 expires_at=payload.expires_at,
+                requested_at=event.recorded_at,
             )
             record_e = state.experiments[payload.experiment_id]
             record_e.status = ExperimentStatus.AWAITING_APPROVAL
@@ -257,20 +286,27 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
             approval = state.approvals[apr_id]
             approval.state = ApprovalState.NUDGED
             approval.nudges += 1
-        case ApprovalGranted(approval_request_id=apr_id):
+        case ApprovalGranted(approval_request_id=apr_id, receipt=receipt):
             approval = state.approvals[apr_id]
             approval.state = ApprovalState.GRANTED
+            approval.receipt_key = receipt_key(receipt.channel.value, receipt.message_ref)
+            state.channel_receipts[approval.receipt_key] = apr_id
             state.experiments[approval.experiment_id].status = ExperimentStatus.APPROVED
-        case ApprovalRejected(approval_request_id=apr_id):
+        case ApprovalRejected(approval_request_id=apr_id, receipt=receipt):
             approval = state.approvals[apr_id]
             approval.state = ApprovalState.REJECTED
+            approval.receipt_key = receipt_key(receipt.channel.value, receipt.message_ref)
+            state.channel_receipts[approval.receipt_key] = apr_id
             state.experiments[approval.experiment_id].status = ExperimentStatus.ABANDONED
         case ApprovalTimedOut(approval_request_id=apr_id):
             approval = state.approvals[apr_id]
             approval.state = ApprovalState.PARKED_UNRESOLVED
-            state.experiments[approval.experiment_id].status = ExperimentStatus.PARKED_UNRESOLVED
+            parked = state.experiments[approval.experiment_id]
+            if parked.status is ExperimentStatus.AWAITING_APPROVAL:  # never revive a terminal one
+                parked.status = ExperimentStatus.PARKED_UNRESOLVED
         case ExperimentStarted(experiment_id=exp_id, approval_request_id=apr_id):
             state.experiments[exp_id].status = ExperimentStatus.STARTED
+            state.experiments[exp_id].started_at = event.recorded_at
             state.approvals[apr_id].consumed_by = event.event_id
         case TrialRecorded(trial=trial):
             _register(state, trial, event)
@@ -281,6 +317,9 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
             state.experiments[exp_id].status = ExperimentStatus.COMPLETED
         case ExperimentAbandoned(experiment_id=exp_id):
             state.experiments[exp_id].status = ExperimentStatus.ABANDONED
+        case ExperimentOutcomeTimedOut(experiment_id=exp_id):
+            state.experiments[exp_id].status = ExperimentStatus.ABANDONED
+            state.experiments[exp_id].outcome_timed_out = True
         case LearningRecorded(learning=learning, promotion_event_id=promotion_id):
             _register(state, learning, event)
             state.promotions[promotion_id].consumed_by = event.event_id
@@ -291,9 +330,15 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
                 review_after=learning.validity.review_after,
                 contexts=learning.scope.contexts,
                 hypothesis_id=learning.hypothesis_id,
+                active_since=event.recorded_at,
+                status_changed_at=event.recorded_at,
             )
         case LearningStatusChanged(learning_id=lrn_id, to_status=to_status):
-            state.learnings[lrn_id].status = to_status
+            learning_record = state.learnings[lrn_id]
+            learning_record.status = to_status
+            learning_record.status_changed_at = event.recorded_at
+            if to_status is LearningStatus.ACTIVE:
+                learning_record.active_since = event.recorded_at
         case LearningSuperseded(learning_id=lrn_id, superseded_by=successor):
             state.learnings[lrn_id].status = LearningStatus.DEPRECATED
             state.learnings[lrn_id].superseded_by = successor
@@ -302,10 +347,17 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
         case MemoryPatchProposed(patch=patch):
             _register(state, patch, event)
             state.memory_patches[patch.patch_id] = "PROPOSED"
-        case MemoryPatchCommitted(patch_id=patch_id):
+        case MemoryPatchCommitted(patch_id=patch_id, commit_sha=commit_sha):
             state.memory_patches[patch_id] = "COMMITTED"
+            state.memory_commits[patch_id] = commit_sha
         case MemoryPatchRejected(patch_id=patch_id):
             state.memory_patches[patch_id] = "REJECTED"
+        case MemoryPatchReviewed(patch_id=patch_id):
+            state.memory_reviews[patch_id] = MemoryReviewRecord(
+                event_id=event.event_id, passed=payload.passed, reason_codes=payload.reason_codes
+            )
+        case MemoryDreamStageRecorded(dream_run_id=run_id, stage=stage):
+            state.dream_runs.setdefault(run_id, []).append(stage)
         case _:
             # Event types that carry no read-state (e.g. requests) still advance the cursor.
             pass

@@ -8,7 +8,7 @@
 
 - **Ledger = truth.** Every change of understanding is a *new* event. Nothing
   is updated or deleted, in code (no such methods exist) or in SQL (triggers).
-- **Closed vocabulary.** 34 event types; each binds exactly one payload schema,
+- **Closed vocabulary.** 37 event types; each binds exactly one payload schema,
   the actor kinds allowed to append it, and the verification statuses it may carry.
 - **Tamper-evident.** Each child's stream is a hash chain; `verify_hash_chain`
   pinpoints the first broken index and the reason.
@@ -62,6 +62,7 @@ test vector lives in `tests/test_canonical_hashing.py`.
 | | `TRIAL_RECORDED` | PARENT, CAREGIVER, SYSTEM | UNVERIFIED |
 | | `OUTCOME_REPORTED` | PARENT, CAREGIVER | UNVERIFIED / VERIFIED* |
 | | `EXPERIMENT_ABANDONED` | PARENT, POLICY | n/a |
+| | `EXPERIMENT_OUTCOME_TIMED_OUT` (WAITING_FOR_OUTCOME expired) | SYSTEM, POLICY | n/a |
 | Approval | `APPROVAL_REQUESTED` | POLICY | n/a |
 | | `APPROVAL_NUDGED` | SYSTEM | n/a |
 | | `APPROVAL_GRANTED` / `APPROVAL_REJECTED` | PARENT | n/a |
@@ -71,6 +72,8 @@ test vector lives in `tests/test_canonical_hashing.py`.
 | | `LEARNING_SUPERSEDED` | POLICY | n/a |
 | Memory | `MEMORY_PATCH_PROPOSED` | AGENT, SYSTEM, PARENT | UNVERIFIED |
 | | `MEMORY_PATCH_COMMITTED` / `MEMORY_PATCH_REJECTED` | MEMORY_COMMITTER | n/a |
+| | `MEMORY_PATCH_REVIEWED` (deterministic Critic verdict) | POLICY | n/a |
+| | `MEMORY_DREAM_STAGE_RECORDED` (one Dream stage) | SYSTEM | n/a |
 
 \* `VERIFIED` on a human report means *channel-authenticated first-hand
 report*: it proves who said it on which channel, not that it is true. It is
@@ -89,7 +92,15 @@ only admissible from a `TELEGRAM` or `WEB_APP` source.
 | `APPROVAL_NUDGED` | `SINGLE_NUDGE_EXCEEDED` |
 | `APPROVAL_TIMED_OUT` | `NOT_YET_EXPIRED` (timeout parks the request, never approves) |
 | `EXPERIMENT_STARTED` | `RED_FAIL_CLOSED`, `NO_APPROVAL`, `APPROVAL_NOT_GRANTED`, `INTERVENTION_CHANGED_SINCE_APPROVAL`, `APPROVAL_ALREADY_USED`, `APPROVAL_EXPIRED` |
-| `LEARNING_RECORDED` | no unused level-5 grant, scope broadened, validity > 180 days, already due for review, untested experiment |
+| `LEARNING_RECORDED` | no unused level-5 grant, scope broadened, validity > 180 days, already due for review, untested experiment, `OUTCOME_OMITTED`, `SCOPE_EXCEEDS_TESTED_CONTEXTS`, `UNRESOLVED_COMPETITOR` |
+| `PROMOTION_DENIED` | `DENIAL_NOT_JUSTIFIED`, `REASON_CODES_MISMATCH`, `STALE_FACTS_DIGEST` (denials are recomputed like grants) |
+| `APPROVAL_GRANTED` (branch B additions) | `RECEIPT_REPLAYED`, `RECEIPT_PREDATES_REQUEST`, `RECEIPT_IN_FUTURE`, `SAFETY_CLASS_CHANGED_SINCE_REQUEST`, `AMBER_DELIBERATION_TOO_SHORT`, `EXPERIMENT_NOT_AWAITING_APPROVAL` |
+| `OUTCOME_REPORTED` / `TRIAL_RECORDED` | `OUTCOME_WINDOW_CLOSED` (after started_at + duration + grace) |
+| `EXPERIMENT_OUTCOME_TIMED_OUT` | `NOT_YET_DUE`, `DEADLINE_MISMATCH`, `OUTCOMES_REPORTED_COMPLETE_INSTEAD` |
+| `LEARNING_STATUS_CHANGED` | illegal transition; `REACTIVATION_NOT_JUSTIFIED` when raising trust |
+| `MEMORY_PATCH_REVIEWED` | `VERDICT_MISMATCH`, `STALE_FACTS_DIGEST`, `ALREADY_REVIEWED` (the Critic is recomputed) |
+| `MEMORY_PATCH_COMMITTED` | `NO_PASSED_REVIEW`, `REVIEW_NO_LONGER_VALID`, `REVIEW_NOT_IN_LINEAGE` |
+| `MEMORY_DREAM_STAGE_RECORDED` | `STAGE_OUT_OF_ORDER`, `RUN_ALREADY_COMPLETE`, `UNKNOWN_INPUT`, `NOT_A_PROPOSED_PATCH` |
 
 A refusal raises `AdmissionRejected(reason_codes)` and writes nothing.
 
