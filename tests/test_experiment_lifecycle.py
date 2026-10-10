@@ -269,3 +269,25 @@ def test_amber_lifecycle_never_nudges_and_waits_longer() -> None:
     fam.clock.advance(timedelta(hours=13))
     assert [e.event_type for e in svc.run_timers(fam.child_id).appended] == [E.APPROVAL_TIMED_OUT]
     assert E.APPROVAL_NUDGED not in event_types(fam)
+
+
+def test_timeout_of_an_abandoned_experiments_request_keeps_it_abandoned() -> None:
+    from serene.domain.events import ExperimentAbandoned
+
+    fam = SyntheticFamily(seed="lifecycle-abandon-timeout")
+    svc = service(fam)
+    exp = _proposed(fam)
+    exp_id = exp.experiment_id  # type: ignore[attr-defined]
+    svc.classify(fam.child_id, exp_id)
+    svc.request_approval(fam.child_id, exp_id, parent_id=fam.parent.actor_id)
+    fam.append(
+        fam.draft(
+            E.EXPERIMENT_ABANDONED,
+            fam.parent,
+            ExperimentAbandoned(experiment_id=exp_id, reason_codes=("PARENT_DECLINED",)),
+            source=fam.source(),
+        )
+    )
+    fam.clock.advance(timedelta(hours=49))
+    assert [e.event_type for e in svc.run_timers(fam.child_id).appended] == [E.APPROVAL_TIMED_OUT]
+    assert fam.state().experiments[exp_id].status.value == "ABANDONED"

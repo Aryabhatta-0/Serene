@@ -301,7 +301,9 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
         case ApprovalTimedOut(approval_request_id=apr_id):
             approval = state.approvals[apr_id]
             approval.state = ApprovalState.PARKED_UNRESOLVED
-            state.experiments[approval.experiment_id].status = ExperimentStatus.PARKED_UNRESOLVED
+            parked = state.experiments[approval.experiment_id]
+            if parked.status is ExperimentStatus.AWAITING_APPROVAL:  # never revive a terminal one
+                parked.status = ExperimentStatus.PARKED_UNRESOLVED
         case ExperimentStarted(experiment_id=exp_id, approval_request_id=apr_id):
             state.experiments[exp_id].status = ExperimentStatus.STARTED
             state.experiments[exp_id].started_at = event.recorded_at
