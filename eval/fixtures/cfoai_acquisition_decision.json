@@ -1,0 +1,66 @@
+{
+  "chosen": "ask_parent_telegram",
+  "cost_decided_between": [
+    "ask_parent_telegram",
+    "ask_caregiver_telegram"
+  ],
+  "cost_decisive": true,
+  "decision": "pickup_cutoff_evidence_source",
+  "economics_version": "serene-economics/1 (local assumptions; awaiting cfo.ai scenario export)",
+  "equivalence_class": [
+    "ask_parent_telegram",
+    "ask_caregiver_telegram"
+  ],
+  "excluded_unsafe": [
+    "scrape_parent_group_chat"
+  ],
+  "options": {
+    "ask_caregiver_telegram": {
+      "cogs_per_family_month_micro_usd": 2763624,
+      "cost_micro_usd": 14452,
+      "gross_margin_bps": 7696,
+      "runway_days": 524
+    },
+    "ask_parent_telegram": {
+      "cogs_per_family_month_micro_usd": 2698656,
+      "cost_micro_usd": 9038,
+      "gross_margin_bps": 7751,
+      "runway_days": 525
+    },
+    "browse_daycare_site": {
+      "cogs_per_family_month_micro_usd": 3264024,
+      "cost_micro_usd": 56152,
+      "gross_margin_bps": 7279,
+      "runway_days": 517
+    },
+    "infer_from_history": {
+      "cogs_per_family_month_micro_usd": 2656440,
+      "cost_micro_usd": 5520,
+      "gross_margin_bps": 7786,
+      "runway_days": 525
+    },
+    "scrape_parent_group_chat": {
+      "cogs_per_family_month_micro_usd": 2647920,
+      "cost_micro_usd": 4810,
+      "gross_margin_bps": 7793,
+      "runway_days": 525
+    }
+  },
+  "plan": {
+    "acquisitions_per_family_month": 12,
+    "cash_micro_usd": 250000000000,
+    "families": 400,
+    "fixed_costs_month_micro_usd": 18000000000,
+    "price_per_family_month_micro_usd": 12000000
+  },
+  "ranking": [
+    "ask_parent_telegram",
+    "ask_caregiver_telegram",
+    "browse_daycare_site",
+    "infer_from_history"
+  ],
+  "rule": "safety > evidence quality > information value > cost (tie-break only)",
+  "savings_vs_alternative_per_family_month_micro_usd": {
+    "ask_caregiver_telegram": 64968
+  }
+}

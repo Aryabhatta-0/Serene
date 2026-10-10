@@ -59,3 +59,43 @@ def rank_acquisition_options(
         )
 
     return sorted(eligible, key=key)
+
+
+@dataclass(frozen=True, slots=True)
+class AcquisitionDecision:
+    """One recorded evidence-acquisition choice and exactly what decided it."""
+
+    chosen: str | None
+    ranking: tuple[str, ...]
+    excluded_unsafe: tuple[str, ...]
+    # Options equal to the chosen one on safety, quality and information value.
+    equivalence_class: tuple[str, ...]
+    cost_decisive: bool
+    costs_micro_usd: tuple[tuple[str, int | None], ...]
+
+
+def _class_key(option: AcquisitionOption) -> tuple[int, int, int]:
+    return (int(option.safety), int(option.quality), _VALUE_RANK[option.information_value])
+
+
+def decide_acquisition(
+    options: Sequence[AcquisitionOption], cost_model: CostModel
+) -> AcquisitionDecision:
+    """Rank, then record whether cost broke a tie. Cost can only ever decide inside the
+    top equivalence class; it never moves an option across safety or quality."""
+    ranking = rank_acquisition_options(options, cost_model)
+    chosen = ranking[0] if ranking else None
+    tie = tuple(o.option_id for o in ranking if chosen and _class_key(o) == _class_key(chosen))
+    return AcquisitionDecision(
+        chosen=None if chosen is None else chosen.option_id,
+        ranking=tuple(o.option_id for o in ranking),
+        excluded_unsafe=tuple(
+            sorted(o.option_id for o in options if o.safety is AcquisitionSafety.UNSAFE)
+        ),
+        equivalence_class=tie,
+        cost_decisive=len(tie) > 1,
+        costs_micro_usd=tuple(
+            (o.option_id, cost_model.estimate_cost_micro_usd(o.option_id))
+            for o in sorted(options, key=lambda o: o.option_id)
+        ),
+    )
