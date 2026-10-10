@@ -1,0 +1,30 @@
+.status {
+  display: grid;
+  grid-template-columns: 1rem 1fr;
+  gap: var(--space-2);
+  align-items: start;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.ring {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.1rem;
+  fill: none;
+  stroke: var(--ink-faint);
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 3.6;
+}
+
+.title {
+  display: block;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.detail {
+  display: block;
+  color: var(--ink-muted);
+}

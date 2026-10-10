@@ -1,0 +1,114 @@
+/* Breakpoints: 45rem (720px) inline top-bar nav, 64rem (1024px) sidebar rail. */
+
+.shell {
+  min-height: 100dvh;
+}
+
+.skip {
+  position: fixed;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 20;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--ground);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(calc(-100% - var(--space-4)));
+}
+
+.skip:focus-visible {
+  transform: none;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  min-height: var(--topbar-height);
+  padding-inline: var(--space-4);
+  border-bottom: 1px solid var(--rule);
+  background: var(--ground);
+}
+
+.barNav {
+  display: none;
+}
+
+.rail {
+  display: none;
+}
+
+.main {
+  padding: var(--space-6) var(--space-4) var(--space-8);
+}
+
+.main:focus {
+  outline: none;
+}
+
+@media (min-width: 45rem) {
+  .topbar {
+    padding-inline: var(--space-6);
+  }
+
+  .barNav {
+    display: block;
+  }
+
+  .menu {
+    display: none;
+  }
+
+  .main {
+    padding: var(--space-7) var(--space-6) var(--space-8);
+  }
+}
+
+@media (min-width: 64rem) {
+  .shell {
+    display: grid;
+    grid-template-columns: var(--rail-width) minmax(0, 1fr);
+  }
+
+  .topbar {
+    display: none;
+  }
+
+  .rail {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    height: 100dvh;
+    overflow-y: auto;
+    padding: var(--space-5) var(--space-4) var(--space-5) var(--space-5);
+    border-right: 1px solid var(--rule);
+    background: var(--ground-sunken);
+  }
+
+  .main {
+    padding: var(--space-8) var(--space-7);
+  }
+}
+
+.railFooter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: auto;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--rule);
+}
+
+.tagline {
+  font-size: var(--text-xs);
+  line-height: 1.45;
+  color: var(--ink-faint);
+}

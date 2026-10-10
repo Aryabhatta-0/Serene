@@ -1,0 +1,20 @@
+"use client";
+
+import { EmptyState } from "@/components/layout/EmptyState";
+import { Page } from "@/components/layout/Page";
+import styles from "./error.module.css";
+
+export default function SurfaceError({ reset }: { error: Error; reset: () => void }) {
+  return (
+    <Page title="This view couldn’t be shown" lead="Something went wrong while drawing this page.">
+      <EmptyState title="Nothing was changed">
+        <p>Showing a page never changes your family’s record. You can try again.</p>
+        <p>
+          <button type="button" className={styles.retry} onClick={reset}>
+            Try again
+          </button>
+        </p>
+      </EmptyState>
+    </Page>
+  );
+}
