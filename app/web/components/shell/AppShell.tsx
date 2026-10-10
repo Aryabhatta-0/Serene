@@ -38,6 +38,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       </header>
 
       <main id="content" tabIndex={-1} className={styles.main}>
+        <div className={styles.status}>
+          <RecordStatus />
+        </div>
         {children}
       </main>
     </div>

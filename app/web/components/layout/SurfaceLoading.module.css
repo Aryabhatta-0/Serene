@@ -13,24 +13,24 @@
   gap: var(--space-4);
 }
 
-.title {
+.loading .title {
   width: 40%;
   margin-bottom: var(--space-3);
 }
 
-.lead {
+.loading .lead {
   width: 90%;
 }
 
-.leadShort {
+.loading .leadShort {
   width: 60%;
 }
 
-.row {
+.loading .row {
   width: 100%;
 }
 
-.rowShort {
+.loading .rowShort {
   width: 70%;
 }
 

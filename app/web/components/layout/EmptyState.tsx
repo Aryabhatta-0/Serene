@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 import { LineMark } from "@/components/notation/LineMark";
 import styles from "./EmptyState.module.css";
 
@@ -11,7 +11,7 @@ type EmptyStateProps = {
 // Surfaces render this until real projection state exists; it never stands
 // in for data with placeholders.
 export function EmptyState({ title, children }: EmptyStateProps) {
-  const headingId = `empty-${title.toLowerCase().replace(/[^a-z]+/g, "-")}`;
+  const headingId = useId();
   return (
     <section className={styles.empty} aria-labelledby={headingId}>
       <span className={styles.line}>

@@ -1,7 +1,7 @@
+/* Colour is inherited, so each context decides how loud the line is. */
 .mark {
   display: block;
   overflow: visible;
-  color: var(--ink);
 }
 
 .horizontal {

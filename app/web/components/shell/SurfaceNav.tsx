@@ -18,7 +18,7 @@ export function SurfaceNav({ variant, label, onNavigate }: SurfaceNavProps) {
   const horizontal = variant === "bar";
 
   return (
-    <nav aria-label={label} className={`${styles.nav} ${styles[variant]}`}>
+    <nav aria-label={label} className={styles[variant]}>
       <ul className={styles.list}>
         {SURFACES.map((surface) => {
           const current = isActive(pathname, surface.href);

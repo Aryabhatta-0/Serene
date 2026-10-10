@@ -52,6 +52,14 @@
   outline: none;
 }
 
+/* Below the rail breakpoint the connection status leads the content. */
+.status {
+  max-width: var(--measure);
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--rule);
+}
+
 @media (min-width: 45rem) {
   .topbar {
     padding-inline: var(--space-6);
@@ -76,7 +84,8 @@
     grid-template-columns: var(--rail-width) minmax(0, 1fr);
   }
 
-  .topbar {
+  .topbar,
+  .status {
     display: none;
   }
 

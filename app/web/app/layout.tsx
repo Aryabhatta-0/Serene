@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   description: "A self-correcting family intelligence agent.",
 };
 
+// Mirrors --ground in globals.css for each colour scheme.
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#eef2ee" },

@@ -1,10 +1,21 @@
 "use client";
 
+import { useEffect } from "react";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { Page } from "@/components/layout/Page";
 import styles from "./error.module.css";
 
-export default function SurfaceError({ reset }: { error: Error; reset: () => void }) {
+export default function SurfaceError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
+
   return (
     <Page title="This view couldn’t be shown" lead="Something went wrong while drawing this page.">
       <EmptyState title="Nothing was changed">

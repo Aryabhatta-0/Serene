@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { LineMark, type Certainty } from "./LineMark";
 import styles from "./LineKey.module.css";
 
@@ -15,7 +16,7 @@ type LineKeyProps = {
 // A legend for the certainty notation. It explains how to read Serene;
 // it does not describe any particular family.
 export function LineKey({ title, entries }: LineKeyProps) {
-  const headingId = `key-${title.toLowerCase().replace(/[^a-z]+/g, "-")}`;
+  const headingId = useId();
   return (
     <section className={styles.key} aria-labelledby={headingId}>
       <h2 id={headingId} className={styles.title}>
@@ -24,8 +25,10 @@ export function LineKey({ title, entries }: LineKeyProps) {
       <dl className={styles.list}>
         {entries.map((entry) => (
           <div key={entry.certainty} className={styles.row}>
-            <LineMark certainty={entry.certainty} className={styles.line} />
-            <dt className={styles.term}>{entry.term}</dt>
+            <dt className={styles.term}>
+              <LineMark certainty={entry.certainty} />
+              {entry.term}
+            </dt>
             <dd className={styles.description}>{entry.description}</dd>
           </div>
         ))}

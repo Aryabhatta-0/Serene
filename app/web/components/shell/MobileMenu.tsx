@@ -1,16 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { RecordStatus } from "./RecordStatus";
 import { SurfaceNav } from "./SurfaceNav";
 import { Wordmark } from "./Wordmark";
 import styles from "./MobileMenu.module.css";
 
-// Must match the breakpoint where the inline top-bar nav takes over.
+// Must match the 45rem breakpoint in AppShell.module.css, where the inline
+// top-bar nav takes over from this menu.
 const INLINE_NAV_QUERY = "(min-width: 45rem)";
 
 export function MobileMenu() {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const pressedBackdrop = useRef(false);
   const [open, setOpen] = useState(false);
 
   const close = () => dialogRef.current?.close();
@@ -51,9 +52,14 @@ export function MobileMenu() {
         className={styles.sheet}
         aria-label="Serene surfaces"
         onClose={() => setOpen(false)}
+        // A press on the backdrop lands on the dialog element itself. Require
+        // it to start there too, so a drag out of the panel does not close it.
+        onPointerDown={(event) => {
+          pressedBackdrop.current = event.target === event.currentTarget;
+        }}
         onClick={(event) => {
-          // A click on the backdrop lands on the dialog element itself.
-          if (event.target === event.currentTarget) close();
+          if (pressedBackdrop.current && event.target === event.currentTarget) close();
+          pressedBackdrop.current = false;
         }}
       >
         <div className={styles.panel}>
@@ -64,7 +70,6 @@ export function MobileMenu() {
             </button>
           </div>
           <SurfaceNav variant="sheet" label="Surfaces" onNavigate={close} />
-          <RecordStatus />
         </div>
       </dialog>
     </>
