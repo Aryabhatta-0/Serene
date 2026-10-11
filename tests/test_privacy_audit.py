@@ -151,6 +151,10 @@ def test_application_has_no_raw_logging_or_console_exception_dump() -> None:
                 assert node.module not in {"logging", "loguru", "structlog"}, path
             if isinstance(node, ast.Call):
                 assert ast.unparse(node.func) not in {"print", "traceback.print_exc"}, path
-    source = (ROOT / "app/web/app/global-error.tsx").read_text("utf-8")
-    assert 'console.error("Serene client error")' in source
-    assert "console.error(error)" not in source
+    for name, code in (
+        ("global-error.tsx", "Serene client error"),
+        ("error.tsx", "Serene view error"),
+    ):
+        source = (ROOT / "app/web/app" / name).read_text("utf-8")
+        assert f'console.error("{code}")' in source
+        assert "console.error(error)" not in source

@@ -73,8 +73,8 @@ raw parent/caregiver messages and private evidence out of telemetry.
 
 The Python application has no raw logging/print path (guarded by a test).
 Database constraint failures and Git subprocess failures expose fixed codes,
-not row contents, stderr or private paths. The web error boundary emits a fixed
-message, not the exception object. Domain/validation exceptions and ledger or
+not row contents, stderr or private paths. Both web error boundaries emit fixed
+messages, not exception objects. Domain/validation exceptions and ledger or
 memory payloads remain **private application data**, not safe log artifacts:
 never dump them, stack locals, transport bodies or `exc_info` into logs. Hermes
 is a separately configured runtime; do not enable its prompt/debug capture for
@@ -145,3 +145,9 @@ uv run mypy
 
 Serene is not a clinical or diagnostic product, and the MVP is not built for
 production child data at scale.
+
+On 2026-10-12, `npm audit --omit=dev` against the pinned web lockfile reports
+Next.js 14.2.35 **critical** and PostCSS **high** advisory groups. Their reachability
+needs separate review and remediation before public hosting; dependency versions
+are unchanged by this secrets/logging audit. The offline Maya demo needs no web
+server. The audit's passing privacy checks do not establish production readiness.
