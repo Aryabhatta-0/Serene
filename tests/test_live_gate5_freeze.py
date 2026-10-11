@@ -5,8 +5,13 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+import pytest
+
 from eval.runners import live_gate4_experiment as v4
 from eval.runners import live_gate5_experiment as v5
+from tests.frozen_contract import frozen_contract_root  # noqa: F401 - pytest fixture
+
+pytestmark = pytest.mark.usefixtures("frozen_contract_root")
 
 
 def test_v5_decision_and_completed_pair_semantics_are_exactly_v4() -> None:

@@ -141,6 +141,23 @@ uv run ruff format --check .
 uv run mypy
 ```
 
+### Historical integrity tests and current privacy fixes
+
+The immutable v3/v4/v5 experiments pin the old runtime source bytes. Their
+contract tests now read runtime bytes from pre-audit Git revision
+`be0cd9c8dfee04458d399b656a561b14126ab71f` in a temporary test context. The
+snapshot is not imported or executed. Manifests, tapes, scorer/gate code and
+archived evidence are copied from the current checkout and retain their actual
+byte checks; none of their hashes or historical outcomes is changed.
+
+`tests/test_frozen_contract_context.py` proves that the unchanged frozen gates
+still refuse the current privacy-modified runtime with `PROTECTED_RUNTIME_DRIFT`.
+`tests/test_historical_snapshot_integrity.py` tampers with temporary runtime/page
+bytes and proves refusal. Normal application/privacy tests continue to exercise
+the current code. This test context is not an exemption for a live experiment.
+The kernel CI checkout includes Git history to materialize the pinned source;
+shallow local clones need `git fetch --unshallow` before the full historical suite.
+
 ## 6. Non-goals
 
 Serene is not a clinical or diagnostic product, and the MVP is not built for
