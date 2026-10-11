@@ -12,6 +12,8 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Each job `name:` below is a required status check in the `main` ruleset
+# (docs/setup.md section 5). Renaming a job means updating that ruleset too.
 jobs:
   kernel:
     name: Kernel (lint, types, tests, ledger + secret checks)
