@@ -1,0 +1,274 @@
+.twin {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: var(--measure);
+  color: var(--ink-muted);
+}
+
+.heading {
+  font-size: var(--text-xl);
+  color: var(--ink);
+}
+
+/* The legend, set along the top of the map like a survey sheet's key. */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-6);
+  list-style: none;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.legendMark {
+  flex: none;
+  width: 2.5rem;
+}
+
+.legendItem[data-category="refuted"],
+.legendItem[data-category="superseded"] {
+  color: var(--ink-faint);
+}
+
+.legendCount {
+  min-width: 1.5rem;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  text-align: center;
+}
+
+/* The map takes the sheet's full width; the selected link reads under it. */
+.stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.unplacedOnly {
+  max-width: var(--measure);
+  padding: var(--space-5);
+  border: 1px dashed var(--rule-strong);
+  color: var(--ink-muted);
+}
+
+.selection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: var(--measure);
+  padding: var(--space-5);
+  border: 1px solid var(--rule-strong);
+  background: var(--ground);
+}
+
+.selectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.selectionTitle {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+.selectionHint {
+  color: var(--ink-muted);
+}
+
+.clear {
+  min-height: var(--tap-target);
+  padding: 0 var(--space-3);
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-sm);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.selectionState {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.selectionMark {
+  flex: none;
+  width: 3rem;
+}
+
+.selection[data-category="refuted"] .selectionStatement {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.selectionStatement {
+  font-size: var(--text-lg);
+  line-height: var(--leading-snug);
+}
+
+.selectionNote {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+.facts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: var(--space-2) 0 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--rule);
+}
+
+.facts dt {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.facts dd {
+  margin: 0;
+}
+
+.caution {
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--ink);
+  font-size: var(--text-sm);
+}
+
+.reference {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-xs);
+  color: var(--ink-faint);
+}
+
+.reference code {
+  overflow-wrap: anywhere;
+  font-size: var(--text-xs);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-width: var(--measure);
+}
+
+.listTitle {
+  font-size: var(--text-xl);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.groupTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+.groupMark {
+  flex: none;
+  width: 2.5rem;
+}
+
+.items {
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+  min-height: var(--tap-target);
+  padding: var(--space-3) var(--space-2);
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .item:hover {
+    background: var(--ground);
+  }
+}
+
+.item[aria-pressed="true"] {
+  background: var(--selection);
+}
+
+.group[data-category="refuted"] .itemStatement {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.group[data-category="refuted"] .item,
+.group[data-category="superseded"] .item {
+  color: var(--ink-faint);
+}
+
+.itemMeta {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  color: var(--rule-strong);
+}
+
+.loadingLine {
+  width: 70%;
+}
+
+.loadingLine + .loadingLine {
+  width: 45%;
+}

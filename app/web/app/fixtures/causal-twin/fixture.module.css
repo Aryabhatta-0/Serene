@@ -1,0 +1,6 @@
+.banner {
+  max-width: var(--measure);
+  padding: var(--space-3) var(--space-4);
+  border: 1px dashed var(--ink);
+  font-weight: 600;
+}

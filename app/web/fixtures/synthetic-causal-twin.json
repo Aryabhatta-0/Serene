@@ -1,0 +1,417 @@
+{
+  "twin_version": "causal-twin/1",
+  "child_id": "chd_00000000000000000000000000000001",
+  "ledger_head": "0000000000000000000000000000000000000000000000000000000000000000",
+  "edges": [
+    {
+      "edge_id": "hyp_00000000000000000000000000000001",
+      "child_id": "chd_00000000000000000000000000000001",
+      "relationship": "Screens after dinner make bedtime harder on school nights.",
+      "cause": "screens_after_dinner",
+      "effect": "bedtime_resistance",
+      "status": "SUPPORTED",
+      "epistemic_level": 5,
+      "support": [
+        {
+          "entity_id": "obs_00000000000000000000000000000001",
+          "kind": "OBSERVATIONAL"
+        },
+        {
+          "entity_id": "obs_00000000000000000000000000000002",
+          "kind": "OBSERVATIONAL"
+        },
+        {
+          "entity_id": "out_00000000000000000000000000000001",
+          "kind": "EXPERIMENTAL"
+        }
+      ],
+      "counterevidence": [],
+      "contradicting_outcomes": [],
+      "confounders": [],
+      "alternative_explanations": [],
+      "competing_edges": [
+        "hyp_00000000000000000000000000000004"
+      ],
+      "experiments": [
+        "exp_00000000000000000000000000000001"
+      ],
+      "scope": {
+        "child_id": "chd_00000000000000000000000000000001",
+        "contexts": [
+          "school_nights"
+        ]
+      },
+      "validity": {
+        "valid_from": "2026-02-01T00:00:00Z",
+        "review_after": "2026-04-01T00:00:00Z"
+      },
+      "learning_status": "ACTIVE",
+      "provenance": {
+        "schema_version": 1,
+        "created_by": {
+          "kind": "AGENT",
+          "actor_id": "act_00000000000000000000000000000001"
+        },
+        "created_at": "2026-01-05T09:00:00Z",
+        "method": "MODEL_INFERENCE",
+        "model": {
+          "provider": "synthetic-fixture",
+          "model_id": "synthetic-fixture",
+          "prompt_version": "fixture-1",
+          "runtime": "fixture"
+        },
+        "derived_from": [
+          "pat_00000000000000000000000000000001"
+        ],
+        "source_ids": [
+          "evd_00000000000000000000000000000001",
+          "evd_00000000000000000000000000000002"
+        ],
+        "verification_status": "UNVERIFIED",
+        "supersedes": null
+      },
+      "raw_evidence": [
+        "evd_00000000000000000000000000000001",
+        "evd_00000000000000000000000000000002"
+      ]
+    },
+    {
+      "edge_id": "hyp_00000000000000000000000000000002",
+      "child_id": "chd_00000000000000000000000000000001",
+      "relationship": "A late bedtime is followed by a hard morning.",
+      "cause": "late_bedtime",
+      "effect": "morning_irritability",
+      "status": "CANDIDATE",
+      "epistemic_level": 3,
+      "support": [
+        {
+          "entity_id": "obs_00000000000000000000000000000003",
+          "kind": "OBSERVATIONAL"
+        },
+        {
+          "entity_id": "obs_00000000000000000000000000000004",
+          "kind": "OBSERVATIONAL"
+        }
+      ],
+      "counterevidence": [],
+      "contradicting_outcomes": [],
+      "confounders": [],
+      "alternative_explanations": [],
+      "competing_edges": [],
+      "experiments": [],
+      "scope": {
+        "child_id": "chd_00000000000000000000000000000001",
+        "contexts": [
+          "school_nights"
+        ]
+      },
+      "validity": null,
+      "learning_status": null,
+      "provenance": {
+        "schema_version": 1,
+        "created_by": {
+          "kind": "AGENT",
+          "actor_id": "act_00000000000000000000000000000001"
+        },
+        "created_at": "2026-01-05T09:00:00Z",
+        "method": "MODEL_INFERENCE",
+        "model": {
+          "provider": "synthetic-fixture",
+          "model_id": "synthetic-fixture",
+          "prompt_version": "fixture-1",
+          "runtime": "fixture"
+        },
+        "derived_from": [
+          "pat_00000000000000000000000000000002"
+        ],
+        "source_ids": [
+          "evd_00000000000000000000000000000003",
+          "evd_00000000000000000000000000000004"
+        ],
+        "verification_status": "UNVERIFIED",
+        "supersedes": null
+      },
+      "raw_evidence": [
+        "evd_00000000000000000000000000000003",
+        "evd_00000000000000000000000000000004"
+      ]
+    },
+    {
+      "edge_id": "hyp_00000000000000000000000000000003",
+      "child_id": "chd_00000000000000000000000000000001",
+      "relationship": "A hard morning makes school drop-off more upsetting.",
+      "cause": "morning_irritability",
+      "effect": "drop_off_distress",
+      "status": "CANDIDATE",
+      "epistemic_level": 3,
+      "support": [],
+      "counterevidence": [],
+      "contradicting_outcomes": [],
+      "confounders": [],
+      "alternative_explanations": [],
+      "competing_edges": [],
+      "experiments": [],
+      "scope": {
+        "child_id": "chd_00000000000000000000000000000001",
+        "contexts": [
+          "school_mornings"
+        ]
+      },
+      "validity": null,
+      "learning_status": null,
+      "provenance": {
+        "schema_version": 1,
+        "created_by": {
+          "kind": "AGENT",
+          "actor_id": "act_00000000000000000000000000000001"
+        },
+        "created_at": "2026-01-05T09:00:00Z",
+        "method": "MODEL_INFERENCE",
+        "model": {
+          "provider": "synthetic-fixture",
+          "model_id": "synthetic-fixture",
+          "prompt_version": "fixture-1",
+          "runtime": "fixture"
+        },
+        "derived_from": [
+          "pat_00000000000000000000000000000003"
+        ],
+        "source_ids": [
+          "evd_00000000000000000000000000000005"
+        ],
+        "verification_status": "UNVERIFIED",
+        "supersedes": null
+      },
+      "raw_evidence": [
+        "evd_00000000000000000000000000000005"
+      ]
+    },
+    {
+      "edge_id": "hyp_00000000000000000000000000000004",
+      "child_id": "chd_00000000000000000000000000000001",
+      "relationship": "A sugary snack after school makes bedtime harder.",
+      "cause": "after_school_snack",
+      "effect": "bedtime_resistance",
+      "status": "REFUTED",
+      "epistemic_level": 3,
+      "support": [
+        {
+          "entity_id": "obs_00000000000000000000000000000005",
+          "kind": "OBSERVATIONAL"
+        }
+      ],
+      "counterevidence": [
+        "out_00000000000000000000000000000002"
+      ],
+      "contradicting_outcomes": [
+        "out_00000000000000000000000000000002"
+      ],
+      "confounders": [],
+      "alternative_explanations": [],
+      "competing_edges": [
+        "hyp_00000000000000000000000000000001"
+      ],
+      "experiments": [
+        "exp_00000000000000000000000000000002"
+      ],
+      "scope": {
+        "child_id": "chd_00000000000000000000000000000001",
+        "contexts": [
+          "school_nights"
+        ]
+      },
+      "validity": null,
+      "learning_status": null,
+      "provenance": {
+        "schema_version": 1,
+        "created_by": {
+          "kind": "AGENT",
+          "actor_id": "act_00000000000000000000000000000001"
+        },
+        "created_at": "2026-01-05T09:00:00Z",
+        "method": "MODEL_INFERENCE",
+        "model": {
+          "provider": "synthetic-fixture",
+          "model_id": "synthetic-fixture",
+          "prompt_version": "fixture-1",
+          "runtime": "fixture"
+        },
+        "derived_from": [
+          "pat_00000000000000000000000000000004"
+        ],
+        "source_ids": [
+          "evd_00000000000000000000000000000006"
+        ],
+        "verification_status": "UNVERIFIED",
+        "supersedes": null
+      },
+      "raw_evidence": [
+        "evd_00000000000000000000000000000006"
+      ]
+    },
+    {
+      "edge_id": "hyp_00000000000000000000000000000005",
+      "child_id": "chd_00000000000000000000000000000001",
+      "relationship": "Screens make bedtime harder.",
+      "cause": "screens_after_dinner",
+      "effect": "bedtime_resistance",
+      "status": "SUPERSEDED",
+      "epistemic_level": 3,
+      "support": [
+        {
+          "entity_id": "obs_00000000000000000000000000000001",
+          "kind": "OBSERVATIONAL"
+        }
+      ],
+      "counterevidence": [],
+      "contradicting_outcomes": [],
+      "confounders": [],
+      "alternative_explanations": [],
+      "competing_edges": [],
+      "experiments": [],
+      "scope": {
+        "child_id": "chd_00000000000000000000000000000001",
+        "contexts": [
+          "evenings"
+        ]
+      },
+      "validity": null,
+      "learning_status": null,
+      "provenance": {
+        "schema_version": 1,
+        "created_by": {
+          "kind": "AGENT",
+          "actor_id": "act_00000000000000000000000000000001"
+        },
+        "created_at": "2026-01-05T09:00:00Z",
+        "method": "MODEL_INFERENCE",
+        "model": {
+          "provider": "synthetic-fixture",
+          "model_id": "synthetic-fixture",
+          "prompt_version": "fixture-1",
+          "runtime": "fixture"
+        },
+        "derived_from": [
+          "pat_00000000000000000000000000000001"
+        ],
+        "source_ids": [
+          "evd_00000000000000000000000000000001"
+        ],
+        "verification_status": "UNVERIFIED",
+        "supersedes": null
+      },
+      "raw_evidence": [
+        "evd_00000000000000000000000000000001"
+      ]
+    },
+    {
+      "edge_id": "hyp_00000000000000000000000000000006",
+      "child_id": "chd_00000000000000000000000000000001",
+      "relationship": "Resisting bedtime pushes the bedtime later.",
+      "cause": "bedtime_resistance",
+      "effect": "late_bedtime",
+      "status": "CANDIDATE",
+      "epistemic_level": 3,
+      "support": [
+        {
+          "entity_id": "obs_00000000000000000000000000000006",
+          "kind": "OBSERVATIONAL"
+        }
+      ],
+      "counterevidence": [
+        "obs_00000000000000000000000000000007"
+      ],
+      "contradicting_outcomes": [],
+      "confounders": [],
+      "alternative_explanations": [],
+      "competing_edges": [],
+      "experiments": [],
+      "scope": {
+        "child_id": "chd_00000000000000000000000000000001",
+        "contexts": [
+          "school_nights"
+        ]
+      },
+      "validity": null,
+      "learning_status": null,
+      "provenance": {
+        "schema_version": 1,
+        "created_by": {
+          "kind": "AGENT",
+          "actor_id": "act_00000000000000000000000000000001"
+        },
+        "created_at": "2026-01-05T09:00:00Z",
+        "method": "MODEL_INFERENCE",
+        "model": {
+          "provider": "synthetic-fixture",
+          "model_id": "synthetic-fixture",
+          "prompt_version": "fixture-1",
+          "runtime": "fixture"
+        },
+        "derived_from": [
+          "pat_00000000000000000000000000000005"
+        ],
+        "source_ids": [
+          "evd_00000000000000000000000000000007",
+          "evd_00000000000000000000000000000008"
+        ],
+        "verification_status": "UNVERIFIED",
+        "supersedes": null
+      },
+      "raw_evidence": [
+        "evd_00000000000000000000000000000007",
+        "evd_00000000000000000000000000000008"
+      ]
+    },
+    {
+      "edge_id": "hyp_00000000000000000000000000000007",
+      "child_id": "chd_00000000000000000000000000000001",
+      "relationship": "Something about weekends changes how the week starts.",
+      "cause": null,
+      "effect": null,
+      "status": "CANDIDATE",
+      "epistemic_level": 3,
+      "support": [],
+      "counterevidence": [],
+      "contradicting_outcomes": [],
+      "confounders": [],
+      "alternative_explanations": [],
+      "competing_edges": [],
+      "experiments": [],
+      "scope": {
+        "child_id": "chd_00000000000000000000000000000001",
+        "contexts": [
+          "weekends"
+        ]
+      },
+      "validity": null,
+      "learning_status": null,
+      "provenance": {
+        "schema_version": 1,
+        "created_by": {
+          "kind": "AGENT",
+          "actor_id": "act_00000000000000000000000000000001"
+        },
+        "created_at": "2026-01-05T09:00:00Z",
+        "method": "MODEL_INFERENCE",
+        "model": {
+          "provider": "synthetic-fixture",
+          "model_id": "synthetic-fixture",
+          "prompt_version": "fixture-1",
+          "runtime": "fixture"
+        },
+        "derived_from": [
+          "pat_00000000000000000000000000000006"
+        ],
+        "source_ids": [
+          "evd_00000000000000000000000000000009"
+        ],
+        "verification_status": "UNVERIFIED",
+        "supersedes": null
+      },
+      "raw_evidence": [
+        "evd_00000000000000000000000000000009"
+      ]
+    }
+  ]
+}
