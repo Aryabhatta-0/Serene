@@ -52,6 +52,10 @@ export function SelectedLink({ edge, onClear, children }: SelectedLinkProps) {
       aria-labelledby={headingId}
       data-selected-edge-id={edge.edge_id}
       data-category={category}
+      // Escape from anywhere in the panel closes it, like the Clear button.
+      onKeyDown={(event) => {
+        if (event.key === "Escape") onClear();
+      }}
     >
       <div className={styles.selectionHead}>
         <h3 id={headingId} className={styles.selectionTitle}>

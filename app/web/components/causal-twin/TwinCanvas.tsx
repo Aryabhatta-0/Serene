@@ -5,10 +5,13 @@ import {
   BackgroundVariant,
   ReactFlow,
   ReactFlowProvider,
+  getViewportForBounds,
   useReactFlow,
+  useStoreApi,
   type EdgeTypes,
   type Node,
   type NodeTypes,
+  type Rect,
 } from "@xyflow/react";
 import "@xyflow/react/dist/base.css";
 import { useEffect, useMemo, useRef } from "react";
@@ -112,15 +115,31 @@ function Toolbar() {
 }
 
 function Reveal({ reveal, edges }: Pick<TwinCanvasProps, "reveal" | "edges">) {
-  const { fitView } = useReactFlow();
+  const { getNodesBounds, screenToFlowPosition, setViewport } = useReactFlow();
+  const store = useStoreApi();
   useEffect(() => {
     const edge = reveal && edges.find((e) => e.id === reveal.edgeId);
     if (!edge) return;
-    void fitView({
-      nodes: [{ id: edge.source }, { id: edge.target }],
-      padding: 0.3,
-      minZoom: FIT.minZoom,
-      maxZoom: FIT.maxZoom,
+    const { domNode, width, height } = store.getState();
+    let bounds: Rect = getNodesBounds([edge.source, edge.target]);
+    // The label too: it rides a bowed curve, and on a narrow map it can sit
+    // well outside the two variables it joins.
+    const label = domNode
+      ?.querySelector(`button[data-edge-id="${edge.id}"]`)
+      ?.getBoundingClientRect();
+    if (label) {
+      const a = screenToFlowPosition({ x: label.left, y: label.top });
+      const b = screenToFlowPosition({ x: label.right, y: label.bottom });
+      const x = Math.min(bounds.x, a.x);
+      const y = Math.min(bounds.y, a.y);
+      bounds = {
+        x,
+        y,
+        width: Math.max(bounds.x + bounds.width, b.x) - x,
+        height: Math.max(bounds.y + bounds.height, b.y) - y,
+      };
+    }
+    void setViewport(getViewportForBounds(bounds, width, height, FIT.minZoom, FIT.maxZoom, 0.15), {
       duration: reducedMotion() ? 0 : 400,
     });
     // Only a new request moves the view, not a re-render.
