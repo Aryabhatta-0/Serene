@@ -1,0 +1,292 @@
+/*
+ * The landing plate, the only place the bloom grows. Below 64rem it stacks
+ * and is centred in the first screen, so the way in is always in view: the
+ * stage (the bloom, with the name over its lower edge) is sized to the
+ * screen, leaving room for the lead and the button. From 64rem it is the three-column sheet of the
+ * reference: margin note, centred name over the bloom, margin note, with the
+ * way in along the foot.
+ */
+
+.hero {
+  position: relative;
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+  justify-items: center;
+  gap: var(--space-5);
+  min-height: calc(100svh - var(--topbar-height) - var(--space-5) - var(--space-6));
+  isolation: isolate;
+}
+
+.stage {
+  position: relative;
+  justify-self: stretch;
+  height: clamp(14rem, min(75vw, 100svh - 21rem), 34rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/*
+ * The bloom runs to the screen edges, and is clipped where the stage ends.
+ * The scene is scaled to the stage's height and placed so the flowers' lower
+ * petals sit just above the name.
+ */
+.bloom {
+  z-index: -1;
+  inset: 0 calc(-1 * var(--gutter));
+  --scene-size: 165%;
+  --scene-top: -24%;
+  --stem-fade-from: 40%;
+  --stem-fade-to: 52%;
+}
+
+/* Text set on the ruled sheet clears the rules behind its letters. */
+.kicker,
+.lead,
+.tagline {
+  text-shadow: 0 0 2px var(--ground), 0 0 6px var(--ground), 0 0 10px var(--ground);
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+
+/* Tracked capitals carry trailing space after the last letter; padding the
+ * start by the same amount keeps each line optically centred. */
+.kicker {
+  padding-left: 0.32em;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.title {
+  padding-left: 0.04em;
+  font-size: min(4.5rem, 19cqi);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.lead {
+  max-width: 34ch;
+  font-size: var(--text-lg);
+  line-height: var(--leading-snug);
+  text-align: center;
+  color: var(--ink-muted);
+}
+
+.tagline {
+  display: none;
+}
+
+.enter {
+  align-self: end;
+  background: var(--ground);
+}
+
+.enter svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: translate var(--dur-base) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .enter:hover svg {
+    /* 3px, or none under reduced motion. */
+    translate: calc(var(--rise) / 2) 0;
+  }
+}
+
+@media (min-width: 45rem) {
+  .kicker {
+    font-size: var(--text-md);
+  }
+
+  .title {
+    font-size: min(5.5rem, 16cqi);
+  }
+}
+
+@media (min-width: 64rem) {
+  .hero {
+    grid-template-columns: minmax(13rem, 1fr) minmax(0, 2.4fr) minmax(13rem, 1fr);
+    grid-template-rows: 1fr auto 1fr;
+    align-items: center;
+    column-gap: var(--space-6);
+    min-height: max(34rem, min(48rem, calc(100dvh - var(--topbar-height) - var(--space-8))));
+  }
+
+  /* The stage dissolves into the plate: the bloom spans the whole sheet and
+   * the name takes the centre column. */
+  .stage {
+    display: contents;
+  }
+
+  /* As on the reference sheet: a scene larger than the plate, centred just
+   * below its middle, with the stems running off the foot. */
+  .bloom {
+    --scene-size: 127%;
+    --scene-top: -9.5%;
+    --stem-fade-from: 50%;
+    --stem-fade-to: 61.5%;
+  }
+
+  .heading {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  /* Sized to the centre column, so the line never breaks. */
+  .kicker {
+    font-size: clamp(var(--text-2xs), 1.45cqi, var(--text-lg));
+  }
+
+  .title {
+    font-size: min(6.5rem, 11cqi);
+  }
+
+  .lead {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+    margin-top: 0;
+    max-width: 24ch;
+    padding-left: var(--space-4);
+    padding-block: 0;
+    border-left: 1px solid var(--ink);
+    background: none;
+    font-size: var(--text-sm);
+    letter-spacing: 0.04em;
+    text-align: start;
+  }
+
+  .tagline {
+    grid-column: 3;
+    grid-row: 2;
+    justify-self: end;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: 22ch;
+    font-family: var(--font-display);
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    line-height: 1.9;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+  }
+
+  .tagline::after {
+    content: "";
+    width: 2rem;
+    border-top: 1px solid var(--ink);
+  }
+
+  .enter {
+    grid-column: 2;
+    grid-row: 3;
+    margin-bottom: var(--space-5);
+  }
+
+  /* The sheet's closing mark, bottom right. */
+  .hero::after {
+    content: "";
+    grid-column: 3;
+    grid-row: 3;
+    align-self: end;
+    justify-self: end;
+    height: 3.5rem;
+    margin-bottom: var(--space-5);
+    border-left: 1px solid var(--ink);
+  }
+}
+
+/*
+ * A fresh load. The flowers open first (BloomArt); while their petals are
+ * still unfurling the name condenses out of a wide, soft spacing, then
+ * everything else arrives.
+ */
+:global(html[data-bloom="play"]) .heading {
+  animation: condense 900ms var(--ease-out) 1500ms backwards;
+}
+
+:global(html[data-bloom="play"]) :is(.lead, .tagline, .enter) {
+  animation: arrive 600ms var(--ease-out) 2100ms backwards;
+}
+
+:global(html[data-bloom="play"]) .hero::after {
+  animation: arrive 600ms var(--ease-out) 2100ms backwards;
+}
+
+@keyframes condense {
+  from {
+    opacity: 0;
+    letter-spacing: 0.5em;
+    filter: blur(10px);
+  }
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--rise) * 2));
+  }
+}
+
+/*
+ * Entering (Landing.tsx). Everything but the main flower clears away; the
+ * flower then flies into the logo on the .flight layer.
+ */
+.hero[data-state="leaving"] {
+  pointer-events: none;
+}
+
+.hero[data-state="leaving"] :is(.heading, .lead, .tagline, .enter),
+.hero[data-state="leaving"]::after,
+.hero[data-state="leaving"] [data-bloom-art] > :not([data-flower="main"]) {
+  opacity: 0;
+  transition: opacity 320ms ease-out;
+}
+
+.flight {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global(html[data-bloom="play"]) .heading {
+    animation-name: fade;
+    animation-delay: 300ms;
+  }
+
+  /* No flight: the flower fades with the rest, and the bar fades in. */
+  .hero[data-state="leaving"] [data-flower="main"] {
+    opacity: 0;
+    transition: opacity 320ms ease-out;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}

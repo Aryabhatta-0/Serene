@@ -1,0 +1,207 @@
+/*
+ * The frame is set by the parent: it clips the scene to the plate. The parent
+ * sizes the square scene with --scene-size (a height) and places it with
+ * --scene-top; --stem-fade-from/--stem-fade-to dissolve the stems before the
+ * plate ends. Everything inside is in scene percentages or container units.
+ *
+ * A fresh load of the landing page (<html data-bloom="play">): the stems draw up, each
+ * closed cup rises as its stem reaches it and unfurls petal by petal, the bud swells, then the glass frosts
+ * over. Without the attribute the bloom is simply there.
+ */
+
+.frame {
+  position: absolute;
+  overflow: clip;
+  pointer-events: none;
+}
+
+.scene {
+  position: absolute;
+  top: var(--scene-top, 0);
+  left: 50%;
+  height: var(--scene-size, 100%);
+  aspect-ratio: 1;
+  translate: -50% 0;
+  container-type: size;
+}
+
+.stems {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 140%;
+  overflow: visible;
+  filter: brightness(0.9) contrast(1.1) saturate(1.2);
+  mask-image: linear-gradient(
+    #000 var(--stem-fade-from, 55%),
+    transparent var(--stem-fade-to, 70%)
+  );
+}
+
+.stem {
+  stroke-dasharray: 1;
+}
+
+.back {
+  top: 36.5%;
+  left: 44%;
+  z-index: 1;
+  --petal-w: 18cqw;
+  --petal-h: 21.5cqw;
+  --centre: 2.9cqw;
+  --bloom-delay: 450ms;
+  transform: rotate(-16deg);
+  filter: brightness(0.86) contrast(1.12) saturate(1.3);
+}
+
+.main {
+  top: 41.8%;
+  left: 64.1%;
+  z-index: 2;
+  --petal-w: 22cqw;
+  --petal-h: 27.5cqw;
+  --centre: 4.1cqw;
+  --bloom-delay: 700ms;
+  transform: rotate(16deg);
+  filter: brightness(0.84) contrast(1.14) saturate(1.35);
+}
+
+/* Light falls a little differently on two of the front petals. */
+.main > :nth-child(2) img {
+  filter: brightness(0.93) saturate(0.94);
+}
+
+.main > :nth-child(4) img {
+  filter: brightness(1.06) saturate(0.8);
+}
+
+.bud {
+  position: absolute;
+  top: 52.5%;
+  left: 23.1%;
+  z-index: 3;
+  display: block;
+  width: 12cqw;
+  height: auto;
+  rotate: -35deg;
+  filter: brightness(0.9) contrast(1.1) saturate(1.25);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Sculpted glass: clear, lightly frosted liquid glass over whatever lies
+ * behind it, the ruled sheet included, with a bright rim where light catches
+ * the cut edge. */
+.glass {
+  position: absolute;
+  z-index: 4;
+  overflow: hidden;
+  border: 1.5px solid rgb(255 255 255 / 0.85);
+  background: linear-gradient(
+    125deg,
+    rgb(255 255 250 / 0.1) 0%,
+    rgb(246 247 238 / 0.03) 38%,
+    rgb(240 242 230 / 0.01) 62%,
+    rgb(252 252 245 / 0.1) 100%
+  );
+  box-shadow:
+    inset 1.5px 1.5px 1px rgb(255 255 255 / 0.9),
+    inset -1.5px -1.5px 2px rgb(255 255 255 / 0.5),
+    inset 0 0 0.8cqw rgb(255 255 255 / 0.12),
+    0 0 0 0.5px rgb(46 61 40 / 0.08),
+    1px 3px 6px rgb(46 61 40 / 0.06);
+  -webkit-backdrop-filter: blur(0.3cqw) saturate(0.95) brightness(1.02);
+  backdrop-filter: blur(0.3cqw) saturate(0.95) brightness(1.02);
+}
+
+/* A sheen across each pane, brightest along the upper rim. */
+.glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 60% at 30% 0%, rgb(255 255 255 / 0.16), transparent 60%),
+    linear-gradient(
+      112deg,
+      rgb(255 255 255 / 0.2),
+      transparent 22%,
+      transparent 74%,
+      rgb(255 255 248 / 0.14)
+    );
+}
+
+.paneFront {
+  top: 21.5%;
+  left: 20%;
+  width: 48%;
+  height: 36.5%;
+  border-radius: 37% 33% 30% 44% / 42% 29% 50% 39%;
+  rotate: 23deg;
+  --d: 1300ms;
+}
+
+.paneBack {
+  top: 36%;
+  left: 42%;
+  z-index: 3;
+  width: 33%;
+  height: 43%;
+  border-radius: 43% 36% 38% 49% / 32% 40% 40% 49%;
+  rotate: -31deg;
+  opacity: 0.9;
+  -webkit-backdrop-filter: blur(0.35cqw) saturate(0.95) brightness(1.02);
+  backdrop-filter: blur(0.35cqw) saturate(0.95) brightness(1.02);
+  --d: 1500ms;
+}
+
+:global(html[data-bloom="play"]) .stem {
+  animation: draw 1100ms var(--ease-out) backwards;
+}
+
+:global(html[data-bloom="play"]) .bud {
+  animation: swell 1400ms var(--ease-out) 600ms backwards;
+}
+
+:global(html[data-bloom="play"]) .glass {
+  animation: frost 1000ms var(--ease-out) var(--d) backwards;
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@keyframes swell {
+  from {
+    opacity: 0;
+    scale: 0.4;
+    rotate: -20deg;
+  }
+}
+
+@keyframes frost {
+  from {
+    opacity: 0;
+    scale: 0.94;
+  }
+}
+
+/* Reduced motion: the bloom fades in, without growth or rotation. */
+@media (prefers-reduced-motion: reduce) {
+  :global(html[data-bloom="play"]) :is(.stem, .bud, .glass) {
+    animation: none;
+  }
+
+  :global(html[data-bloom="play"]) .scene {
+    animation: fade 600ms ease-out backwards;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}

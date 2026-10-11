@@ -1,0 +1,11 @@
+# Botanical assets
+
+Created with the built-in image generation tool. The supplied image was used as a visual reference. Both PNG assets have alpha transparency.
+
+## petal.png
+
+Use case: photorealistic-natural. Asset type: transparent botanical cutout for a website flower bloom animation. Input image is a style reference only: match its pale sage green hellebore petals, their real delicate veining and translucent paper-like texture. Generate ONE single detached hellebore sepal/petal, NOT a whole flower: broad rounded irregular fan-shaped petal at the top with slightly scalloped natural edge, tapers to a very narrow short attachment point at bottom center. Upright vertical orientation, straight front view, no tilt, fills 85 percent of a portrait frame. Pale silvery ivory green at outer edge, richer fresh olive sage green at base; intricate irregular organic branching veins, fine natural mottling, extremely subtle crinkles, light shining through thin tissue. Photographic macro botanical realism with soft diffuse daylight, no illustration or vector aesthetic. Actual alpha transparency everywhere around the single petal. No stem, no other petals, no shadows behind, no letters, no glass, no background. Petal tip at top and attachment base at bottom center. Save a high resolution asset.
+
+## bud.png
+
+Use case: photorealistic-natural. Asset type: isolated transparent botanical bud cutout for a live website. Reference image is a style reference only. Create ONE pale sage-green hellebore flower bud, almost closed, three overlapping plump thin sepals forming a small roundish teardrop-shaped bell with a subtly flattened scalloped upper edge, narrow attachment at bottom. Match the small lower-left bud of the reference, natural silver sage and olive greens, delicate branching translucent veins and soft white edge highlights. Vertical orientation, straight front-facing, broad rounded bud pointing upward, tiny 2cm green stem stub attached at bottom center. Bud fills 85% frame. Photographic botanical macro, soft backlighting, exceptionally realistic organic detail, slightly darker at the base. Isolated actual alpha transparency, no background, no cast shadow, no other flowers, no glass, no typography, no illustration.

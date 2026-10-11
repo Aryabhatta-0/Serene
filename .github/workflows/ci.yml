@@ -94,3 +94,31 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run build
+
+  web-e2e:
+    name: Web E2E (Playwright, Chromium - desktop, tablet, mobile)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: app/web
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "20"
+      - run: npm ci
+      # Chromium only, at the version pinned by @playwright/test in package-lock.
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      # playwright.config.ts builds and starts the production server itself
+      # (`next build && next start`); every configured project runs.
+      - name: Run the shell acceptance suite against a production build
+        run: npm run test:e2e
+      - name: Upload Playwright traces on failure
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-test-results
+          path: app/web/test-results/
+          retention-days: 7

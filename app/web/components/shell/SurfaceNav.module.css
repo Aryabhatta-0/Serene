@@ -1,0 +1,133 @@
+/*
+ * Each label sits on a survey line. Hovering draws it dotted, a possibility;
+ * the current surface is drawn solid, and settles into place when the route
+ * changes. That stroke is the shell's one authored motion.
+ */
+
+.list {
+  list-style: none;
+}
+
+.link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: var(--tap-target);
+  color: var(--ink-muted);
+  text-decoration: none;
+  transition: color var(--dur-fast) ease;
+}
+
+.link:hover,
+.link[aria-current="page"] {
+  color: var(--ink);
+}
+
+.label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+/* The survey line under the label. */
+.link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: var(--tracking-caps-trim, 0);
+  bottom: 0.5rem;
+  height: 2px;
+  background: radial-gradient(circle, currentColor 0.9px, transparent 1.3px) 0 50% / 6px 2px repeat-x;
+  opacity: 0;
+  transition: opacity var(--dur-fast) ease;
+}
+
+.link:hover::after {
+  opacity: 0.7;
+}
+
+.link[aria-current="page"]::after {
+  background: currentColor;
+  opacity: 1;
+  transform-origin: left;
+  animation: settle var(--dur-settle) var(--ease-out);
+}
+
+.summary {
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--ink-muted);
+}
+
+/* Top bar */
+
+.bar .list {
+  display: flex;
+  gap: var(--space-6);
+}
+
+/* The tracking adds trailing space after the last letter; trim the line. */
+.bar .link {
+  --tracking-caps-trim: var(--tracking-caps);
+  font-size: var(--text-2xs);
+  white-space: nowrap;
+}
+
+/* Entering from the landing page: the surfaces arrive one after another,
+ * once the flower has settled into the logo. */
+:global(html[data-enter]) .bar li {
+  animation: reveal 500ms var(--ease-out) calc(220ms + var(--n) * 70ms) backwards;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    translate: 0 calc(var(--rise) * -1);
+  }
+}
+
+/* Menu sheet: large capitals, with room for what each surface is for. */
+
+.sheet .list {
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet li + li {
+  border-top: 1px solid var(--rule);
+}
+
+.sheet .link {
+  min-height: 5rem;
+  padding-block: var(--space-4);
+}
+
+.sheet .label {
+  font-size: var(--text-xl);
+  letter-spacing: 0.08em;
+}
+
+.sheet .link::after {
+  display: none;
+}
+
+.sheet .link[aria-current="page"] .label::before {
+  content: "";
+  display: inline-block;
+  width: 1.5rem;
+  height: 2px;
+  margin-right: var(--space-3);
+  vertical-align: middle;
+  background: currentColor;
+  transform-origin: left;
+  animation: settle var(--dur-settle) var(--ease-out);
+}
+
+@keyframes settle {
+  from {
+    scale: 0 1;
+  }
+}

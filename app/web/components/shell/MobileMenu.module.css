@@ -1,0 +1,90 @@
+/* The reference's three hairlines, without a box around them. */
+.trigger {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  margin-right: calc(var(--space-3) * -1);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.trigger svg {
+  width: 1.5rem;
+  height: 0.875rem;
+  overflow: visible;
+  stroke: currentColor;
+  stroke-width: 1.25;
+}
+
+.trigger:hover svg line:nth-child(2) {
+  stroke-dasharray: 0.1 3.5;
+  stroke-linecap: round;
+  stroke-width: 1.75;
+}
+
+/* A full sheet of the same ruled paper, lowered over the page. */
+.sheet {
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--ground);
+  color: var(--ink);
+}
+
+.sheet[open] {
+  animation: sheet-in var(--dur-overlay) var(--ease-out);
+}
+
+.sheet::backdrop {
+  background: rgb(46 61 40 / 0.42);
+}
+
+.sheet[open]::backdrop {
+  animation: backdrop-in var(--dur-base) ease-out;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-height: 100%;
+  padding: 0 var(--gutter) var(--space-7);
+}
+
+.header {
+  display: flex;
+  margin-inline: calc(var(--gutter) * -1);
+  padding-inline: var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  align-items: center;
+  justify-content: space-between;
+  height: var(--topbar-height);
+}
+
+.close {
+  min-height: 2.25rem;
+  padding-inline: var(--space-4);
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(calc(var(--rise) * -3));
+    opacity: 0;
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}

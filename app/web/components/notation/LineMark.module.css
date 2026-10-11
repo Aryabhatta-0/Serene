@@ -1,0 +1,47 @@
+/*
+ * `contain: size` drops the SVG's default 300x150 box, so a mark takes the
+ * length of whatever box it sits in. Default sizes sit in :where() so a
+ * caller's single class always wins. Colour is inherited from the context.
+ */
+.mark {
+  display: block;
+  overflow: visible;
+  contain: size;
+}
+
+:where(.horizontal) {
+  width: 100%;
+  height: var(--mark-size);
+}
+
+:where(.vertical) {
+  width: var(--mark-size);
+  height: 100%;
+}
+
+.stroke {
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.mark[data-certainty="unknown"] .stroke {
+  stroke-dasharray: 0.1 6;
+  stroke-width: 2.5;
+}
+
+.mark[data-certainty="observed"] .stroke {
+  stroke-dasharray: 7 5;
+}
+
+.mark[data-certainty="refuted"] {
+  color: var(--ink-faint);
+}
+
+/* Refuted beliefs stay visible, struck through rather than erased. */
+.strike {
+  stroke: currentColor;
+  stroke-width: 9;
+  stroke-dasharray: 1.5 11;
+  stroke-dashoffset: -5;
+}

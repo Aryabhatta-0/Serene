@@ -1,0 +1,109 @@
+/*
+ * A zero-size point that the petals radiate from. Each arm turns about the
+ * point; each petal hangs off its arm with its base on the point.
+ *
+ * The flower opens only while <html data-bloom="play"> is set (a fresh load
+ * of the landing page). Every keyframe runs *from* the closed state back to the
+ * drawn default, so with no attribute the flower is simply open.
+ */
+
+.flower {
+  position: absolute;
+  width: 0;
+  height: 0;
+  perspective: calc(var(--petal-h) * 3.5);
+  transform-style: preserve-3d;
+}
+
+.arm {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+  transform: rotate(var(--angle));
+  transform-style: preserve-3d;
+}
+
+.petal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: var(--petal-w);
+  height: var(--petal-h);
+  max-width: none;
+  object-fit: fill;
+  /* The petal's base sits at 95% of the cutout's height. */
+  transform-origin: 50% 95%;
+  transform: translate(-50%, -95%) scale(var(--spread), 1);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.centre {
+  position: absolute;
+  top: calc(var(--centre) / -2);
+  left: calc(var(--centre) / -2);
+  width: var(--centre);
+  height: var(--centre);
+  opacity: 0.86;
+  filter: drop-shadow(0 1px 2px rgb(51 71 34 / 0.38));
+}
+
+/* First load: the closed cup rises, then the petals unfurl one after another. */
+:global(html[data-bloom="play"]) .flower {
+  animation: rise 900ms var(--ease-out) var(--bloom-delay, 0ms) backwards;
+}
+
+:global(html[data-bloom="play"]) .arm {
+  animation: unfold var(--bloom-dur, 2600ms) var(--ease-bloom)
+    calc(var(--bloom-delay, 0ms) + 50ms + var(--i) * 75ms) backwards;
+}
+
+:global(html[data-bloom="play"]) .petal {
+  animation: open var(--bloom-dur, 2600ms) var(--ease-bloom)
+    calc(var(--bloom-delay, 0ms) + var(--i) * 75ms) backwards;
+}
+
+:global(html[data-bloom="play"]) .centre {
+  animation: show 900ms ease calc(var(--bloom-delay, 0ms) + var(--bloom-dur, 2600ms) * 0.75)
+    backwards;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    scale: 0.6;
+  }
+}
+
+@keyframes unfold {
+  from {
+    transform: rotate(var(--folded));
+  }
+}
+
+@keyframes open {
+  from {
+    transform: translate(-50%, -95%) rotateY(64deg) rotateX(30deg) scale(0.72, 0.84);
+  }
+}
+
+@keyframes show {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Reduced motion: the open flower fades in, without any petal movement. */
+@media (prefers-reduced-motion: reduce) {
+  :global(html[data-bloom="play"]) :is(.arm, .petal, .centre) {
+    animation: none;
+  }
+
+  :global(html[data-bloom="play"]) .flower {
+    animation: show 600ms ease-out var(--bloom-delay, 0ms) backwards;
+  }
+}

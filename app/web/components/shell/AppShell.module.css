@@ -1,0 +1,88 @@
+/* Breakpoint: 60rem (960px), where the five tracked labels fit inline. */
+
+.shell {
+  min-height: 100dvh;
+}
+
+.skip {
+  position: fixed;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 20;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--ground);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(calc(-100% - var(--space-4)));
+}
+
+.skip:focus-visible {
+  transform: none;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--space-7);
+  height: var(--topbar-height);
+  padding-inline: var(--gutter);
+  background: var(--ground);
+}
+
+.barNav {
+  display: none;
+}
+
+.menu {
+  margin-left: auto;
+}
+
+.main {
+  padding: var(--space-5) var(--gutter) var(--space-8);
+}
+
+.main:focus {
+  outline: none;
+}
+
+@media (min-width: 60rem) {
+  .barNav {
+    display: block;
+  }
+
+  .menu {
+    display: none;
+  }
+}
+
+@media (min-width: 64rem) {
+  .main {
+    padding-top: 0;
+  }
+}
+
+/* The landing page holds the bar empty (hidden, but still laid out, so the
+ * flower can be flown to the logo's exact place). Entering fills it in:
+ * <html data-enter> is set as the flower lands, while still on "/". */
+.topbar[data-landing] > * {
+  visibility: hidden;
+}
+
+:global(html[data-enter]) .topbar > * {
+  visibility: visible;
+}
+
+:global(html[data-enter]) .menu {
+  animation: reveal 450ms var(--ease-out) 200ms backwards;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+  }
+}
