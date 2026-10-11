@@ -157,11 +157,16 @@ test("the menu sheet closes on Escape and gives focus back", async ({ page }) =>
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
   await expect(trigger).toHaveAttribute("aria-expanded", "true");
-  // Focus moves into the sheet, and Tab stays inside it.
+  // Focus moves into the sheet, and Tab never reaches the inert page behind
+  // it. (Past the last item a native modal hands focus to the browser.)
   await expect(dialog.locator(":focus")).toHaveCount(1);
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 10; i++) {
     await page.keyboard.press("Tab");
-    await expect(dialog.locator(":focus")).toHaveCount(1);
+    const contained = await page.evaluate(() => {
+      const active = document.activeElement;
+      return !active || active === document.body || !!active.closest("dialog");
+    });
+    expect(contained).toBe(true);
   }
 
   await page.keyboard.press("Escape");
