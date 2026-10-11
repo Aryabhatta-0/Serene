@@ -106,6 +106,13 @@ every event with the same deterministic policies.
 
 ## 7. Cost never overrides safety (cfo.ai, #55)
 
+Current implementation and the genuinely populated cfo.ai Scenario are documented
+in [economics.md](economics.md). The table below is the historical v1 scaffold;
+its local arithmetic and evaluation fixture are retained for compatibility.
+The v2 model adds provenance, storage/memory-read/telemetry costs and sensitivity.
+Cost requires explicit policy eligibility and certified evidence equivalence;
+required parent questions disable the tradeoff.
+
 Evidence acquisition is ordered **safety > evidence quality > information
 value > cost**; cost only breaks ties inside the top equivalence class, unsafe
 options are dropped, and an unknown cost is never "free"

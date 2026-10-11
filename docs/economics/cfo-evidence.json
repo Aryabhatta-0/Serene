@@ -1,0 +1,71 @@
+{
+  "server": {
+    "name": "cfo.ai",
+    "version": "0.1.0",
+    "endpoint": "https://api.cfo.ai/mcp",
+    "authentication": "existing Codex OAuth session"
+  },
+  "scenario": {
+    "name": "Serene economics #55 - assumed operating case",
+    "ref": "Serene economics #55 - assumed operating case#fb5",
+    "create_change_log_id": "282907",
+    "created_at_utc": "2026-10-11T18:32:08.616079Z"
+  },
+  "page_create_change_log_id": "282930",
+  "model_create": {
+    "change_log_id": 282944,
+    "status": "applied",
+    "state_changed": "yes",
+    "counts": {
+      "requested": 70,
+      "created": 70
+    },
+    "coverage": {
+      "saved_state": "changed_fields",
+      "values": "bounded_window",
+      "calculation": "complete"
+    },
+    "table": {
+      "display_name": "Serene55 unit economics and sensitivity",
+      "ref": "Serene55 unit economics and sensitivity#94f",
+      "url": "https://app.cfo.ai/s/p_AQL7pQYkOTRmNGZkYzctNGFmMS00ZTkwLThlZGUtZGJkOTRlMzk5YTBmJGZiNTE2MjlkLWQ3ZmQtNGYyNC05MmQ1LWNiNDEwNmRjYzM5Zg"
+    },
+    "scenario": {
+      "display_name": "Serene economics #55 - assumed operating case",
+      "ref": "Serene economics #55 - assumed operating case#fb5"
+    }
+  },
+  "request_file": "cfo-model-request.json",
+  "request_sha256": "ca17e6dccf175f4ee22102fb562b96ffb06f724fb3736dff0942440e837fdcfb",
+  "privacy": "Only the synthetic model artifacts are retained. Credentials, user/account identities and unrelated workspace data are omitted.",
+  "convention_update": {
+    "change_log_id": 282960,
+    "status": "applied",
+    "state_changed": "yes",
+    "changed": {
+      "default_formulas": 1,
+      "formatting_scopes": 1,
+      "layouts": 1
+    },
+    "formula_changes": [
+      {
+        "change": "saved",
+        "formula": "floor(`Serene55 cash` * `Serene55 days_per_month` / `Serene55 burn_month`, 1)",
+        "rows": [
+          "Serene55 runway_days#108"
+        ]
+      }
+    ],
+    "references_evaluated_at": {
+      "status": "complete",
+      "scope": "changed_variables_in_table",
+      "groups": 1,
+      "inspected_cells": 1,
+      "omitted_cells": 0
+    }
+  },
+  "convention_request_file": "cfo-convention-request.json",
+  "convention_request_sha256": "fd82fa6e511585efe53689ee20ccc6cf42c90c8bb95e8ca1a46dfb314ced858f",
+  "analysis_note_change_log_id": "282948",
+  "hash_encoding": "SHA-256 of committed UTF-8 LF JSON artifact; request objects preserved"
+}
