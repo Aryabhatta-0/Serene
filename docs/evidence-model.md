@@ -1,107 +1,121 @@
-# Serene Evidence Model
+# Serene evidence model
 
-> **Status:** lineage, acquisition policy, bounded browser, independent verifier,
-> caregiver disagreement and the ladder/gate are implemented. See
-> [runtime.md](runtime.md) for code contracts and [maya-demo.md](maya-demo.md)
-> for the deterministic rejection/recovery trajectory (#56).
+Evidence, not eloquence, constrains belief. Serene keeps what was reported,
+what it remembers and what it currently believes separate. This implements the
+[architecture thesis](architecture.md#thesis-and-state-ownership): **LLM proposes;
+deterministic code decides.** Source: merged `main` at `b8b102d` (2026-10-12).
 
-## 1. Principle
+## Reports, captures and verification
 
-Evidence, not eloquence, decides what Serene believes. Two questions are always
-answerable: *what supports this?* and *what would change our mind?*
+| Input | Admission and meaning | Implementation / evidence |
+| --- | --- | --- |
+| Parent/caregiver report | Raw bytes preserved before structuring; VERIFIED authenticates a first-hand channel report, not objective truth or caregiver agreement | [ingestion](../serene/evidence/ingestion.py), [Telegram channel](../serene/adapters/telegram/channel.py), [tests](../tests/test_telegram_ingestion.py), #9 |
+| Structured observation/pattern/hypothesis | Model proposal must pass schema, lineage and introduction checks; cannot overwrite the raw report | [KernelBoundary](../serene/investigation/boundary.py), [Promotion Gate](../serene/policies/promotion.py), #17–#19 |
+| External browser capture | Enters UNVERIFIED with source, content digest and provenance; successful execution gives no trust | [EvidenceService](../serene/evidence/service.py), [capture format](../serene/evidence/capture.py), #15 |
+| External verifier verdict | Only the independent verifier grants VERIFIED/REJECTED; admission rechecks the decidable verdict/request constraints | [verifier](../serene/evidence/verifier.py), [external-evidence policy](../serene/policies/external_evidence.py), [tests](../tests/test_evidence_path.py), #16 |
 
-## 2. Evidence acquisition pipeline
+The browser has a goal, allowed HTTPS domains, requested fields, action budget
+and forbidden actions in its [port contract](../serene/ports/evidence.py).
+[HermesBrowser](../serene/adapters/browser/hermes_browser.py) audits actual tool
+execution against those bounds; browser and model cannot verify their own output.
 
-```
-Minimum Sufficient Childhood Data policy   (#13)
-   -> identifies the smallest missing observation likely to reduce uncertainty
-   -> information value is ordinal: HIGH / MEDIUM / LOW  (no fake precision)
+The default `IndependentEvidenceVerifier` requires an independent source re-fetch
+and all six checks: SOURCE_ALLOWED, DIGEST_MATCHES, SUBJECT_MATCHES,
+EFFECTIVE_DATE_VALID, REQUESTED_FIELDS_PRESENT and PROVENANCE_VALID. It checks
+field values occur in the excerpt, a subject token is present, the effective date
+is within bounds and the excerpt occurs in the re-fetched page. Missing/unreachable
+fetch or unsupported content rejects. The [HTTP fetcher](../serene/adapters/browser/fetch.py)
+rejects redirects/private addresses and caps bytes. The constructor can explicitly
+disable mandatory re-fetch; that mode does not establish independent source
+confirmation. These are syntactic/source checks, not a semantic truth oracle.
 
-evidence acquisition priority              (#14)
-   -> Safety -> evidence requirements -> information value -> burden/latency/cost
-   -> cost may NEVER override safety
+Acquisition failures append numbered `EVIDENCE_ACQUISITION_FAILED` attempts;
+replay does not replenish retry budgets. Rejected captures remain in history but
+cannot support promotion. The [Maya trajectory](maya-demo.md) proves transient
+failure → retry → `EXCERPT_NOT_ON_SOURCE` rejection → later verified acquisition
+using an offline fictional page and the real verifier/admission code (#56).
 
-bounded EvidenceBrowser contract           (#15)
-   -> goal, allowed domains, requested fields, max actions, forbidden actions
-   -> Hermes Browser is the MVP implementation
+## Minimum data and investigation boundary
 
-External Evidence Verifier                 (#16)
-   -> checks SOURCE_ALLOWED, DIGEST_MATCHES, SUBJECT_MATCHES,
-      EFFECTIVE_DATE_VALID, REQUESTED_FIELDS_PRESENT, PROVENANCE_VALID
-   -> emits EvidenceVerified  OR  EvidenceRejected
-```
+The model suggests candidates; [MinimumDataPolicy](../serene/investigation/minimum_data.py)
+computes ranking. Information value is ordinal: HIGH when live hypotheses predict
+different answers, MEDIUM when at least one predicts an answer, LOW otherwise.
+Unsafe, LOW and already-requested field subsets are excluded. The policy selects
+at most one candidate by safety → evidence need → information value → burden →
+latency, then cost only when the entire top evidence request is equivalent.
+There is no numerical expected-information-gain claim (#13, #14).
 
-## 3. Information value is ordinal
+This is a ranking of proposed candidates, not a proof the planner proposed all
+useful observations. Current `Selection.sufficient` means no candidate selected;
+empty or fully excluded plans can lead to COMPLETE without decisive evidence.
+[Phase admission](../serene/policies/investigation.py) checks structural progress,
+not every competing hypothesis pair. The unmerged
+[PR #69](https://github.com/Sathvikar01/morrow/pull/69) is a proposed correction,
+not implemented sufficiency on `main`. COMPLETE gives no promotion authority.
 
-Serene does **not** invent a numeric expected-information-gain score. It ranks
-the smallest missing observation as HIGH, MEDIUM or LOW value. This is honest
-about uncertainty and keeps the policy deterministic and testable.
+## Epistemic ladder and promotion
 
-## 4. Epistemic ladder
+| Level | Meaning and deterministic requirement | Evidence |
+| --- | --- | --- |
+| 0 — Raw Evidence | Preserved report/capture with source and digest; external capture may still be UNVERIFIED or REJECTED | [entities](../serene/domain/entities.py), [ingestion](../serene/evidence/ingestion.py) |
+| 1 — Observation | Introduced from verified level-0 evidence with valid provenance | [check_introduction](../serene/policies/promotion.py) |
+| 2 — Pattern | Introduced from observations on at least two distinct occasions, with counter-observations retained | [check_introduction](../serene/policies/promotion.py) |
+| 3 — Hypothesis | Pattern-derived explanation with alternatives/competitors, scope and falsification criteria; cited evidence verified | [hypothesis schema](../serene/domain/entities.py), [gate](../serene/policies/promotion.py) |
+| 4 — Tested Hypothesis | One-rung promotion supported by a completed approved non-RED trial with supporting outcome and verified lineage | [evaluate_promotion](../serene/policies/promotion.py) |
+| 5 — Contextual Learning | One-rung promotion/learning with tested bounded scope, outcome/counterevidence checks, no equally tested rival and validity/review metadata | [gate](../serene/policies/promotion.py), [learning policy](../serene/policies/learning.py) |
 
-```
-0 Raw Evidence
-1 Observation
-2 Pattern
-3 Hypothesis
-4 Tested Hypothesis
-5 Contextual Learning
-```
+Levels 1–3 introduce derived entities; levels 4–5 promote an existing hypothesis.
+The [legal transition table](../serene/policies/ladder.py) forbids level skips.
+The model may request a level; deterministic policy grants or refuses it and
+admission recomputes the decision. Rationale and confidence are not authority.
+[Promotion tests](../tests/test_promotion_policy.py) and
+[authority tests](../tests/test_promotion_authority.py) cover negative transitions
+and unverified lineage (#17–#19).
 
-The Promotion Gate (#18) computes the **maximum permitted level** from
-structured evidence. The LLM may request a level; it cannot authorize one.
-Skipping levels is forbidden. Every transition is covered by deterministic
-tests (#19), including negative/adversarial cases.
+Level 4 means a bounded approved N-of-1 trial supported this explanation in its
+scope; it is not an estimated causal effect. Level 5 carries `valid_from`,
+`review_after`, scope and reviewer metadata. Maximum validity is 180 days;
+the default review window is 60 days. ACTIVE, NEEDS_REVIEW, NEEDS_RETEST, STALE
+and DEPRECATED keep uncertainty/age explicit. Context drift or contradiction can
+require retest/deprecation; passing the date does not create new evidence.
+See [learning tests](../tests/test_learning_validity.py) (#20).
 
-## 5. Level-5 semantics
+## Lineage, disagreement and refutation
 
-A Contextual Learning is only valid within a bounded scope and with an
-expiry/review date (#20):
+[Provenance](../serene/domain/values.py) records creator, method, timestamps,
+model/version where applicable, source IDs, `derived_from`, verification status
+and supersession. [Lineage tracing](../serene/lineage/provenance.py) follows derived
+objects to raw evidence; missing/rejected/unverified ancestry prevents promotion
+([tests](../tests/test_promotion_authority.py), #7).
 
-- `valid_from`, `review_after`
-- status: `ACTIVE`, `NEEDS_REVIEW`, `NEEDS_RETEST`, `STALE`, `DEPRECATED`
-- retest triggers when context drifts
+[Context retrieval](../serene/investigation/context.py) preserves separate observer
+reports and caregiver disagreement (#21); no averaging into invented truth or
+reliability scores. [Causal Twin](../serene/causal/model.py) exposes support,
+counterevidence, confounders, alternatives and CANDIDATE/SUPPORTED/REFUTED/
+SUPERSEDED status. Refutation appends a fact and retains the old hypothesis.
+[Dream/Critic](../serene/policies/memory_review.py) requires counterevidence in
+memory patches; deprecation replaces silent deletion. Reviewed memory is context,
+never a new raw evidence source or a shortcut to belief promotion (#27–#32).
+Critic verification checks structured fields and recorded contradictions; it
+does not prove that arbitrary Dreamer prose is semantically true.
 
-## 6. Lineage
+## Authority and non-goals
 
-Every derived object carries `derived_from[]`, creator, method, model version,
-verification status, supersession and source IDs (#7). A belief without a
-complete lineage is not trustworthy and cannot be promoted.
+Parent authorization and evidence verification answer separate questions.
+An approval permits one exact non-RED experiment; it does not verify a claim.
+A verifier verdict confirms bounded source checks; it never approves an
+intervention. Neither a model, telemetry nor cfo.ai may cross those boundaries.
 
-## 7. Caregiver disagreement
+[The #55 cost helper](../serene/adapters/cfoai.py) grants no access and preserves
+required parent questions. Assumed prices break only policy-certified equivalence
+ties; equal HIGH ordinals alone are insufficient. See [economics.md](economics.md)
+and [acquisition tests](../tests/test_acquisition_costs.py).
 
-When caregivers disagree, Serene preserves **separate observer reports** and
-exposes the disagreement as context (#21). It never averages reports into a
-fake truth and never invents reliability scores.
-
-## 8. Acquisition is not verification
-
-`HermesBrowser` audits executed tools, HTTPS domains and action bounds from the
-ledger request. A capture enters as UNVERIFIED, with a digest and provenance.
-`IndependentEvidenceVerifier` uses its own fetcher to confirm the excerpt is
-present on the source and all six checks pass. Missing fetch capability rejects
-the evidence. The production fetcher refuses redirects/private addresses and
-caps bytes. Model confidence and a successful browser call cannot grant trust.
-Admission rechecks verdict structure against the original request.
-
-Failures append `EVIDENCE_ACQUISITION_FAILED` with consecutive attempt numbers;
-retry budgets survive replay. Rejected evidence stays in history but cannot
-support a promoted belief. In Maya, a transient failure at ledger #23 is retried,
-the resulting unsupported excerpt is rejected at #26 (`EXCERPT_NOT_ON_SOURCE`),
-and a subsequent bounded request yields verified evidence at #33. The fixture's
-page fetch is synthetic/offline; the verifier and admission path are real.
-
-## 9. Authority, non-goals and technology choices
-
-Models suggest evidence and predictions; deterministic policy selects the
-request; the independent verifier grants evidence status; the Promotion Gate
-decides belief level. Parent approval is a separate safety requirement, never a
-verifier verdict. Observational association and a scoped N-of-1 outcome do not
-establish a general causal effect.
-
-The MVP uses structured lineage and ordinal information value rather than
-DoWhy/pgmpy/Cleanlab or a second retrieval/graph-memory system. There is no
-probabilistic reliability score, automatic diagnosis, scraping of private parent
-groups, or cost-based reduction in source/verifier requirements. See the
-excluded-technology rationale in [architecture.md](architecture.md) and the
-cost equivalence boundary in [economics.md](economics.md) (#55).
+No unverified evidence promotion, silent uncertainty, hidden deletion of refuted
+beliefs, diagnosis, private-parent-group scraping, cost-reduced verification or
+general causal-effect claim is permitted. Git memory/structured lineage and the
+custom deterministic ladder replace extra graph-memory or statistical causal
+stacks for this MVP; [architecture exclusions](architecture.md#non-goals-and-excluded-technologies)
+link the recorded technology rationale. [Entire #54](https://github.com/Sathvikar01/morrow/issues/54)
+is development provenance only and remains incomplete; checkpoint references
+cannot substitute for child-evidence lineage.
