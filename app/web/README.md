@@ -62,13 +62,19 @@ these commands.
   (`model.ts`, a mirror of `serene/causal/model.py` with a parser that
   re-checks the kernel's invariants and fails closed), how each edge is drawn
   (`categories.ts`), the React Flow graph and its deterministic layout
-  (`graph.ts`), and where the twin comes from (`source.ts`: not connected
-  until Issue #33).
-- `components/causal-twin/`: `CausalTwinView` (unconnected, loading, error,
-  empty and map states), the map (`TwinCanvas`, `VariableNode`,
-  `BeliefEdge`), the selected-link summary (`SelectedLink`, where the
-  provenance panel of Issue #39 attaches through `renderEdgeDetail`) and the
-  text list of every link (`LinkList`).
+  (`graph.ts`), the provenance panel's reading of an edge (`provenance.ts`:
+  ids typed by prefix, support against counterevidence, lineage and
+  supersession followed by id), and where the twin comes from (`source.ts`:
+  not connected until Issue #33).
+- `components/causal-twin/`: `CausalTwinSurface` (what pages render: the
+  view with the provenance panel wired in), `CausalTwinView` (unconnected,
+  loading, error, empty and map states), the map (`TwinCanvas`,
+  `VariableNode`, `BeliefEdge`), the selected-link summary (`SelectedLink`),
+  the provenance panel (`EdgeProvenance`, Issue #39, attached through
+  `renderEdgeDetail`) and the text list of every link (`LinkList`). The
+  panel shows only what `CausalEdge` carries; what it does not carry (what
+  each item says, which evidence is external, which experiment an outcome
+  came from) is stated in the panel, not filled in.
 - `fixtures/synthetic-causal-twin.json`: a synthetic twin for tests only. It
   is in the kernel's wire format and validates against
   `CausalTwin.model_validate_json`.

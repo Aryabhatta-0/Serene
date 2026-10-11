@@ -27,8 +27,12 @@
       ],
       "counterevidence": [],
       "contradicting_outcomes": [],
-      "confounders": [],
-      "alternative_explanations": [],
+      "confounders": [
+        "Dinner runs later on some school nights."
+      ],
+      "alternative_explanations": [
+        "Homework left until after dinner, not the screens."
+      ],
       "competing_edges": [
         "hyp_00000000000000000000000000000004"
       ],
@@ -68,7 +72,7 @@
           "evd_00000000000000000000000000000002"
         ],
         "verification_status": "UNVERIFIED",
-        "supersedes": null
+        "supersedes": "hyp_00000000000000000000000000000005"
       },
       "raw_evidence": [
         "evd_00000000000000000000000000000001",

@@ -55,6 +55,8 @@ test("the shipped surface draws no map and no fixture data", async ({ page }) =>
   await expect(map(page)).toHaveCount(0);
   const main = page.getByRole("main");
   for (const edge of payload.edges) await expect(main).not.toContainText(edge.relationship);
+  await expect(main.locator("[data-provenance-for]")).toHaveCount(0);
+  await expect(main).not.toContainText(/(hyp|evd|obs|out|exp|pat)_[0-9a-f]{32}/);
 });
 
 test("the map draws every category distinctly and keeps refuted links", async ({ page }, testInfo) => {
@@ -150,6 +152,17 @@ test("links on the map can be reached and chosen from the keyboard", async ({ pa
   await expect(panel(page)).toHaveAttribute("data-selected-edge-id", focused!);
 });
 
+test("choosing any link from the list brings its label into view", async ({ page }) => {
+  await page.goto(FIXTURE);
+  await expect(map(page)).toBeVisible();
+  for (const edge of payload.edges.filter((e) => e.cause !== null)) {
+    await list(page).locator(`button[data-edge-id="${edge.edge_id}"]`).click();
+    await expect(panel(page)).toHaveAttribute("data-selected-edge-id", edge.edge_id);
+    await expectInsideMap(page, mapLabel(page, edge.edge_id));
+    await panel(page).getByRole("button", { name: "Clear" }).click();
+  }
+});
+
 test("zoom and fit-to-view move the map", async ({ page }) => {
   await page.goto(FIXTURE);
   await expect(map(page)).toBeVisible();
@@ -178,4 +191,60 @@ test("on a phone the map reads top to bottom and the panel follows it", async ({
     expect(effect.y).toBeGreaterThan(cause.y);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   }
+});
+
+// The provenance panel (#39): why Serene holds the selected link this way.
+const provenance = (page: Page) => panel(page).locator("[data-provenance-for]");
+const section = (page: Page, name: string) => panel(page).getByRole("region", { name });
+
+test("the provenance panel follows the selected link and its lineage", async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on("console", (m) => {
+    if (m.type() === "error" || m.type() === "warning") errors.push(m.text());
+  });
+  await page.goto(FIXTURE);
+  await expect(provenance(page)).toHaveCount(0);
+
+  await mapLabel(page, HYP(1)).click();
+  await expect(provenance(page)).toHaveAttribute("data-provenance-for", HYP(1));
+  await expect(section(page, "Evidence for it").locator("[data-entity-id]")).toHaveCount(3);
+  await expect(section(page, "Where and when it holds")).toContainText("Review after");
+  await expect(section(page, "Where and when it holds").locator("time")).toHaveCount(2);
+
+  // A different link has different evidence.
+  await mapLabel(page, HYP(4)).click();
+  await expect(provenance(page)).toHaveAttribute("data-provenance-for", HYP(4));
+  await expect(section(page, "Evidence against it")).toContainText("Experiment outcome: contradicts it");
+  await expect(section(page, "Evidence for it")).not.toContainText("evd_00000000000000000000000000000001");
+
+  // Replaced link -> its replacement, chosen from the panel: the map follows.
+  await list(page).locator(`button[data-edge-id="${HYP(5)}"]`).click();
+  await expect(section(page, "Why it is drawn this way")).toContainText("better-formed version");
+  await section(page, "Replaced and replacing").locator(`button[data-edge-ref="${HYP(1)}"]`).click();
+  await expect(panel(page)).toHaveAttribute("data-selected-edge-id", HYP(1));
+  await expect(mapLabel(page, HYP(1))).toHaveAttribute("aria-pressed", "true");
+  await expectInsideMap(page, mapLabel(page, HYP(1)));
+  await expect(section(page, "Why it is drawn this way").getByRole("heading")).toBeFocused();
+  await expect(section(page, "Replaced and replacing").locator(`button[data-edge-ref="${HYP(5)}"]`)).toBeVisible();
+
+  // Nothing in the panel overflows the page, at any width.
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+  const sheet = (await panel(page).boundingBox())!;
+  expect(sheet.x + sheet.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+  await panel(page).screenshot({ path: testInfo.outputPath(`provenance-${testInfo.project.name}.png`) });
+  expect(errors).toEqual([]);
+});
+
+test("the provenance panel opens and closes from the keyboard", async ({ page }) => {
+  await page.goto(FIXTURE);
+  const item = list(page).locator(`button[data-edge-id="${HYP(6)}"]`);
+  await item.focus();
+  await page.keyboard.press("Enter");
+  await expect(provenance(page)).toHaveAttribute("data-provenance-for", HYP(6));
+  await expect(section(page, "Evidence against it")).toContainText("Observation against it");
+
+  await panel(page).getByRole("button", { name: "Clear" }).focus();
+  await page.keyboard.press("Escape");
+  await expect(panel(page)).not.toHaveAttribute("data-selected-edge-id", /.*/);
+  await expect(item).toBeFocused();
 });

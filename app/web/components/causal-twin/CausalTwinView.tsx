@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useId, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { LineKey, type LineKeyEntry } from "@/components/notation/LineKey";
 import { LineMark } from "@/components/notation/LineMark";
@@ -19,13 +19,18 @@ const LINK_KEY: readonly LineKeyEntry[] = CATEGORY_ORDER.map((category) => ({
   description: CATEGORIES[category].description,
 }));
 
+export type EdgeDetailActions = { selectEdge: (edgeId: string) => void };
+
 export type CausalTwinViewProps = {
   source: TwinSource;
   /** Controlled selection; omit to let the view keep its own. */
   selectedEdgeId?: string | null;
   onSelectedEdgeChange?: (edgeId: string | null) => void;
-  /** Extra detail for the selected link (the provenance panel, #39). */
-  renderEdgeDetail?: (edge: CausalEdge) => ReactNode;
+  /**
+   * Extra detail for the selected link (the provenance panel, #39).
+   * `selectEdge` chooses another link and moves the map to show it.
+   */
+  renderEdgeDetail?: (edge: CausalEdge, actions: EdgeDetailActions) => ReactNode;
   onRetry?: () => void;
 };
 
@@ -113,6 +118,22 @@ function TwinMap({ twin, selectedEdgeId, onSelectedEdgeChange, renderEdgeDetail 
     (edgeId: string) => select(edgeId === selectedId ? null : edgeId),
     [select, selectedId],
   );
+  // Chosen outside the map (the list, the panel): the map moves to show it.
+  const choose = useCallback(
+    (edgeId: string) => {
+      select(edgeId);
+      setReveal({ edgeId });
+    },
+    [select],
+  );
+  // Closing the panel hands focus back to the link in the list, which is
+  // always there (a link may not be drawn), without scrolling the page.
+  const list = useRef<HTMLDivElement>(null);
+  const clear = useCallback(() => {
+    const closed = selectedId;
+    select(null);
+    list.current?.querySelector<HTMLElement>(`button[data-edge-id="${closed}"]`)?.focus({ preventScroll: true });
+  }, [select, selectedId]);
 
   const graph = useMemo(() => buildTwinGraph(twin, direction, selectedId), [twin, direction, selectedId]);
   const selected = twin.edges.find((e) => e.edge_id === selectedId) ?? null;
@@ -163,19 +184,18 @@ function TwinMap({ twin, selectedEdgeId, onSelectedEdgeChange, renderEdgeDetail 
             been named. They are listed below.
           </p>
         )}
-        <SelectedLink edge={selected} onClear={() => select(null)}>
-          {selected && renderEdgeDetail ? renderEdgeDetail(selected) : null}
+        <SelectedLink edge={selected} onClear={clear}>
+          {selected && renderEdgeDetail ? renderEdgeDetail(selected, { selectEdge: choose }) : null}
         </SelectedLink>
       </div>
 
-      <LinkList
-        edges={twin.edges}
-        selectedEdgeId={selectedId}
-        onSelect={(edgeId) => {
-          toggle(edgeId);
-          if (edgeId !== selectedId) setReveal({ edgeId });
-        }}
-      />
+      <div ref={list}>
+        <LinkList
+          edges={twin.edges}
+          selectedEdgeId={selectedId}
+          onSelect={(edgeId) => (edgeId === selectedId ? select(null) : choose(edgeId))}
+        />
+      </div>
 
       <LineKey title="How to read the map" entries={LINK_KEY} />
     </section>

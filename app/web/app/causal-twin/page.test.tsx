@@ -11,7 +11,14 @@ describe("the Causal Twin surface", () => {
     const body = container.querySelector("#surface-body")!;
     expect(body.querySelector(".react-flow, svg g[data-edge-id], [data-variable]")).toBeNull();
     expect(body).not.toHaveTextContent(/\d/);
-    for (const edge of payload.edges) expect(container).not.toHaveTextContent(edge.relationship);
+    for (const edge of payload.edges) {
+      expect(container).not.toHaveTextContent(edge.relationship);
+      for (const note of [...edge.confounders, ...edge.alternative_explanations]) {
+        expect(container).not.toHaveTextContent(note);
+      }
+    }
+    expect(container).not.toHaveTextContent(/(hyp|evd|obs|out|exp|pat)_/);
+    expect(body.querySelector("[data-provenance-for], [data-selected-edge-id]")).toBeNull();
     expect(container).toHaveTextContent("No links to draw yet");
     expect(container).toHaveTextContent("No family record connected");
   });

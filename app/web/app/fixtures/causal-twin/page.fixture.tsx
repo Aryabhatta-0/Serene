@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CausalTwinView } from "@/components/causal-twin/CausalTwinView";
+import { CausalTwinSurface } from "@/components/causal-twin/CausalTwinSurface";
 import { Page } from "@/components/layout/Page";
 import { twinSourceFrom } from "@/lib/causal-twin/source";
 import payload from "@/fixtures/synthetic-causal-twin.json";
@@ -26,7 +26,7 @@ export default function CausalTwinFixturePage() {
       <p role="note" className={styles.banner} data-fixture-banner>
         Synthetic test fixture. Nothing on this page describes a real child.
       </p>
-      <CausalTwinView source={source} />
+      <CausalTwinSurface source={source} />
     </Page>
   );
 }

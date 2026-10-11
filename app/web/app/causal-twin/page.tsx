@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CausalTwinView } from "@/components/causal-twin/CausalTwinView";
+import { CausalTwinSurface } from "@/components/causal-twin/CausalTwinSurface";
 import { Page } from "@/components/layout/Page";
 import { UNCONNECTED } from "@/lib/causal-twin/source";
 
@@ -17,7 +17,7 @@ export default function CausalTwinPage() {
       lead="A map of what may influence what in your child’s days, drawn by how firmly each link is known."
       width={source.status === "ready" ? "wide" : "reading"}
     >
-      <CausalTwinView source={source} />
+      <CausalTwinSurface source={source} />
     </Page>
   );
 }
