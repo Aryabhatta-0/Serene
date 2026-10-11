@@ -76,6 +76,19 @@ these commands.
   panel shows only what `CausalEdge` carries; what it does not carry (what
   each item says, which evidence is external, which experiment an outcome
   came from) is stated in the panel, not filled in.
+- `lib/projections/`: live projection state (Issue #33). The web app reads
+  `serene.projection_state` only, never the event ledger
+  (`no-ledger.test.ts` checks every source file). `sync.ts` takes a snapshot,
+  then Realtime changes, and re-reads the snapshot on every (re)connect. Each
+  projection keeps its highest ledger sequence, so the result does not depend
+  on arrival order. It is never shown as live before the subscription is up.
+  `supabase.ts` is the Supabase transport (PostgREST snapshot plus
+  `postgres_changes`, both under the signed-in user's RLS), `client.ts` builds
+  it from `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+  (`config.ts`), and `useProjections` is the hook surfaces use.
+  `components/projections/ProjectionStatus` says in words how current the
+  state is. Web sign-in is not built yet (#84), so no page subscribes and
+  surfaces stay unconnected.
 - `lib/memory/`: consolidated memory and Dream runs as the kernel serializes
   them (`model.ts`, a mirror of `serene/memory/view.py` with a parser that
   re-checks its invariants and fails closed: a refused change can never be

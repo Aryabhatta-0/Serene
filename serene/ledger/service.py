@@ -22,7 +22,7 @@ from serene.observability.telemetry import SafeTelemetry
 from serene.policies.admission import admission_violations
 from serene.ports.clock import Clock
 from serene.ports.event_store import EventStore
-from serene.projections.state import KernelState, replay
+from serene.projections.state import KernelState, apply_event, replay
 from serene.projections.views import project
 
 
@@ -53,6 +53,11 @@ def envelope_violations(draft: EventDraft) -> list[str]:
     return reasons
 
 
+# Called once per admitted event with the state *after* it. Used to keep
+# disposable read state (projection_state) in step with the ledger (issue #33).
+AfterAppend = Callable[[DomainEvent, KernelState], None]
+
+
 class EventLedger:
     def __init__(
         self,
@@ -61,11 +66,13 @@ class EventLedger:
         *,
         telemetry: SafeTelemetry | None = None,
         new_event_id: Callable[[], str] = lambda: new_id("evt"),
+        after_append: AfterAppend | None = None,
     ) -> None:
         self._store = store
         self._clock = clock
         self._telemetry = telemetry or SafeTelemetry()
         self._new_event_id = new_event_id
+        self._after_append = after_append
 
     # ------------------------------------------------------------------ reads
     def verify_hash_chain(self, child_id: str) -> ChainVerification:
@@ -129,7 +136,25 @@ class EventLedger:
                 "decision": "ADMITTED",
             },
         )
+        if self._after_append is not None:
+            self._notify(self._after_append, event, state)
         return event
+
+    def _notify(self, hook: AfterAppend, event: DomainEvent, state: KernelState) -> None:
+        """Hand the sealed event and the state it produced to the read side.
+
+        Read state is disposable and rebuildable, so a failure here never undoes
+        or fails the append: it is reported, and the next append or a rebuild
+        brings the read side up to date.
+        """
+        try:
+            apply_event(state, event)
+            hook(event, state)
+        except Exception as exc:  # the ledger is the truth; read state can lag
+            self._telemetry.emit(
+                "ledger.after_append_failed",
+                {"event_id": event.event_id, "error_type": type(exc).__name__},
+            )
 
     def _reject(self, draft: EventDraft, reasons: list[str]) -> None:
         self._telemetry.emit(
