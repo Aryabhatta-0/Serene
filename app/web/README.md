@@ -28,8 +28,9 @@ npm run test:e2e
 
 The e2e build is made with `SERENE_FIXTURE_ROUTES=1`, which also routes the
 test-only `page.fixture.tsx` pages (`/fixtures/causal-twin` draws the
-synthetic Causal Twin). A normal `npm run build` has no such route and
-bundles no fixture data. To look at the fixture map by hand:
+synthetic Causal Twin, `/fixtures/memory` the synthetic memory and Dream
+runs). A normal `npm run build` has no such route and bundles no fixture
+data. To look at the fixture map by hand:
 
 ```sh
 SERENE_FIXTURE_ROUTES=1 npm run dev   # then open /fixtures/causal-twin
@@ -75,6 +76,21 @@ these commands.
   panel shows only what `CausalEdge` carries; what it does not carry (what
   each item says, which evidence is external, which experiment an outcome
   came from) is stated in the panel, not filled in.
+- `lib/memory/`: consolidated memory and Dream runs as the kernel serializes
+  them (`model.ts`, a mirror of `serene/memory/view.py` with a parser that
+  re-checks its invariants and fails closed: a refused change can never be
+  shown without its reasons), how reason codes, steps and outcomes are
+  worded (`present.ts`), and where the view comes from (`source.ts`: not
+  connected until Issue #33). `lib/wire.ts` holds the shared boundary readers.
+- `components/memory/`: `MemoryView` (Issue #36: unconnected, loading, error,
+  empty and review states), each kept memory with its evidence trail down to
+  raw evidence, each Dream run with its steps and its kept, refused and
+  waiting changes (`PatchCard`). It is read-only: nothing on it can edit,
+  commit or approve memory.
+- `fixtures/synthetic-memory-dream.json`: produced by running the kernel on a
+  synthetic family (`uv run python -m tests.memory_view_fixture`);
+  `tests/test_memory_view.py` fails if it drifts from what the kernel
+  produces. Drawn only by the test-build route `/fixtures/memory`.
 - `fixtures/synthetic-causal-twin.json`: a synthetic twin for tests only. It
   is in the kernel's wire format and validates against
   `CausalTwin.model_validate_json`.

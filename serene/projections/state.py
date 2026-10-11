@@ -166,6 +166,30 @@ class MemoryReviewRecord:
     event_id: str
     passed: bool
     reason_codes: tuple[str, ...]
+    checks_passed: tuple[str, ...] = ()
+    recorded_at: datetime | None = None
+
+
+@dataclass(slots=True)
+class MemoryDecisionRecord:
+    """The committer's terminal decision on one patch (MEMORY_PATCH_COMMITTED / _REJECTED)."""
+
+    event_id: str
+    committed: bool
+    reason_codes: tuple[str, ...]
+    recorded_at: datetime
+
+
+@dataclass(slots=True)
+class DreamStageRecord:
+    """One MEMORY_DREAM_STAGE_RECORDED, kept for read views. Carries no authority."""
+
+    event_id: str
+    stage: DreamStage
+    input_ids: tuple[str, ...]
+    item_count: int
+    reason_codes: tuple[str, ...]
+    recorded_at: datetime
 
 
 @dataclass(slots=True)
@@ -205,6 +229,9 @@ class KernelState:
     memory_reviews: dict[str, MemoryReviewRecord] = field(default_factory=dict)
     memory_commits: dict[str, str] = field(default_factory=dict)
     dream_runs: dict[str, list[DreamStage]] = field(default_factory=dict)
+    # read-view detail for the memory / Dream review surface (issue #36)
+    memory_decisions: dict[str, MemoryDecisionRecord] = field(default_factory=dict)
+    dream_stages: dict[str, list[DreamStageRecord]] = field(default_factory=dict)
     channel_receipts: dict[str, str] = field(default_factory=dict)
 
     # branch A: investigation reasoning phases and evidence acquisition state
@@ -403,14 +430,34 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
         case MemoryPatchCommitted(patch_id=patch_id, commit_sha=commit_sha):
             state.memory_patches[patch_id] = "COMMITTED"
             state.memory_commits[patch_id] = commit_sha
-        case MemoryPatchRejected(patch_id=patch_id):
+            state.memory_decisions[patch_id] = MemoryDecisionRecord(
+                event.event_id, True, (), event.recorded_at
+            )
+        case MemoryPatchRejected(patch_id=patch_id, reason_codes=reason_codes):
             state.memory_patches[patch_id] = "REJECTED"
+            state.memory_decisions[patch_id] = MemoryDecisionRecord(
+                event.event_id, False, reason_codes, event.recorded_at
+            )
         case MemoryPatchReviewed(patch_id=patch_id):
             state.memory_reviews[patch_id] = MemoryReviewRecord(
-                event_id=event.event_id, passed=payload.passed, reason_codes=payload.reason_codes
+                event_id=event.event_id,
+                passed=payload.passed,
+                reason_codes=payload.reason_codes,
+                checks_passed=tuple(c.value for c in payload.checks_passed),
+                recorded_at=event.recorded_at,
             )
         case MemoryDreamStageRecorded(dream_run_id=run_id, stage=stage):
             state.dream_runs.setdefault(run_id, []).append(stage)
+            state.dream_stages.setdefault(run_id, []).append(
+                DreamStageRecord(
+                    event_id=event.event_id,
+                    stage=stage,
+                    input_ids=payload.input_ids,
+                    item_count=payload.item_count,
+                    reason_codes=payload.reason_codes,
+                    recorded_at=event.recorded_at,
+                )
+            )
         case _:
             # Event types that carry no read-state (e.g. requests) still advance the cursor.
             pass
