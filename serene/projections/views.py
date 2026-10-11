@@ -18,6 +18,7 @@ from serene.domain.entities import (
 )
 from serene.domain.events import DomainEvent
 from serene.domain.values import VerificationStatus
+from serene.projections.investigations import investigations
 from serene.projections.state import (
     OPEN_APPROVAL_STATES,
     KernelState,
@@ -111,6 +112,8 @@ PROJECTIONS: Final[dict[str, Callable[[KernelState], dict[str, Any]]]] = {
     "active_hypotheses": active_hypotheses,
     "pending_approvals": pending_approvals,
     "active_learnings": active_learnings,
+    # issue #35: the investigation surface's read state, streamed by #33
+    "investigations": investigations,
 }
 
 

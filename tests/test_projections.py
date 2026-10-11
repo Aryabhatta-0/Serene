@@ -22,13 +22,14 @@ def _events(fam: SyntheticFamily) -> list[Any]:
     return list(fam.ledger.get_events_for_child(fam.child_id))
 
 
-def test_the_five_initial_projections_exist() -> None:
+def test_the_initial_projections_and_the_investigation_view_exist() -> None:
     assert set(PROJECTIONS) == {
         "current_child_state",
         "active_investigations",
         "active_hypotheses",
         "pending_approvals",
         "active_learnings",
+        "investigations",  # issue #35
     }
 
 
@@ -61,7 +62,7 @@ def test_a_new_event_changes_exactly_the_expected_projection(family: SyntheticFa
     family.open_investigation("Why is pickup hard?")
     after = family.ledger.projections(family.child_id)
     changed = {name for name in PROJECTIONS if before[name] != after[name]}
-    assert changed == {"active_investigations", "current_child_state"}
+    assert changed == {"active_investigations", "current_child_state", "investigations"}
 
 
 def test_pending_approvals_track_the_lifecycle(family: SyntheticFamily) -> None:

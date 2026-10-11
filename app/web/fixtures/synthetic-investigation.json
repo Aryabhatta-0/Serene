@@ -1,0 +1,748 @@
+{
+  "changes": [
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "7839ccde93b5e8c0c31c0d5e366eecb689b66b35f67dda3d2c1268ff428fac0f",
+      "last_sequence": 16,
+      "projection": "current_child_state",
+      "state": {
+        "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+        "entities_by_level": {
+          "HYPOTHESIS": 2,
+          "OBSERVATION": 3,
+          "PATTERN": 1,
+          "RAW_EVIDENCE": 4
+        },
+        "evidence_by_status": {
+          "NOT_APPLICABLE": 0,
+          "REJECTED": 0,
+          "UNVERIFIED": 0,
+          "VERIFIED": 4
+        },
+        "last_event_hash": "7839ccde93b5e8c0c31c0d5e366eecb689b66b35f67dda3d2c1268ff428fac0f",
+        "last_sequence": 16
+      }
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "7839ccde93b5e8c0c31c0d5e366eecb689b66b35f67dda3d2c1268ff428fac0f",
+      "last_sequence": 16,
+      "projection": "investigations",
+      "state": {
+        "inv_1ffc3f5de0bef0a3ae3fc6e0952dd9df": {
+          "evidence_requests": [
+            {
+              "acquisition_mode": "ASK_PARENT",
+              "allowed_domains": [],
+              "evidence": [
+                {
+                  "checks_passed": [],
+                  "evidence_id": "evd_f7c7acfdffe855f3f05cf447cc7505d7",
+                  "kind": "PARENT_REPORT",
+                  "rejection_reason_codes": [],
+                  "source_kind": "TELEGRAM",
+                  "verification_status": "VERIFIED"
+                }
+              ],
+              "failed_attempts": 0,
+              "information_value": "HIGH",
+              "predictions": [
+                {
+                  "expected": "YES",
+                  "hypothesis_id": "hyp_d0cf0f44f44e1b2a8f2ac899aeff8996",
+                  "live": true
+                },
+                {
+                  "expected": "NO",
+                  "hypothesis_id": "hyp_e0f5a185f6d8f0a17199549ecc87d5b1",
+                  "live": true
+                }
+              ],
+              "question": "Was pickup calmer on days he had a snack just before?",
+              "rationale": "hunger predicts yes; an abrupt transition predicts no",
+              "request_id": "erq_18a61f3cc87b5c5e09a1ac153617e5c3",
+              "requested_fields": [
+                "calm_after_snack"
+              ],
+              "status": "ANSWERED",
+              "subject": null
+            }
+          ],
+          "hypotheses": [
+            {
+              "alternative_explanations": [
+                "Hunger after a long day drives the distress"
+              ],
+              "competing_hypothesis_ids": [],
+              "falsification_criteria": [
+                "pattern continues regardless"
+              ],
+              "hypothesis_id": "hyp_e0f5a185f6d8f0a17199549ecc87d5b1",
+              "known_confounders": [
+                "variable nap length"
+              ],
+              "level": "HYPOTHESIS",
+              "statement": "The abrupt transition at pickup drives the distress",
+              "status": "ACTIVE",
+              "superseded_by": null
+            },
+            {
+              "alternative_explanations": [
+                "The abrupt transition at pickup drives the distress"
+              ],
+              "competing_hypothesis_ids": [
+                "hyp_e0f5a185f6d8f0a17199549ecc87d5b1"
+              ],
+              "falsification_criteria": [
+                "pattern continues regardless"
+              ],
+              "hypothesis_id": "hyp_d0cf0f44f44e1b2a8f2ac899aeff8996",
+              "known_confounders": [
+                "variable nap length"
+              ],
+              "level": "HYPOTHESIS",
+              "statement": "Hunger after a long day drives the distress",
+              "status": "ACTIVE",
+              "superseded_by": null
+            }
+          ],
+          "next_action": {
+            "acquisition_mode": "ASK_PARENT",
+            "allowed_domains": [],
+            "evidence_ids": [],
+            "experiment_ids": [],
+            "kind": "PROCESS_ANSWER",
+            "phase": "ASKING_HUMAN",
+            "question": "Was pickup calmer on days he had a snack just before?",
+            "reason_codes": [],
+            "request_id": "erq_18a61f3cc87b5c5e09a1ac153617e5c3",
+            "subject": null
+          },
+          "opened_at": "2026-09-04T08:00:00.000000Z",
+          "phase": "ASKING_HUMAN",
+          "phase_reason_codes": [
+            "QUESTION_SELECTED"
+          ],
+          "question": "Why are daycare pickups so hard?",
+          "status": "OPEN",
+          "uncertainty": [
+            "COMPETING_EXPLANATIONS",
+            "NOTHING_TESTED"
+          ]
+        }
+      }
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "2f9bb4b5a66a298dfdbd8a92c380afd543c0026d6fe72e759e4ed62f506f526a",
+      "last_sequence": 17,
+      "projection": "active_investigations",
+      "state": {
+        "inv_1ffc3f5de0bef0a3ae3fc6e0952dd9df": {
+          "hypothesis_ids": [
+            "hyp_d0cf0f44f44e1b2a8f2ac899aeff8996",
+            "hyp_e0f5a185f6d8f0a17199549ecc87d5b1"
+          ],
+          "phase": "VERIFYING",
+          "status": "OPEN"
+        }
+      }
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "2f9bb4b5a66a298dfdbd8a92c380afd543c0026d6fe72e759e4ed62f506f526a",
+      "last_sequence": 17,
+      "projection": "current_child_state",
+      "state": {
+        "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+        "entities_by_level": {
+          "HYPOTHESIS": 2,
+          "OBSERVATION": 3,
+          "PATTERN": 1,
+          "RAW_EVIDENCE": 4
+        },
+        "evidence_by_status": {
+          "NOT_APPLICABLE": 0,
+          "REJECTED": 0,
+          "UNVERIFIED": 0,
+          "VERIFIED": 4
+        },
+        "last_event_hash": "2f9bb4b5a66a298dfdbd8a92c380afd543c0026d6fe72e759e4ed62f506f526a",
+        "last_sequence": 17
+      }
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "2f9bb4b5a66a298dfdbd8a92c380afd543c0026d6fe72e759e4ed62f506f526a",
+      "last_sequence": 17,
+      "projection": "investigations",
+      "state": {
+        "inv_1ffc3f5de0bef0a3ae3fc6e0952dd9df": {
+          "evidence_requests": [
+            {
+              "acquisition_mode": "ASK_PARENT",
+              "allowed_domains": [],
+              "evidence": [
+                {
+                  "checks_passed": [],
+                  "evidence_id": "evd_f7c7acfdffe855f3f05cf447cc7505d7",
+                  "kind": "PARENT_REPORT",
+                  "rejection_reason_codes": [],
+                  "source_kind": "TELEGRAM",
+                  "verification_status": "VERIFIED"
+                }
+              ],
+              "failed_attempts": 0,
+              "information_value": "HIGH",
+              "predictions": [
+                {
+                  "expected": "YES",
+                  "hypothesis_id": "hyp_d0cf0f44f44e1b2a8f2ac899aeff8996",
+                  "live": true
+                },
+                {
+                  "expected": "NO",
+                  "hypothesis_id": "hyp_e0f5a185f6d8f0a17199549ecc87d5b1",
+                  "live": true
+                }
+              ],
+              "question": "Was pickup calmer on days he had a snack just before?",
+              "rationale": "hunger predicts yes; an abrupt transition predicts no",
+              "request_id": "erq_18a61f3cc87b5c5e09a1ac153617e5c3",
+              "requested_fields": [
+                "calm_after_snack"
+              ],
+              "status": "ANSWERED",
+              "subject": null
+            }
+          ],
+          "hypotheses": [
+            {
+              "alternative_explanations": [
+                "Hunger after a long day drives the distress"
+              ],
+              "competing_hypothesis_ids": [],
+              "falsification_criteria": [
+                "pattern continues regardless"
+              ],
+              "hypothesis_id": "hyp_e0f5a185f6d8f0a17199549ecc87d5b1",
+              "known_confounders": [
+                "variable nap length"
+              ],
+              "level": "HYPOTHESIS",
+              "statement": "The abrupt transition at pickup drives the distress",
+              "status": "ACTIVE",
+              "superseded_by": null
+            },
+            {
+              "alternative_explanations": [
+                "The abrupt transition at pickup drives the distress"
+              ],
+              "competing_hypothesis_ids": [
+                "hyp_e0f5a185f6d8f0a17199549ecc87d5b1"
+              ],
+              "falsification_criteria": [
+                "pattern continues regardless"
+              ],
+              "hypothesis_id": "hyp_d0cf0f44f44e1b2a8f2ac899aeff8996",
+              "known_confounders": [
+                "variable nap length"
+              ],
+              "level": "HYPOTHESIS",
+              "statement": "Hunger after a long day drives the distress",
+              "status": "ACTIVE",
+              "superseded_by": null
+            }
+          ],
+          "next_action": {
+            "acquisition_mode": null,
+            "allowed_domains": [],
+            "evidence_ids": [],
+            "experiment_ids": [],
+            "kind": "VERIFY_EVIDENCE",
+            "phase": "VERIFYING",
+            "question": null,
+            "reason_codes": [],
+            "request_id": null,
+            "subject": null
+          },
+          "opened_at": "2026-09-04T08:00:00.000000Z",
+          "phase": "VERIFYING",
+          "phase_reason_codes": [
+            "ANSWER_RECEIVED"
+          ],
+          "question": "Why are daycare pickups so hard?",
+          "status": "OPEN",
+          "uncertainty": [
+            "COMPETING_EXPLANATIONS",
+            "NOTHING_TESTED"
+          ]
+        }
+      }
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "1b58242ceeabf32bd97c1613b07f008311f92c2bc04a209b236a5b69a0fec9eb",
+      "last_sequence": 18,
+      "projection": "active_investigations",
+      "state": {
+        "inv_1ffc3f5de0bef0a3ae3fc6e0952dd9df": {
+          "hypothesis_ids": [
+            "hyp_d0cf0f44f44e1b2a8f2ac899aeff8996",
+            "hyp_e0f5a185f6d8f0a17199549ecc87d5b1"
+          ],
+          "phase": "EVALUATING",
+          "status": "OPEN"
+        }
+      }
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "1b58242ceeabf32bd97c1613b07f008311f92c2bc04a209b236a5b69a0fec9eb",
+      "last_sequence": 18,
+      "projection": "current_child_state",
+      "state": {
+        "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+        "entities_by_level": {
+          "HYPOTHESIS": 2,
+          "OBSERVATION": 3,
+          "PATTERN": 1,
+          "RAW_EVIDENCE": 4
+        },
+        "evidence_by_status": {
+          "NOT_APPLICABLE": 0,
+          "REJECTED": 0,
+          "UNVERIFIED": 0,
+          "VERIFIED": 4
+        },
+        "last_event_hash": "1b58242ceeabf32bd97c1613b07f008311f92c2bc04a209b236a5b69a0fec9eb",
+        "last_sequence": 18
+      }
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "1b58242ceeabf32bd97c1613b07f008311f92c2bc04a209b236a5b69a0fec9eb",
+      "last_sequence": 18,
+      "projection": "investigations",
+      "state": {
+        "inv_1ffc3f5de0bef0a3ae3fc6e0952dd9df": {
+          "evidence_requests": [
+            {
+              "acquisition_mode": "ASK_PARENT",
+              "allowed_domains": [],
+              "evidence": [
+                {
+                  "checks_passed": [],
+                  "evidence_id": "evd_f7c7acfdffe855f3f05cf447cc7505d7",
+                  "kind": "PARENT_REPORT",
+                  "rejection_reason_codes": [],
+                  "source_kind": "TELEGRAM",
+                  "verification_status": "VERIFIED"
+                }
+              ],
+              "failed_attempts": 0,
+              "information_value": "HIGH",
+              "predictions": [
+                {
+                  "expected": "YES",
+                  "hypothesis_id": "hyp_d0cf0f44f44e1b2a8f2ac899aeff8996",
+                  "live": true
+                },
+                {
+                  "expected": "NO",
+                  "hypothesis_id": "hyp_e0f5a185f6d8f0a17199549ecc87d5b1",
+                  "live": true
+                }
+              ],
+              "question": "Was pickup calmer on days he had a snack just before?",
+              "rationale": "hunger predicts yes; an abrupt transition predicts no",
+              "request_id": "erq_18a61f3cc87b5c5e09a1ac153617e5c3",
+              "requested_fields": [
+                "calm_after_snack"
+              ],
+              "status": "ANSWERED",
+              "subject": null
+            }
+          ],
+          "hypotheses": [
+            {
+              "alternative_explanations": [
+                "Hunger after a long day drives the distress"
+              ],
+              "competing_hypothesis_ids": [],
+              "falsification_criteria": [
+                "pattern continues regardless"
+              ],
+              "hypothesis_id": "hyp_e0f5a185f6d8f0a17199549ecc87d5b1",
+              "known_confounders": [
+                "variable nap length"
+              ],
+              "level": "HYPOTHESIS",
+              "statement": "The abrupt transition at pickup drives the distress",
+              "status": "ACTIVE",
+              "superseded_by": null
+            },
+            {
+              "alternative_explanations": [
+                "The abrupt transition at pickup drives the distress"
+              ],
+              "competing_hypothesis_ids": [
+                "hyp_e0f5a185f6d8f0a17199549ecc87d5b1"
+              ],
+              "falsification_criteria": [
+                "pattern continues regardless"
+              ],
+              "hypothesis_id": "hyp_d0cf0f44f44e1b2a8f2ac899aeff8996",
+              "known_confounders": [
+                "variable nap length"
+              ],
+              "level": "HYPOTHESIS",
+              "statement": "Hunger after a long day drives the distress",
+              "status": "ACTIVE",
+              "superseded_by": null
+            }
+          ],
+          "next_action": {
+            "acquisition_mode": null,
+            "allowed_domains": [],
+            "evidence_ids": [],
+            "experiment_ids": [],
+            "kind": "EVALUATE",
+            "phase": "EVALUATING",
+            "question": null,
+            "reason_codes": [],
+            "request_id": null,
+            "subject": null
+          },
+          "opened_at": "2026-09-04T08:00:00.000000Z",
+          "phase": "EVALUATING",
+          "phase_reason_codes": [
+            "EVIDENCE_DECIDED"
+          ],
+          "question": "Why are daycare pickups so hard?",
+          "status": "OPEN",
+          "uncertainty": [
+            "COMPETING_EXPLANATIONS",
+            "NOTHING_TESTED"
+          ]
+        }
+      }
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "da3342e3e499cee409a35e3461c08ac1342f576206111a54e5b8ce69c2cfc8e4",
+      "last_sequence": 19,
+      "projection": "active_investigations",
+      "state": {}
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "da3342e3e499cee409a35e3461c08ac1342f576206111a54e5b8ce69c2cfc8e4",
+      "last_sequence": 19,
+      "projection": "current_child_state",
+      "state": {
+        "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+        "entities_by_level": {
+          "HYPOTHESIS": 2,
+          "OBSERVATION": 3,
+          "PATTERN": 1,
+          "RAW_EVIDENCE": 4
+        },
+        "evidence_by_status": {
+          "NOT_APPLICABLE": 0,
+          "REJECTED": 0,
+          "UNVERIFIED": 0,
+          "VERIFIED": 4
+        },
+        "last_event_hash": "da3342e3e499cee409a35e3461c08ac1342f576206111a54e5b8ce69c2cfc8e4",
+        "last_sequence": 19
+      }
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "da3342e3e499cee409a35e3461c08ac1342f576206111a54e5b8ce69c2cfc8e4",
+      "last_sequence": 19,
+      "projection": "investigations",
+      "state": {
+        "inv_1ffc3f5de0bef0a3ae3fc6e0952dd9df": {
+          "evidence_requests": [
+            {
+              "acquisition_mode": "ASK_PARENT",
+              "allowed_domains": [],
+              "evidence": [
+                {
+                  "checks_passed": [],
+                  "evidence_id": "evd_f7c7acfdffe855f3f05cf447cc7505d7",
+                  "kind": "PARENT_REPORT",
+                  "rejection_reason_codes": [],
+                  "source_kind": "TELEGRAM",
+                  "verification_status": "VERIFIED"
+                }
+              ],
+              "failed_attempts": 0,
+              "information_value": "HIGH",
+              "predictions": [
+                {
+                  "expected": "YES",
+                  "hypothesis_id": "hyp_d0cf0f44f44e1b2a8f2ac899aeff8996",
+                  "live": true
+                },
+                {
+                  "expected": "NO",
+                  "hypothesis_id": "hyp_e0f5a185f6d8f0a17199549ecc87d5b1",
+                  "live": true
+                }
+              ],
+              "question": "Was pickup calmer on days he had a snack just before?",
+              "rationale": "hunger predicts yes; an abrupt transition predicts no",
+              "request_id": "erq_18a61f3cc87b5c5e09a1ac153617e5c3",
+              "requested_fields": [
+                "calm_after_snack"
+              ],
+              "status": "ANSWERED",
+              "subject": null
+            }
+          ],
+          "hypotheses": [
+            {
+              "alternative_explanations": [
+                "Hunger after a long day drives the distress"
+              ],
+              "competing_hypothesis_ids": [],
+              "falsification_criteria": [
+                "pattern continues regardless"
+              ],
+              "hypothesis_id": "hyp_e0f5a185f6d8f0a17199549ecc87d5b1",
+              "known_confounders": [
+                "variable nap length"
+              ],
+              "level": "HYPOTHESIS",
+              "statement": "The abrupt transition at pickup drives the distress",
+              "status": "ACTIVE",
+              "superseded_by": null
+            },
+            {
+              "alternative_explanations": [
+                "The abrupt transition at pickup drives the distress"
+              ],
+              "competing_hypothesis_ids": [
+                "hyp_e0f5a185f6d8f0a17199549ecc87d5b1"
+              ],
+              "falsification_criteria": [
+                "pattern continues regardless"
+              ],
+              "hypothesis_id": "hyp_d0cf0f44f44e1b2a8f2ac899aeff8996",
+              "known_confounders": [
+                "variable nap length"
+              ],
+              "level": "HYPOTHESIS",
+              "statement": "Hunger after a long day drives the distress",
+              "status": "ACTIVE",
+              "superseded_by": null
+            }
+          ],
+          "next_action": {
+            "acquisition_mode": null,
+            "allowed_domains": [],
+            "evidence_ids": [],
+            "experiment_ids": [],
+            "kind": "NONE_COMPLETE",
+            "phase": "COMPLETE",
+            "question": null,
+            "reason_codes": [
+              "EVIDENCE_SUFFICIENT",
+              "COMPETING_HYPOTHESES_RETAINED"
+            ],
+            "request_id": null,
+            "subject": null
+          },
+          "opened_at": "2026-09-04T08:00:00.000000Z",
+          "phase": "COMPLETE",
+          "phase_reason_codes": [
+            "EVIDENCE_SUFFICIENT",
+            "COMPETING_HYPOTHESES_RETAINED"
+          ],
+          "question": "Why are daycare pickups so hard?",
+          "status": "OPEN",
+          "uncertainty": [
+            "COMPETING_EXPLANATIONS",
+            "NOTHING_TESTED"
+          ]
+        }
+      }
+    }
+  ],
+  "snapshot": [
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "ebd2b306a49697e55730a7f5fc677d508693f439a777d20b268e3a995ac11b87",
+      "last_sequence": 15,
+      "projection": "active_hypotheses",
+      "state": {
+        "hyp_d0cf0f44f44e1b2a8f2ac899aeff8996": {
+          "investigation_id": "inv_1ffc3f5de0bef0a3ae3fc6e0952dd9df",
+          "level": "HYPOTHESIS"
+        },
+        "hyp_e0f5a185f6d8f0a17199549ecc87d5b1": {
+          "investigation_id": "inv_1ffc3f5de0bef0a3ae3fc6e0952dd9df",
+          "level": "HYPOTHESIS"
+        }
+      }
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "ebd2b306a49697e55730a7f5fc677d508693f439a777d20b268e3a995ac11b87",
+      "last_sequence": 15,
+      "projection": "active_investigations",
+      "state": {
+        "inv_1ffc3f5de0bef0a3ae3fc6e0952dd9df": {
+          "hypothesis_ids": [
+            "hyp_d0cf0f44f44e1b2a8f2ac899aeff8996",
+            "hyp_e0f5a185f6d8f0a17199549ecc87d5b1"
+          ],
+          "phase": "ASKING_HUMAN",
+          "status": "OPEN"
+        }
+      }
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "ebd2b306a49697e55730a7f5fc677d508693f439a777d20b268e3a995ac11b87",
+      "last_sequence": 15,
+      "projection": "active_learnings",
+      "state": {}
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "ebd2b306a49697e55730a7f5fc677d508693f439a777d20b268e3a995ac11b87",
+      "last_sequence": 15,
+      "projection": "current_child_state",
+      "state": {
+        "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+        "entities_by_level": {
+          "HYPOTHESIS": 2,
+          "OBSERVATION": 3,
+          "PATTERN": 1,
+          "RAW_EVIDENCE": 3
+        },
+        "evidence_by_status": {
+          "NOT_APPLICABLE": 0,
+          "REJECTED": 0,
+          "UNVERIFIED": 0,
+          "VERIFIED": 3
+        },
+        "last_event_hash": "ebd2b306a49697e55730a7f5fc677d508693f439a777d20b268e3a995ac11b87",
+        "last_sequence": 15
+      }
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "ebd2b306a49697e55730a7f5fc677d508693f439a777d20b268e3a995ac11b87",
+      "last_sequence": 15,
+      "projection": "investigations",
+      "state": {
+        "inv_1ffc3f5de0bef0a3ae3fc6e0952dd9df": {
+          "evidence_requests": [
+            {
+              "acquisition_mode": "ASK_PARENT",
+              "allowed_domains": [],
+              "evidence": [],
+              "failed_attempts": 0,
+              "information_value": "HIGH",
+              "predictions": [
+                {
+                  "expected": "YES",
+                  "hypothesis_id": "hyp_d0cf0f44f44e1b2a8f2ac899aeff8996",
+                  "live": true
+                },
+                {
+                  "expected": "NO",
+                  "hypothesis_id": "hyp_e0f5a185f6d8f0a17199549ecc87d5b1",
+                  "live": true
+                }
+              ],
+              "question": "Was pickup calmer on days he had a snack just before?",
+              "rationale": "hunger predicts yes; an abrupt transition predicts no",
+              "request_id": "erq_18a61f3cc87b5c5e09a1ac153617e5c3",
+              "requested_fields": [
+                "calm_after_snack"
+              ],
+              "status": "OPEN",
+              "subject": null
+            }
+          ],
+          "hypotheses": [
+            {
+              "alternative_explanations": [
+                "Hunger after a long day drives the distress"
+              ],
+              "competing_hypothesis_ids": [],
+              "falsification_criteria": [
+                "pattern continues regardless"
+              ],
+              "hypothesis_id": "hyp_e0f5a185f6d8f0a17199549ecc87d5b1",
+              "known_confounders": [
+                "variable nap length"
+              ],
+              "level": "HYPOTHESIS",
+              "statement": "The abrupt transition at pickup drives the distress",
+              "status": "ACTIVE",
+              "superseded_by": null
+            },
+            {
+              "alternative_explanations": [
+                "The abrupt transition at pickup drives the distress"
+              ],
+              "competing_hypothesis_ids": [
+                "hyp_e0f5a185f6d8f0a17199549ecc87d5b1"
+              ],
+              "falsification_criteria": [
+                "pattern continues regardless"
+              ],
+              "hypothesis_id": "hyp_d0cf0f44f44e1b2a8f2ac899aeff8996",
+              "known_confounders": [
+                "variable nap length"
+              ],
+              "level": "HYPOTHESIS",
+              "statement": "Hunger after a long day drives the distress",
+              "status": "ACTIVE",
+              "superseded_by": null
+            }
+          ],
+          "next_action": {
+            "acquisition_mode": "ASK_PARENT",
+            "allowed_domains": [],
+            "evidence_ids": [],
+            "experiment_ids": [],
+            "kind": "WAIT_FOR_PARENT_ANSWER",
+            "phase": "ASKING_HUMAN",
+            "question": "Was pickup calmer on days he had a snack just before?",
+            "reason_codes": [],
+            "request_id": "erq_18a61f3cc87b5c5e09a1ac153617e5c3",
+            "subject": null
+          },
+          "opened_at": "2026-09-04T08:00:00.000000Z",
+          "phase": "ASKING_HUMAN",
+          "phase_reason_codes": [
+            "QUESTION_SELECTED"
+          ],
+          "question": "Why are daycare pickups so hard?",
+          "status": "OPEN",
+          "uncertainty": [
+            "COMPETING_EXPLANATIONS",
+            "NOTHING_TESTED",
+            "PREDICTIONS_DISAGREE",
+            "EVIDENCE_REQUESTED"
+          ]
+        }
+      }
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "ebd2b306a49697e55730a7f5fc677d508693f439a777d20b268e3a995ac11b87",
+      "last_sequence": 15,
+      "projection": "pending_approvals",
+      "state": {}
+    }
+  ]
+}

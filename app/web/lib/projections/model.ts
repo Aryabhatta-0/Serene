@@ -11,6 +11,7 @@ export const PROJECTION_NAMES = [
   "active_hypotheses",
   "pending_approvals",
   "active_learnings",
+  "investigations", // issue #35
 ] as const;
 export type ProjectionName = (typeof PROJECTION_NAMES)[number];
 

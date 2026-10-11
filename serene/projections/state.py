@@ -246,6 +246,10 @@ class KernelState:
 
     # branch A: investigation reasoning phases and evidence acquisition state
     investigation_phases: dict[str, InvestigationPhase] = field(default_factory=dict)
+    # read-view detail for the investigation surface (issue #35)
+    investigation_phase_reasons: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    evidence_checks: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    evidence_rejections: dict[str, tuple[str, ...]] = field(default_factory=dict)
     evidence_requests: dict[str, EvidenceRequestRecord] = field(default_factory=dict)
     investigation_requests: dict[str, list[str]] = field(default_factory=dict)
     evidence_request_of: dict[str, str] = field(default_factory=dict)
@@ -312,8 +316,10 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
             state.structuring_failures[evidence_id] = attempt
         case EvidenceVerified(evidence_id=evidence_id):
             state.entities[evidence_id].verification_status = VerificationStatus.VERIFIED
+            state.evidence_checks[evidence_id] = tuple(c.value for c in payload.checks_passed)
         case EvidenceRejected(evidence_id=evidence_id):
             state.entities[evidence_id].verification_status = VerificationStatus.REJECTED
+            state.evidence_rejections[evidence_id] = payload.reason_codes
         case ObservationStructured(observation=entity) | PatternProposed(pattern=entity):
             _register(state, entity, event)
         case HypothesisProposed(hypothesis=hypothesis):
@@ -350,6 +356,7 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
             )
         case InvestigationPhaseChanged(investigation_id=inv_id, to_phase=to_phase):
             state.investigation_phases[inv_id] = to_phase
+            state.investigation_phase_reasons[inv_id] = payload.reason_codes
         case InvestigationStatusChanged(investigation_id=inv_id, to_status=to_status):
             state.investigations[inv_id] = to_status
         case ExperimentProposed(experiment=experiment):
