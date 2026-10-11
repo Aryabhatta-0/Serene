@@ -14,13 +14,18 @@ from typing import Final
 from serene.domain.canonical import sha256_hex
 from serene.domain.entities import (
     TERMINAL_INVESTIGATION_STATUSES,
+    Burden,
     Evidence,
     EvidenceKind,
+    Intervention,
+    InterventionCategory,
+    InvestigationPhase,
     InvestigationStatus,
     LearningStatus,
     OutcomeResult,
 )
 from serene.domain.events import (
+    AcquisitionMode,
     ApprovalGranted,
     ApprovalNudged,
     ApprovalRejected,
@@ -30,7 +35,9 @@ from serene.domain.events import (
     EventDraft,
     EventType,
     EvidenceAcquired,
+    EvidenceAcquisitionFailed,
     EvidenceRejected,
+    EvidenceRequested,
     EvidenceVerified,
     ExperimentAbandoned,
     ExperimentBlocked,
@@ -42,7 +49,9 @@ from serene.domain.events import (
     HypothesisProposed,
     HypothesisRefuted,
     HypothesisSuperseded,
+    InformationValue,
     InvestigationOpened,
+    InvestigationPhaseChanged,
     InvestigationStatusChanged,
     LearningRecorded,
     LearningStatusChanged,
@@ -54,16 +63,23 @@ from serene.domain.events import (
     MemoryPatchReviewed,
     ObservationReported,
     ObservationStructured,
+    ObservationStructuringFailed,
     OutcomeReported,
     PatternProposed,
     PromotionDecisionRecord,
+    SafetyClass,
     TrialRecorded,
 )
 from serene.domain.values import AUTHENTICATED_CHANNELS, EpistemicLevel, VerificationStatus
 from serene.lineage.provenance import provenance_violations
-from serene.policies import approval, memory_review, promotion, safety
+from serene.policies import approval, investigation, memory_review, promotion, safety
 from serene.policies.decision import PolicyDecision
 from serene.policies.experiments import outcome_due_at
+from serene.policies.external_evidence import (
+    domain_allowed,
+    external_verification_violations,
+    host_of,
+)
 from serene.policies.learning import LEARNING_TRANSITIONS, check_status_change
 from serene.projections.state import ExperimentStatus, KernelState, LifecycleStatus
 
@@ -115,12 +131,109 @@ def _undecided_patch(patch_id: str, state: KernelState) -> list[str]:
     return []
 
 
+def _check_answer(request_id: str, state: KernelState) -> list[str]:
+    record = state.evidence_requests.get(request_id)
+    if record is None:
+        return ["UNKNOWN_EVIDENCE_REQUEST"]
+    reasons: list[str] = []
+    if record.request.acquisition_mode is not AcquisitionMode.ASK_PARENT:
+        reasons.append("REQUEST_NOT_A_QUESTION")
+    if not record.open:
+        reasons.append("REQUEST_NOT_OPEN")
+    return reasons
+
+
+def _check_acquired_for_request(ev: Evidence, request_id: str, state: KernelState) -> list[str]:
+    record = state.evidence_requests.get(request_id)
+    if record is None:
+        return ["UNKNOWN_EVIDENCE_REQUEST"]
+    reasons: list[str] = []
+    if record.request.acquisition_mode is not AcquisitionMode.BROWSE:
+        reasons.append("REQUEST_NOT_A_BROWSE_REQUEST")
+    if record.exhausted:
+        reasons.append("REQUEST_EXHAUSTED")
+    if not domain_allowed(host_of(ev.source.uri), record.request.allowed_domains):
+        reasons.append("SOURCE_DOMAIN_NOT_ALLOWED")
+    return reasons
+
+
+_VALUE_RANK: Final = {InformationValue.HIGH: 0, InformationValue.MEDIUM: 1, InformationValue.LOW: 2}
+
+
+def _check_evidence_request(p: EvidenceRequested, state: KernelState) -> list[str]:
+    """The recorded request is code's decision, so admission re-derives what it can.
+
+    Only SYSTEM/POLICY may record one (taxonomy). Independently of who wrote it, the
+    request must be well-formed for its mode, ask nothing already asked, carry an
+    information value its own predictions justify (never LOW, never inflated), and an
+    ASK_PARENT question must pass the same RED screen the selection policy applies.
+    """
+    inv = p.investigation_id
+    reasons = investigation.investigation_accepts_work(inv, state)
+    if p.request_id in state.evidence_requests:
+        reasons.append("DUPLICATE_EVIDENCE_REQUEST")
+    phase = state.investigation_phases.get(inv)
+    if phase is not None and phase is not InvestigationPhase.NEEDS_EVIDENCE:
+        reasons.append(f"WRONG_PHASE:{phase.value}")
+    if any(record.open for record in investigation.requests_of(inv, state)):
+        reasons.append("OPEN_REQUEST_OUTSTANDING")
+    browse_bounds = bool(p.allowed_domains) or p.subject is not None
+    if p.acquisition_mode is None:
+        reasons.append("ACQUISITION_MODE_REQUIRED")
+    elif p.acquisition_mode is AcquisitionMode.ASK_PARENT:
+        if p.question is None:
+            reasons.append("QUESTION_REQUIRED")
+        elif _question_is_red(p.question):
+            reasons.append("UNSAFE_QUESTION")
+        if browse_bounds or p.max_age_days is not None:
+            reasons.append("QUESTION_WITH_BROWSE_BOUNDS")
+    elif p.acquisition_mode is AcquisitionMode.BROWSE:
+        if not p.allowed_domains or p.subject is None:
+            reasons.append("BROWSE_BOUNDS_REQUIRED")
+        if p.question is not None:
+            reasons.append("BROWSE_WITH_QUESTION")
+    asked = {f for r in investigation.requests_of(inv, state) for f in r.request.requested_fields}
+    if set(p.requested_fields) <= asked:
+        reasons.append("REDUNDANT_FIELDS")
+    active = set(investigation.active_hypotheses(inv, state))
+    predicted = [prediction.hypothesis_id for prediction in p.predictions]
+    if len(predicted) != len(set(predicted)):
+        reasons.append("DUPLICATE_PREDICTION")
+    for hypothesis_id in predicted:
+        if hypothesis_id not in active:
+            reasons.append(f"PREDICTION_FOR_INACTIVE_HYPOTHESIS:{hypothesis_id}")
+    # The selection policy scores over *live* hypotheses (a subset of active ones), so
+    # its value can be at most the value recomputed here: anything higher is inflated.
+    justified = investigation.information_value_of(p.predictions, frozenset(active))
+    if justified is InformationValue.LOW:
+        reasons.append("LOW_VALUE_REQUEST")
+    elif _VALUE_RANK[p.information_value] < _VALUE_RANK[justified]:
+        reasons.append(f"INFORMATION_VALUE_INFLATED:{justified.value}")
+    return reasons
+
+
+def _question_is_red(question: str) -> bool:
+    """The RED screen MinimumDataPolicy applies: a question must not smuggle an intervention."""
+    screened = safety.classify_intervention(
+        Intervention(
+            category=InterventionCategory.COMMUNICATION,
+            description=question,
+            reversible=True,
+            max_duration_days=1,
+            burden=Burden.LOW,
+        )
+    )
+    return screened.safety_class is SafetyClass.RED
+
+
 def admission_violations(draft: EventDraft, state: KernelState, now: datetime) -> list[str]:
     p = draft.payload
     et = draft.event_type
     match p:
-        case ObservationReported(evidence=ev):
+        case ObservationReported(evidence=ev, request_id=request_id):
             reasons = _check_evidence(draft, ev, state)
+            if request_id is not None:
+                reasons += _check_answer(request_id, state)
             if ev.observer != draft.actor:
                 reasons.append("OBSERVER_MISMATCH")
             if ev.kind in _EXTERNAL_EVIDENCE:
@@ -131,10 +244,12 @@ def admission_violations(draft: EventDraft, state: KernelState, now: datetime) -
             ):
                 reasons.append("UNAUTHENTICATED_CHANNEL")
             return reasons
-        case EvidenceAcquired(evidence=ev):
+        case EvidenceAcquired(evidence=ev, request_id=request_id):
             reasons = _check_evidence(draft, ev, state)
             if ev.kind not in _EXTERNAL_EVIDENCE:
                 reasons.append("ONLY_EXTERNAL_EVIDENCE_IS_ACQUIRED")
+            if request_id is not None:
+                reasons += _check_acquired_for_request(ev, request_id, state)
             return reasons
         case EvidenceVerified(evidence_id=evidence_id) | EvidenceRejected(evidence_id=evidence_id):
             status = state.verification_of(evidence_id)
@@ -142,11 +257,43 @@ def admission_violations(draft: EventDraft, state: KernelState, now: datetime) -
                 return ["UNKNOWN_EVIDENCE"]
             if status is not VerificationStatus.UNVERIFIED:
                 return [f"ALREADY_DECIDED:{status.value}"]
+            entity = state.entities[evidence_id].entity
+            if (
+                isinstance(p, EvidenceVerified)
+                and isinstance(entity, Evidence)
+                and entity.kind in _EXTERNAL_EVIDENCE
+            ):
+                return external_verification_violations(entity, p.checks_passed, state)
             return []
+        case EvidenceRequested():
+            return _check_evidence_request(p, state)
+        case EvidenceAcquisitionFailed(request_id=request_id, attempt=attempt):
+            request_record = state.evidence_requests.get(request_id)
+            if request_record is None:
+                return ["UNKNOWN_EVIDENCE_REQUEST"]
+            reasons = []
+            if request_record.request.acquisition_mode is not AcquisitionMode.BROWSE:
+                reasons.append("REQUEST_NOT_A_BROWSE_REQUEST")
+            if not request_record.open:
+                reasons.append("REQUEST_NOT_OPEN")
+            if attempt != request_record.failed_attempts + 1:
+                reasons.append(f"ATTEMPT_OUT_OF_ORDER:{request_record.failed_attempts}")
+            return reasons
+        case ObservationStructuringFailed(evidence_id=evidence_id, attempt=attempt):
+            reasons = []
+            evidence_record = state.entities.get(evidence_id)
+            if evidence_record is None or evidence_record.kind != "evd":
+                reasons.append("UNKNOWN_EVIDENCE")
+            if attempt != state.structuring_failures.get(evidence_id, 0) + 1:
+                reasons.append("ATTEMPT_OUT_OF_ORDER")
+            return reasons
+        case InvestigationPhaseChanged():
+            return _reasons(investigation.check_phase_transition(p, state))
         case ObservationStructured(observation=entity) | PatternProposed(pattern=entity):
             return _reasons(promotion.check_introduction(entity, state))
         case HypothesisProposed(hypothesis=hypothesis):
-            return _reasons(promotion.check_introduction(hypothesis, state))
+            reasons = _reasons(promotion.check_introduction(hypothesis, state))
+            return reasons + investigation.hypothesis_admission(hypothesis.investigation_id, state)
         case HypothesisSuperseded(hypothesis_id=old, superseded_by=new):
             reasons = []
             for hyp in (old, new):
@@ -378,5 +525,5 @@ def admission_violations(draft: EventDraft, state: KernelState, now: datetime) -
                 ]
             return reasons  # fail closed until the owning policy lands
         case _:
-            # EVIDENCE_REQUESTED and PROMOTION_REQUESTED carry no authority.
+            # PROMOTION_REQUESTED carries no authority.
             return []

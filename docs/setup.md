@@ -52,7 +52,9 @@ applies `supabase/migrations/`.
    without login. Session pushing is disabled (`push_sessions: false`) because
    the repository is public; enable it only deliberately.
 4. **neatlogs**: set `NEATLOGS_API_KEY` (and optionally `NEATLOGS_ENDPOINT`,
-   `SERENE_TELEMETRY_PSEUDONYM_KEY`) in `.env`. Without a key telemetry is a no-op.
+   `NEATLOGS_SESSION_ID`, `SERENE_TELEMETRY_PSEUDONYM_KEY`) in `.env`. Without a key
+   telemetry is a no-op. The sink speaks HTTP to `/v1/trace` itself; the SDK extra
+   is not needed for it.
 5. **Supabase hosted project** (when one exists): `supabase login`,
    `supabase link --project-ref …`, `supabase db push`.
 

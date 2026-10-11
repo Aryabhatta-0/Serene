@@ -15,10 +15,18 @@ SQL = "\n".join(
 
 
 def _check_list(column: str) -> set[str]:
-    # Later migrations regenerate a constraint; the most recent definition is in force.
+    # Migrations are append-only, so the *latest* definition of a check list is live.
     matches = re.findall(column + r"\s+in\s*\((.*?)\)\)", SQL, flags=re.S)
     assert matches, column
     return set(re.findall(r"'([A-Za-z_]+)'", matches[-1]))
+
+
+def test_latest_event_type_constraint_is_regenerated_not_edited() -> None:
+    foundation = (ROOT / "supabase/migrations/20261010120000_serene_domain_events.sql").read_text(
+        encoding="utf-8"
+    )
+    assert "INVESTIGATION_PHASE_CHANGED" not in foundation  # applied migration left untouched
+    assert "drop constraint if exists domain_events_event_type_check" in SQL
 
 
 def test_event_type_constraint_matches_taxonomy() -> None:

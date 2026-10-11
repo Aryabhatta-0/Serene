@@ -51,8 +51,12 @@ All telemetry passes through `serene.observability.SafeTelemetry`:
   talks to a sink directly, so callers cannot bypass it.
 
 The neatlogs adapter (`serene/adapters/neatlogs_sink.py`) only receives these
-redacted attributes, sets them as `serene.*` span attributes and is a no-op
-without `NEATLOGS_API_KEY`. `capture_logs` is disabled.
+redacted attributes, re-applies the same `redact` (so a direct caller cannot bypass
+it), sets them as `serene.*` span attributes and is a no-op without
+`NEATLOGS_API_KEY`. It posts over HTTPS with the standard library (no SDK), never
+follows a redirect (the key is not forwarded), packs spans into bodies under the
+ingest limit, caps pending spans, and reports failures as codes (`HTTP_403`,
+`REDIRECT_REFUSED`, ...) in a `FlushReport`, never as response text.
 
 ## 4. Data minimisation in the domain
 

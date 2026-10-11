@@ -9,9 +9,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Any, Final, Literal
+from typing import Annotated, Any, Final, Literal
 
-from pydantic import Field, JsonValue
+from pydantic import Field, JsonValue, StringConstraints
 
 from serene.domain.base import (
     SCHEMA_VERSION,
@@ -41,6 +41,7 @@ from serene.domain.entities import (
     Experiment,
     Hypothesis,
     Investigation,
+    InvestigationPhase,
     InvestigationStatus,
     Learning,
     LearningStatus,
@@ -67,9 +68,11 @@ class EventType(StrEnum):
     # observation
     OBSERVATION_REPORTED = "OBSERVATION_REPORTED"
     OBSERVATION_STRUCTURED = "OBSERVATION_STRUCTURED"
+    OBSERVATION_STRUCTURING_FAILED = "OBSERVATION_STRUCTURING_FAILED"
     # evidence
     EVIDENCE_REQUESTED = "EVIDENCE_REQUESTED"
     EVIDENCE_ACQUIRED = "EVIDENCE_ACQUIRED"
+    EVIDENCE_ACQUISITION_FAILED = "EVIDENCE_ACQUISITION_FAILED"
     EVIDENCE_VERIFIED = "EVIDENCE_VERIFIED"
     EVIDENCE_REJECTED = "EVIDENCE_REJECTED"
     # pattern / hypothesis
@@ -84,6 +87,7 @@ class EventType(StrEnum):
     # investigation
     INVESTIGATION_OPENED = "INVESTIGATION_OPENED"
     INVESTIGATION_STATUS_CHANGED = "INVESTIGATION_STATUS_CHANGED"
+    INVESTIGATION_PHASE_CHANGED = "INVESTIGATION_PHASE_CHANGED"
     # experiment
     EXPERIMENT_PROPOSED = "EXPERIMENT_PROPOSED"
     EXPERIMENT_CLASSIFIED = "EXPERIMENT_CLASSIFIED"
@@ -119,10 +123,20 @@ class _Payload(KernelModel):
 
 class ObservationReported(_Payload):
     evidence: Evidence
+    # Set when the report answers a kernel-issued micro-question (branch A, #40).
+    request_id: EvidenceRequestId | None = None
 
 
 class ObservationStructured(_Payload):
     observation: Observation
+
+
+class ObservationStructuringFailed(_Payload):
+    """Structured extraction of a raw report failed. The raw evidence is untouched."""
+
+    evidence_id: EvidenceId
+    attempt: int = Field(ge=1, le=16)
+    reason_codes: tuple[ReasonCode, ...] = Field(min_length=1)
 
 
 class InformationValue(StrEnum):
@@ -131,17 +145,65 @@ class InformationValue(StrEnum):
     LOW = "LOW"
 
 
+class AcquisitionMode(StrEnum):
+    ASK_PARENT = "ASK_PARENT"  # one YES/NO/UNSURE micro-question over Telegram
+    BROWSE = "BROWSE"  # bounded EvidenceBrowser acquisition + independent verification
+
+
+class PredictedAnswer(StrEnum):
+    YES = "YES"
+    NO = "NO"
+
+
+class HypothesisPrediction(KernelModel):
+    """What one hypothesis predicts the requested observation will show."""
+
+    hypothesis_id: HypothesisId
+    expected: PredictedAnswer
+
+
+HostName = Annotated[str, StringConstraints(pattern=r"^[a-z0-9.\-]{1,253}$")]
+
+
 class EvidenceRequested(_Payload):
     request_id: EvidenceRequestId
     investigation_id: InvestigationId
     requested_fields: tuple[Tag, ...] = Field(min_length=1, max_length=16)
     information_value: InformationValue
     rationale: ShortText
+    # Additive (branch A): everything needed to rebuild the acquisition from the
+    # ledger alone, so a retry/resume never depends on process memory.
+    acquisition_mode: AcquisitionMode | None = None
+    question: ShortText | None = None
+    subject: Tag | None = None
+    allowed_domains: tuple[HostName, ...] = Field(default=(), max_length=16)
+    max_age_days: int | None = Field(default=None, ge=1, le=3650)
+    predictions: tuple[HypothesisPrediction, ...] = Field(default=(), max_length=16)
 
 
 class EvidenceAcquired(_Payload):
     request_id: EvidenceRequestId | None = None
     evidence: Evidence
+
+
+class AcquisitionFailure(StrEnum):
+    TRANSIENT = "TRANSIENT"  # dependency/transport error; retryable within budget
+    NOT_FOUND = "NOT_FOUND"
+    BLOCKED = "BLOCKED"  # a bound (domain/forbidden action) was violated; permanent
+    BUDGET_EXHAUSTED = "BUDGET_EXHAUSTED"
+    MALFORMED = "MALFORMED"  # the browser result failed validation
+    UNAVAILABLE = "UNAVAILABLE"  # the model runtime refused service (auth/refusal/protocol)
+
+
+class EvidenceAcquisitionFailed(_Payload):
+    """One failed acquisition attempt. Attempts are counted from the ledger, so a
+    restart never resets the retry budget."""
+
+    request_id: EvidenceRequestId
+    attempt: int = Field(ge=1, le=16)
+    failure: AcquisitionFailure
+    retryable: bool
+    reason_codes: tuple[ReasonCode, ...] = Field(min_length=1)
 
 
 class VerificationCheck(StrEnum):
@@ -151,6 +213,7 @@ class VerificationCheck(StrEnum):
     REQUESTED_FIELDS_PRESENT = "REQUESTED_FIELDS_PRESENT"
     DIGEST_MATCHES = "DIGEST_MATCHES"
     CHANNEL_AUTHENTICATED = "CHANNEL_AUTHENTICATED"
+    PROVENANCE_VALID = "PROVENANCE_VALID"
 
 
 class EvidenceVerified(_Payload):
@@ -209,6 +272,13 @@ class InvestigationStatusChanged(_Payload):
     investigation_id: InvestigationId
     from_status: InvestigationStatus
     to_status: InvestigationStatus
+    reason_codes: tuple[ReasonCode, ...] = Field(min_length=1)
+
+
+class InvestigationPhaseChanged(_Payload):
+    investigation_id: InvestigationId
+    from_phase: InvestigationPhase
+    to_phase: InvestigationPhase
     reason_codes: tuple[ReasonCode, ...] = Field(min_length=1)
 
 
@@ -404,10 +474,14 @@ EVENT_TAXONOMY: Final[dict[EventType, EventSpec]] = {
     EventType.OBSERVATION_STRUCTURED: _spec(
         ObservationStructured, {_A.AGENT, _A.SYSTEM}, frozenset({_V.UNVERIFIED})
     ),
-    EventType.EVIDENCE_REQUESTED: _spec(EvidenceRequested, {_A.AGENT, _A.SYSTEM, _A.POLICY}, _NA),
+    EventType.OBSERVATION_STRUCTURING_FAILED: _spec(ObservationStructuringFailed, {_A.SYSTEM}, _NA),
+    # LLM proposes, code decides: a model's suggestion reaches the ledger only as the
+    # request MinimumDataPolicy selected, recorded by the kernel (SYSTEM) or a policy.
+    EventType.EVIDENCE_REQUESTED: _spec(EvidenceRequested, {_A.SYSTEM, _A.POLICY}, _NA),
     EventType.EVIDENCE_ACQUIRED: _spec(
         EvidenceAcquired, {_A.SYSTEM, _A.PARENT, _A.CAREGIVER}, frozenset({_V.UNVERIFIED})
     ),
+    EventType.EVIDENCE_ACQUISITION_FAILED: _spec(EvidenceAcquisitionFailed, {_A.SYSTEM}, _NA),
     EventType.EVIDENCE_VERIFIED: _spec(EvidenceVerified, {_A.VERIFIER}, frozenset({_V.VERIFIED})),
     EventType.EVIDENCE_REJECTED: _spec(EvidenceRejected, {_A.VERIFIER}, frozenset({_V.REJECTED})),
     EventType.PATTERN_PROPOSED: _spec(
@@ -428,6 +502,9 @@ EVENT_TAXONOMY: Final[dict[EventType, EventSpec]] = {
     ),
     EventType.INVESTIGATION_STATUS_CHANGED: _spec(
         InvestigationStatusChanged, {_A.SYSTEM, _A.POLICY}, _NA
+    ),
+    EventType.INVESTIGATION_PHASE_CHANGED: _spec(
+        InvestigationPhaseChanged, {_A.SYSTEM, _A.POLICY}, _NA
     ),
     EventType.EXPERIMENT_PROPOSED: _spec(
         ExperimentProposed, {_A.AGENT, _A.PARENT}, frozenset({_V.UNVERIFIED})

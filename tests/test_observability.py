@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from contextlib import contextmanager
 from typing import Any
 
-from serene.adapters.neatlogs_sink import NeatlogsSink, build_telemetry
+from serene.adapters.neatlogs_sink import build_telemetry
 from serene.ledger import EventLedger
 from serene.observability import RecordingSink, SafeTelemetry, redact
 from serene.testing import SyntheticFamily
@@ -77,27 +76,6 @@ def test_ledger_telemetry_carries_only_opaque_ids() -> None:
     assert [name for name, _ in sink.records] == ["ledger.append", "ledger.append"]
     blob = repr(sink.records)
     assert "tearful" not in blob and fam.child_id not in blob
-
-
-def test_neatlogs_sink_maps_spans_without_the_real_sdk() -> None:
-    spans: list[tuple[str, str, dict[str, Any]]] = []
-
-    class FakeSpan:
-        def __init__(self) -> None:
-            self.attrs: dict[str, Any] = {}
-
-        def set_attribute(self, key: str, value: Any) -> None:
-            self.attrs[key] = value
-
-    class FakeClient:
-        @contextmanager
-        def trace(self, name: str, kind: str):  # type: ignore[no-untyped-def]
-            span = FakeSpan()
-            yield span
-            spans.append((name, kind, span.attrs))
-
-    NeatlogsSink(FakeClient()).emit("policy.promotion", {"decision": "DENIED"})
-    assert spans == [("policy.promotion", "GUARDRAIL", {"serene.decision": "DENIED"})]
 
 
 def test_build_telemetry_without_a_key_is_a_noop(monkeypatch: Any) -> None:

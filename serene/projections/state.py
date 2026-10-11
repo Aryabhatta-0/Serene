@@ -17,6 +17,7 @@ from typing import Any
 from serene.domain.base import id_prefix
 from serene.domain.entities import (
     Experiment,
+    InvestigationPhase,
     InvestigationStatus,
     LearningStatus,
 )
@@ -31,7 +32,9 @@ from serene.domain.events import (
     DreamStage,
     EventType,
     EvidenceAcquired,
+    EvidenceAcquisitionFailed,
     EvidenceRejected,
+    EvidenceRequested,
     EvidenceVerified,
     ExperimentAbandoned,
     ExperimentBlocked,
@@ -44,6 +47,7 @@ from serene.domain.events import (
     HypothesisRefuted,
     HypothesisSuperseded,
     InvestigationOpened,
+    InvestigationPhaseChanged,
     InvestigationStatusChanged,
     LearningRecorded,
     LearningStatusChanged,
@@ -55,6 +59,7 @@ from serene.domain.events import (
     MemoryPatchReviewed,
     ObservationReported,
     ObservationStructured,
+    ObservationStructuringFailed,
     OutcomeReported,
     PatternProposed,
     PromotionDecisionRecord,
@@ -164,6 +169,25 @@ class MemoryReviewRecord:
 
 
 @dataclass(slots=True)
+class EvidenceRequestRecord:
+    """An EVIDENCE_REQUESTED and everything the ledger later learned about it."""
+
+    request: EvidenceRequested
+    event_id: str
+    evidence_ids: list[str] = field(default_factory=list)
+    failed_attempts: int = 0
+    exhausted: bool = False
+
+    @property
+    def answered(self) -> bool:
+        return bool(self.evidence_ids)
+
+    @property
+    def open(self) -> bool:
+        return not self.answered and not self.exhausted
+
+
+@dataclass(slots=True)
 class KernelState:
     child_id: str | None = None
     last_sequence: int = 0
@@ -182,6 +206,13 @@ class KernelState:
     memory_commits: dict[str, str] = field(default_factory=dict)
     dream_runs: dict[str, list[DreamStage]] = field(default_factory=dict)
     channel_receipts: dict[str, str] = field(default_factory=dict)
+
+    # branch A: investigation reasoning phases and evidence acquisition state
+    investigation_phases: dict[str, InvestigationPhase] = field(default_factory=dict)
+    evidence_requests: dict[str, EvidenceRequestRecord] = field(default_factory=dict)
+    investigation_requests: dict[str, list[str]] = field(default_factory=dict)
+    evidence_request_of: dict[str, str] = field(default_factory=dict)
+    structuring_failures: dict[str, int] = field(default_factory=dict)
 
     def clone(self) -> KernelState:
         return copy.deepcopy(self)
@@ -223,8 +254,25 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
     state.event_ids[event.event_id] = event.event_type
 
     match payload:
-        case ObservationReported(evidence=evidence) | EvidenceAcquired(evidence=evidence):
+        case (
+            ObservationReported(evidence=evidence, request_id=request_id)
+            | EvidenceAcquired(evidence=evidence, request_id=request_id)
+        ):
             _register(state, evidence, event)
+            if request_id is not None:
+                state.evidence_requests[request_id].evidence_ids.append(evidence.evidence_id)
+                state.evidence_request_of[evidence.evidence_id] = request_id
+        case EvidenceRequested(request_id=request_id, investigation_id=inv_id):
+            state.evidence_requests[request_id] = EvidenceRequestRecord(
+                request=payload, event_id=event.event_id
+            )
+            state.investigation_requests.setdefault(inv_id, []).append(request_id)
+        case EvidenceAcquisitionFailed(request_id=request_id, attempt=attempt):
+            record_r = state.evidence_requests[request_id]
+            record_r.failed_attempts = attempt
+            record_r.exhausted = not payload.retryable
+        case ObservationStructuringFailed(evidence_id=evidence_id, attempt=attempt):
+            state.structuring_failures[evidence_id] = attempt
         case EvidenceVerified(evidence_id=evidence_id):
             state.entities[evidence_id].verification_status = VerificationStatus.VERIFIED
         case EvidenceRejected(evidence_id=evidence_id):
@@ -257,6 +305,11 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
         case InvestigationOpened(investigation=investigation):
             _register(state, investigation, event)
             state.investigations[investigation.investigation_id] = InvestigationStatus.OPEN
+            state.investigation_phases[investigation.investigation_id] = (
+                InvestigationPhase.UNDERSTANDING
+            )
+        case InvestigationPhaseChanged(investigation_id=inv_id, to_phase=to_phase):
+            state.investigation_phases[inv_id] = to_phase
         case InvestigationStatusChanged(investigation_id=inv_id, to_status=to_status):
             state.investigations[inv_id] = to_status
         case ExperimentProposed(experiment=experiment):

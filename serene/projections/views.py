@@ -12,6 +12,7 @@ from typing import Any, Final
 
 from serene.domain.canonical import canonical_digest, format_timestamp, to_canonical_data
 from serene.domain.entities import (
+    TERMINAL_INVESTIGATION_PHASES,
     TERMINAL_INVESTIGATION_STATUSES,
     LearningStatus,
 )
@@ -47,10 +48,12 @@ def active_investigations(state: KernelState) -> dict[str, Any]:
     return {
         inv_id: {
             "status": status.value,
+            "phase": state.investigation_phases[inv_id].value,
             "hypothesis_ids": sorted(state.investigation_hypotheses.get(inv_id, [])),
         }
         for inv_id, status in sorted(state.investigations.items())
         if status not in TERMINAL_INVESTIGATION_STATUSES
+        and state.investigation_phases[inv_id] not in TERMINAL_INVESTIGATION_PHASES
     }
 
 

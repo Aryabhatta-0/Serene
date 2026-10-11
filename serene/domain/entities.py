@@ -185,6 +185,33 @@ TERMINAL_INVESTIGATION_STATUSES = frozenset(
 )
 
 
+class InvestigationPhase(StrEnum):
+    """Reasoning-loop phase of an investigation (issue #10, branch A).
+
+    Orthogonal to `InvestigationStatus` (the coarse lifecycle used by the
+    experiment/approval flow). Legal transitions and their evidence guards live
+    in `serene.policies.investigation`; COMPLETE and PARKED_UNRESOLVED are
+    terminal, so a finished investigation can never silently resume.
+    """
+
+    UNDERSTANDING = "UNDERSTANDING"
+    RETRIEVING_CONTEXT = "RETRIEVING_CONTEXT"
+    FORMING_HYPOTHESES = "FORMING_HYPOTHESES"
+    NEEDS_EVIDENCE = "NEEDS_EVIDENCE"
+    ASKING_HUMAN = "ASKING_HUMAN"
+    RESEARCHING = "RESEARCHING"
+    VERIFYING = "VERIFYING"
+    EVALUATING = "EVALUATING"
+    NEEDS_APPROVAL = "NEEDS_APPROVAL"
+    COMPLETE = "COMPLETE"
+    PARKED_UNRESOLVED = "PARKED_UNRESOLVED"
+
+
+TERMINAL_INVESTIGATION_PHASES = frozenset(
+    {InvestigationPhase.COMPLETE, InvestigationPhase.PARKED_UNRESOLVED}
+)
+
+
 class Investigation(_Entity):
     investigation_id: InvestigationId
     question: ShortText

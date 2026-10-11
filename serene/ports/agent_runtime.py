@@ -16,6 +16,9 @@ from serene.domain.entities import Experiment, Hypothesis, MemoryPatch, Observat
 from serene.domain.values import ModelRef
 
 CONTRACT_VERSION: Final = "agent-runtime/1"
+ProposalKind = Literal[
+    "observation", "pattern", "hypothesis", "experiment", "memory_patch", "need_evidence", "abstain"
+]
 
 
 class AgentTask(KernelModel):
@@ -28,6 +31,9 @@ class AgentTask(KernelModel):
     context_entity_ids: tuple[EntityId, ...] = Field(default=(), max_length=256)
     max_steps: int = Field(ge=1, le=50)
     max_cost_micro_usd: int = Field(ge=0, le=50_000_000)
+    # Additive (branch A): the proposal kinds the caller will admit, so an adapter can
+    # describe only those. Empty = unspecified. The kernel boundary still enforces it.
+    proposal_kinds: tuple[ProposalKind, ...] = Field(default=(), max_length=8)
 
 
 class _Proposal(KernelModel):

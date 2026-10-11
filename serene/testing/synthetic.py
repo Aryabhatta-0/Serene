@@ -25,6 +25,7 @@ from serene.domain.entities import (
     Intervention,
     InterventionCategory,
     Investigation,
+    InvestigationPhase,
     Learning,
     Observation,
     Outcome,
@@ -47,6 +48,7 @@ from serene.domain.events import (
     ExperimentStarted,
     HypothesisProposed,
     InvestigationOpened,
+    InvestigationPhaseChanged,
     LearningRecorded,
     ObservationReported,
     ObservationStructured,
@@ -280,6 +282,28 @@ class SyntheticFamily:
         self.introduced_by[investigation.investigation_id] = event.event_id
         return investigation
 
+    def start_forming_hypotheses(self, investigation: Investigation) -> None:
+        """Walk a fresh investigation to FORMING_HYPOTHESES, the phase hypotheses need."""
+        _P = InvestigationPhase
+        steps = {
+            _P.UNDERSTANDING: _P.RETRIEVING_CONTEXT,
+            _P.RETRIEVING_CONTEXT: _P.FORMING_HYPOTHESES,
+        }
+        inv = investigation.investigation_id
+        while (phase := self.state().investigation_phases.get(inv)) in steps:
+            self.append(
+                self.draft(
+                    EventType.INVESTIGATION_PHASE_CHANGED,
+                    self.system,
+                    InvestigationPhaseChanged(
+                        investigation_id=inv,
+                        from_phase=phase,
+                        to_phase=steps[phase],
+                        reason_codes=("SYNTHETIC_SETUP",),
+                    ),
+                )
+            )
+
     def hypothesis(
         self,
         investigation: Investigation,
@@ -288,6 +312,7 @@ class SyntheticFamily:
         *,
         contexts: tuple[str, ...] = DEFAULT_CONTEXTS,
     ) -> Hypothesis:
+        self.start_forming_hypotheses(investigation)
         parents = tuple(p.pattern_id for p in patterns)
         hypothesis = Hypothesis(
             child_id=self.child_id,

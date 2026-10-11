@@ -49,9 +49,11 @@ jobs:
         run: uv run python scripts/secret_scan.py
 
   eval-smoke:
-    name: Inspect AI eval smoke (no model keys)
+    name: Inspect AI eval gate (no model keys)
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
+    env:
+      INSPECT_LOGS: eval/reports/local/ci
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
@@ -62,11 +64,20 @@ jobs:
       - name: Run deterministic kernel-invariant scenarios through Inspect AI
         run: >-
           uv run inspect eval eval/tasks/kernel_invariants.py --model mockllm/model
-          --log-dir eval/reports/local --display plain
+          --log-dir "$INSPECT_LOGS" --display plain
       - name: Run deterministic trust scenarios (promotion, approval, Dream, scorers, cost)
         run: >-
           uv run inspect eval eval/tasks/trust_invariants.py --model mockllm/model
-          --log-dir eval/reports/local --display plain
+          --log-dir "$INSPECT_LOGS" --display plain
+      - name: Run frozen runtime investigation scenarios (scripted Hermes wire)
+        run: >-
+          uv run inspect eval eval/tasks/runtime_investigation.py --model mockllm/model
+          --log-dir "$INSPECT_LOGS" --display plain
+      # `inspect eval` exits 0 even when a sample is INCORRECT; this step is the gate.
+      - name: Gate - every sample of every task must be CORRECT
+        run: >-
+          uv run python scripts/inspect_gate.py "$INSPECT_LOGS"
+          kernel_invariants trust_invariants runtime_investigation
 
   web:
     name: Web (next.js typecheck + build)

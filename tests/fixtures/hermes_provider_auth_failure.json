@@ -1,0 +1,24 @@
+{
+  "id": "resp_c8fabd9d559f4b5785b850059380",
+  "object": "response",
+  "status": "completed",
+  "created_at": 1791646926,
+  "model": "hermes-agent",
+  "output": [
+    {
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "⚠️ Provider authentication failed: No usable credentials found for provider 'opencode-go'. Set OPENCODE_GO_API_KEY."
+        }
+      ]
+    }
+  ],
+  "usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  }
+}
