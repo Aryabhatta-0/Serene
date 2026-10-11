@@ -5,15 +5,16 @@ from tempfile import TemporaryDirectory
 
 from serene.demo.maya import MayaDemo
 from serene.demo.report import render_html, verify_report
+from serene.demo.reset import demo_directory, load_seed
 from serene.domain.canonical import canonical_json, sha256_hex
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / ".demo" / "maya"
+OUTPUT = demo_directory(ROOT)
 
 
 def main() -> None:
     with TemporaryDirectory(prefix="serene-synthetic-maya-") as temp:
-        report = MayaDemo(Path(temp) / "memory").run()
+        report = MayaDemo(Path(temp) / "memory", seed=load_seed(ROOT)).run()
     rows = verify_report(report)
     OUTPUT.mkdir(parents=True, exist_ok=True)
     data = canonical_json(report)
