@@ -12,6 +12,10 @@ Its canonical SHA excludes only `manifest_sha256`; the companion `.sha256` is th
 anchor. The implementation commit precedes the manifest commit to avoid a circular
 identity. The eight v4 runner files and offline probe are independently hashed.
 
+Frozen implementation: `eb4fcb07fa827ecd759c69a8241b4b0731cb7a89`.
+Canonical manifest SHA:
+`124d97b1649580a002d963c5f4ca929517fda38968502779ef6ef83115c152cf`.
+
 The v4 catalog differs from v3 only in its protocol version. All 36 tapes, ordering,
 source hashes, oracle digests, prompts, budgets, pages, simulator, protected files,
 and product SHAs are carried forward. A remains
@@ -151,5 +155,8 @@ and mutation, exact loopback, explicit request options, one-use session isolatio
 PID/process mismatch, pre-attempt drift, SDK payload controls, unchanged v3 bytes,
 and unchanged decisions. Full verification includes Python tests/lint/types,
 ledger/secret checks, all three scripted Inspect tasks, offline 36-tape replay,
-and existing web type/build/browser checks. See the new v4 verification record for
-actual outcomes; no live verdict is inferred from offline verification.
+and existing web type/build/browser checks. The
+[v4 verification record](../eval/reports/archive/2026-10-11-live-gate-v4/verification.json)
+records 972 passing Python tests, 20/20 scripted Inspect cases, all 36 replayed
+tapes, and 29 passing browser tests with one existing skip. No live verdict is
+inferred from offline verification.

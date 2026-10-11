@@ -1,0 +1,1015 @@
+{
+  "assurance": {
+    "installation_identity": "interpreter/source/stamp/dependency RECORD identities; not all OS or dependency binaries",
+    "live_conversation_validation": "NOT_RUN",
+    "local_frozen_runtime_settings": "owned process + actual agent + request/serialized SDK checks; no pre-existing daemon defaults",
+    "remote_provider_sampling_defaults": "UNOBSERVABLE; no client temperature or seed sent"
+  },
+  "eligible_for_holdout": false,
+  "evaluation_verdict": "NOT_EVALUATED",
+  "historical_verdict": "FAIL",
+  "holdout_runs": 0,
+  "immutable_history": {
+    "historical_fail_files_sha256": {
+      "eval/reports/archive/2026-10-11-pr67-dev-ab-fail/all-36-runs.csv": "796a5db8908334120df54c39ea56bb50972c470955700c21426ed3bec525327f",
+      "eval/reports/archive/2026-10-11-pr67-dev-ab-fail/integrity.json": "4f9d26e62f19c99192618817aadeadedb3562d2e673419d19e4deac57a8bc26e",
+      "eval/reports/archive/2026-10-11-pr67-dev-ab-fail/loss-attribution.json": "bd1883673229987e06b6155d58c0b12e87a44e5636ddafc701d433bb331d794a",
+      "eval/reports/archive/2026-10-11-pr67-dev-ab-fail/neatlogs-sessions.csv": "ffa975bcbd887e22191e3e05d6e138a85c6dca33e258f95a6ba8996d194b74fd",
+      "eval/reports/archive/2026-10-11-pr67-dev-ab-fail/protocol.json": "8269c330cab202e7202aef9816e50795be77cd7679244125de00e98013f3a49d",
+      "eval/reports/archive/2026-10-11-pr67-dev-ab-fail/protocol.md": "bf640ba9c6a7c139af708341a58019033195cfd8a70e6aaed6b89c4d81fa9d05",
+      "eval/reports/archive/2026-10-11-pr67-dev-ab-fail/protocol.sha256": "2d43ea5367461dbe7c68345f88eca98d6a3365f48fa612ea4a663f50f1e3fcc1",
+      "eval/reports/archive/2026-10-11-pr67-dev-ab-fail/report.md": "3a03699be240d63958ba4fbcfc12e4a6d9ab400a6e76e824158a2791c7112ac0",
+      "eval/reports/archive/2026-10-11-pr67-dev-ab-fail/score-inputs.json": "98926f16be8565e4ea9902b205f800df0cf331d7f5082b27424b02ae4a292892",
+      "eval/reports/archive/2026-10-11-pr67-dev-ab-fail/summary.json": "ca48f57a0419312ea8baaeb281c5f3b102187f800c7719738ec2871b2f2c3afa"
+    },
+    "v3_attempt_observed_files_sha256": {
+      "catalog-status.json": "85a63eb62d2053611a452299a8801defa10dc99df77504ab71911c122af23222",
+      "preflight.json": "e120f532f42cddb345e7897e5a83f566b96cd2c72ec4ae7fa8cd761a543a59ea",
+      "report.md": "b43d5d0113a818f076ea3f74849cd24f62527902725cb86dedc5c17c1d81f5f0",
+      "summary.json": "10abc0af7fb64d40332372080aca5b3edec370caffee198d6a4f6684277bf5ea"
+    },
+    "v3_files_sha256": {
+      "docs/shared-prefix-dev-v3-decision.md": "a0a5e962d1b0162eb125bb6994ce8f18ecf26b9c3f33237853b183532d4082f8",
+      "docs/shared-prefix-dev-v3.md": "700563ebe1af97f1a60315e3124cd384eb818fecb18a423330377efa6ed504d4",
+      "eval/fixtures/shared-prefix-dev-v3-experiment.json": "095939cf50831eef8c30f3b5d2380f1e9c34b5caed3ab4331f15837fc95516ce",
+      "eval/fixtures/shared-prefix-dev-v3-experiment.sha256": "f6d27a9d9333e25e008bdd20d37b5f607268e5d142832146581d6443105e70ad",
+      "eval/fixtures/shared-prefix-dev-v3.json": "945ff0ee0129bfc4ef76996217dcab3b684ab3092d298e56769ad882fca40f32",
+      "eval/reports/archive/2026-10-11-shared-prefix-dev-v3/manifest.json": "6bb7d215193ea598777bcbb9b5e73afcc0f6c4dc1a4cdce6323be07544e56ca7",
+      "eval/reports/archive/2026-10-11-shared-prefix-dev-v3/sha256.json": "5c707424401199d8f412ac8dcbcb9bfbc21aa4461d5a9d75d851319005623711",
+      "eval/reports/archive/2026-10-11-shared-prefix-dev-v3/verification.json": "e4adb8cd70d899ac0a80fa34948f66fafa2b299868e265b86b548568820db7a0",
+      "eval/runners/shared_prefix_compare.py": "45dafb39a5e605bcdf73daca167dfce3f2c4e6e3264d3a40faa02c39ac366e8e",
+      "eval/runners/shared_prefix_experiment.py": "c5dc3b7e5e44965d3f2f7559753925715de5e306137bddc2fb1d9edb6ec773c6",
+      "eval/runners/shared_prefix_metrics.py": "5abc21383d6b02fc5c348d586fd4b551f48ecc8e5ced41e81197e35959413908",
+      "eval/runners/shared_prefix_protocol.py": "12f78125d73327a2cadbd0405ed42b1414201f8e74322ba5bd7a86923cda3b79",
+      "eval/runners/shared_prefix_worker.py": "7f70042dd742d1329b0d9d316b44101479f1aa678bfef41099e8cea12dd4dbc8"
+    }
+  },
+  "live_calls": 0,
+  "live_configuration_sha256": "c7b4758a06a838454e4a3c612e34676f8882763d3a8dbc9ac2a0480c88486b4c",
+  "live_execution_authorized": false,
+  "manifest_sha256": "124d97b1649580a002d963c5f4ca929517fda38968502779ef6ef83115c152cf",
+  "offline_replay": {
+    "pairs": [
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "110db13c36d5437ef70756eacbf29bd5c3f4541cb0aa068f8683fc8df2609c8d",
+        "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+        "prefix_sha256": "8bed4f11366ab2754dc70460ce9e1bc993ff72d520e02aa970e6eb1a9c9c4e2a",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 15,
+          "files": {
+            "native/manifest.json": "5f965e99da6f5aed04963d30e8a6ec6eed99de38a9a4b8b88a026a1a0cc16dcd",
+            "native/raw/serene__ask_discriminates.jsonl": "009624be6f3d9f47a26e91a4786ec2f3b346dcef138c97ac3d7b6ac3ddaea19c",
+            "native/scores.json": "da1bbe8cd2657f267b7381736b5e7f9f99c492732aacbcf3f7e86632a64170a5"
+          },
+          "index": 1,
+          "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+          "repetition": 1,
+          "scenario": "ask_discriminates",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "01-pr67-A-r1-ask_discriminates",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "17512c87213195933fdffed257ded2338cb033d7fba21f73ab4dd70a3a1fcafe",
+        "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+        "prefix_sha256": "746bdae3e3c4b4b39bbb1c39023b343bea4c399f53be7dc6ce5470f1e54be26e",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 16,
+          "files": {
+            "native/manifest.json": "f539370c56da4d62d9bfea7c3b7b20f4692076a81cf8a3a4d1c85975524098f4",
+            "native/raw/serene__ask_discriminates.jsonl": "2b77118b5c76b7eab76b3b3216504943147a6f160fec3d465c967ccdd6ef32d5",
+            "native/scores.json": "89506e3013b708eca6a67a0911aca27854efe31aedfdf99522851ebaa1f68100"
+          },
+          "index": 2,
+          "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+          "repetition": 1,
+          "scenario": "ask_discriminates",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "02-pr67-B-r1-ask_discriminates",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "fb24709e515e191ac1148c4d37e30eed9e75c7d49dac1583a718d28799eff9f3",
+        "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+        "prefix_sha256": "25d567ebf57bc1a5f002ca59c8398fd9afcd91609c8f2c9a8a3775e770ba912d",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 13,
+          "files": {
+            "native/manifest.json": "c04cd3ce3c3273b2acb431c263ef312387aae7e64a4c94836fbf888da4fd288c",
+            "native/raw/serene__browse_verified.jsonl": "8e9bf780ff0676336231d84ba38f43893788924445eda781029716b80e70fd35",
+            "native/scores.json": "cff92e3b49883eebcc5d40243bf1d96e66211d366e4148c2653aec6375d87e65"
+          },
+          "index": 3,
+          "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+          "repetition": 1,
+          "scenario": "browse_verified",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "03-pr67-A-r1-browse_verified",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "8423dc8ef8fe3a811b7ce3f226c5ef7bf1f60c5ae60fc369ff47b761218419ca",
+        "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+        "prefix_sha256": "0dfe16a2c758fde156f868208600d5d53ff448e91b16f497ecbaf2e759929bc4",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 16,
+          "files": {
+            "native/manifest.json": "d844b55a39feb5b0e27bc53d9c18b6573c474a9c492f5459c9e944a401d05262",
+            "native/raw/serene__browse_verified.jsonl": "ebc4461b194c53a5d0be9dbebc026206468414da1d616e91fdcc5f6383791964",
+            "native/scores.json": "549bd5c190d3abbd5b7e6d04f2b66433aaec84317da706bde07605302505b5af"
+          },
+          "index": 4,
+          "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+          "repetition": 1,
+          "scenario": "browse_verified",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "04-pr67-B-r1-browse_verified",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "04957c38a34c184cf0c0ffafcbb373fed114dd6b913372d9e7dad574df3fb05b",
+        "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+        "prefix_sha256": "ee3a4c099d75e1c28a2004bd8b4fb1f8ac4d9556079b123ae01bb36f3ae74255",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 17,
+          "files": {
+            "native/manifest.json": "2f4971c3f29cc227006567b1b12d5c02780ccad3b7c8b3753e147559f0cc6cb0",
+            "native/raw/serene__browse_unsupported_page.jsonl": "91f80119c86545479e2f88cc374ce9a5cb89c55cb067b71fed26a3099d004231",
+            "native/scores.json": "97a007c6c63ff9ab33e109e7dedb0fe5c737c7d6db8411548b683b027be58907"
+          },
+          "index": 5,
+          "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+          "repetition": 1,
+          "scenario": "browse_unsupported_page",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "05-pr67-A-r1-browse_unsupported_page",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "b21718a31db6a8a26b1bf50424f1ebe07551b20fa55c1fac2f63d4bffd9c4016",
+        "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+        "prefix_sha256": "e9c7a368d7842fd0ee3081437671cb4c1ca3c28f082f514aca3e4b8946dfdc3c",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 16,
+          "files": {
+            "native/manifest.json": "6ec23317e5e5a82c2bd4af6d041f9edda967d6ef7329b371371253c3f7dab26d",
+            "native/raw/serene__browse_unsupported_page.jsonl": "403756e71811f41d124d1d8d14cf41997fc36c35bef99a3eb84ff629e11bd19c",
+            "native/scores.json": "1e9b897e264eff4c511c5bca2bfab78add4c116a973aaa93c377feafc6ae1802"
+          },
+          "index": 6,
+          "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+          "repetition": 1,
+          "scenario": "browse_unsupported_page",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "06-pr67-B-r1-browse_unsupported_page",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "bc00557d0668817586a1d197c353e1c844ded5376aef484f4ffe759f9e7b8362",
+        "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+        "prefix_sha256": "7fd9e86fbb1cfc9f05b3274c6b84a03aa65e30f763588873fef41dfafe5a6123",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 19,
+          "files": {
+            "native/manifest.json": "29827745f295c77fd345ae2a2ada00f1fad0bdb370219dd1bcea94a877c0b5fd",
+            "native/raw/serene__browser_flaky_restart.jsonl": "9a0757b3197b6f4bad9b6502a6dcffe487dfe0b9fe049f719b2cf4f1038d5e1f",
+            "native/scores.json": "6595ae71795b49c93acedc3a4d4f7af5ec7ae77612d1328450ef748257331bc0"
+          },
+          "index": 7,
+          "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+          "repetition": 1,
+          "scenario": "browser_flaky_restart",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "07-pr67-A-r1-browser_flaky_restart",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "e3a24e73256fadd3acf936f8e4533af0066eefb8f0b0fcf7020bbb6198e57772",
+        "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+        "prefix_sha256": "91a7195896b6131e544e762c64cbfaa2502ff3d139cc23c99f0d8ea5490d7a00",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 19,
+          "files": {
+            "native/manifest.json": "1e74ad52071779478a486ec5da976d991e80022834d47a41837b8a91a48b29f9",
+            "native/raw/serene__browser_flaky_restart.jsonl": "40fd76b7515f738fd8e23008817931a487b743019998795f03cde814240a15f3",
+            "native/scores.json": "c6fb47afad1fcfa3f384b7d6fc4d285841885c4656692b2def27135edfdef88d"
+          },
+          "index": 8,
+          "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+          "repetition": 1,
+          "scenario": "browser_flaky_restart",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "08-pr67-B-r1-browser_flaky_restart",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "6d8f202fd8895b62e8f935faa43beeb4d9128e70c634630a1653d661fdd8a787",
+        "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+        "prefix_sha256": "a4768dccbd45a38f78bc185b70b41f798d8adc4455768dec25138fb2bb0ceb47",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 5,
+          "files": {
+            "native/manifest.json": "1b94f386ca1fd5e262a6fa4667559ce141988108c2ffd7f251d7ded319f2c679",
+            "native/raw/serene__parent_silent.jsonl": "2485a27a108b279b40c7c9274f9254463772f3bbc01eba60a19035d237dc9a0c",
+            "native/scores.json": "7ab8f7e28247ce1056881f50a43e010a423c7729a25f6e8ebab2c662168c4726"
+          },
+          "index": 9,
+          "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+          "repetition": 1,
+          "scenario": "parent_silent",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "09-pr67-A-r1-parent_silent",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "c0673eeee1994a02d240f7ee617f967c1adcaff74e4d61e7d2ece680510d7c41",
+        "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+        "prefix_sha256": "e9d208a5b8ea9ff385bf77f587534b1cfff3f5704a68e2c6a91c15ecff7b1064",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 10,
+          "files": {
+            "native/manifest.json": "2c9be1e99e3c35708a005e73b8182ba8bcacb52813eef883373adfb1def2a434",
+            "native/raw/serene__parent_silent.jsonl": "0e8b4538720d375881c3f04c4c7d7fc77ed05a643ce38ee09dd9e3d3e18badd0",
+            "native/scores.json": "1565dfb703e0549c6d8cc6506f30a6aa03d2e2be46710962c38a15fc14a20362"
+          },
+          "index": 10,
+          "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+          "repetition": 1,
+          "scenario": "parent_silent",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "10-pr67-B-r1-parent_silent",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "8097a20145123f734e0f2a454fe054aa2c869618f1649c1675607dc49e2436e4",
+        "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+        "prefix_sha256": "afdd7306029f3b1608e881c64c51da601f6e97261d6a392d462e21fe2c7d813a",
+        "protocol_version": "live-gate/4",
+        "status": "no_divergence",
+        "tape": {
+          "exchange_count": 5,
+          "files": {
+            "native/manifest.json": "f133f7e1acd67b83d5064888e8be88a030bfcc8b75c4918d2d567c5cf641bd78",
+            "native/raw/serene__planner_down.jsonl": "ed979d5426b8a8cf12a0e4a0798a6e86ba47aa37a445bda1174c7e5004cb9c29",
+            "native/scores.json": "bfdbb3d3d81376d3225686d88d77a27ec0b37876e9f1c4b6da970684786dddd9"
+          },
+          "index": 11,
+          "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+          "repetition": 1,
+          "scenario": "planner_down",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "11-pr67-A-r1-planner_down",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "ee10821d3d54af5d5187315c2860433c26c47bffa352078d1496f5c7e65b6d16",
+        "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+        "prefix_sha256": "f6711555ba7f30e8afc06b90caf3c06bc065991f38f440c980c29f9c2a186098",
+        "protocol_version": "live-gate/4",
+        "status": "no_divergence",
+        "tape": {
+          "exchange_count": 5,
+          "files": {
+            "native/manifest.json": "60c387d8ed8ea6f6cb0e3961e6e40cd8c7de29d554402d80a329080a43ff8924",
+            "native/raw/serene__planner_down.jsonl": "7e1fb4fab8a5c50937e1bd7cbd639dcb0d82ef3cd10fd61bb394536a3ef6f5e9",
+            "native/scores.json": "f03a3f65087303b70192f1f63ca7f97381bb37f0722a5c8c6b374c25a13ffb63"
+          },
+          "index": 12,
+          "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+          "repetition": 1,
+          "scenario": "planner_down",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "12-pr67-B-r1-planner_down",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "ac3b78f0a68ac53562e11974c581df0403c51ceffccccfba252e7826d70d77ca",
+        "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+        "prefix_sha256": "1232fd5f7ac7383052a301adfcdc0073e042fa352e3ffc812109fedd294c0180",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 16,
+          "files": {
+            "native/manifest.json": "7b05259a97dd4f7e8ac395f444a37405ee8df3b76ebca202d89c7fc6cd36a211",
+            "native/raw/serene__ask_discriminates.jsonl": "7f67917670216d0eb6769a0451ad3e314aa9aec5ee327e1e580a2b75326d9348",
+            "native/scores.json": "48103a2d51a47b4e40518095fa3c4f3dcda87e37b7a51eb72bfc885d1cd477e7"
+          },
+          "index": 13,
+          "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+          "repetition": 2,
+          "scenario": "ask_discriminates",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "13-pr67-A-r2-ask_discriminates",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "c46f44fd936cb0ead2ca290b43dd54661882fbf27a631731882850902417826b",
+        "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+        "prefix_sha256": "191380bae1c39796f2f36c15cdfecfd55dbefebc049122c6e2986c8777c90f3f",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 15,
+          "files": {
+            "native/manifest.json": "3f82303c2f9100b6f04f73f5ff36749bf89f8ad3282b9554008f908b6d6b6fd3",
+            "native/raw/serene__ask_discriminates.jsonl": "5d1e5ca049e1b66146835fbff59f6682530b3b54b37c05a2fb07b515ffc4fad0",
+            "native/scores.json": "27c6ff46b3fb2e7c9554ac10df1699af3790cb85732ed8ac3903a1dacc643b15"
+          },
+          "index": 14,
+          "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+          "repetition": 2,
+          "scenario": "ask_discriminates",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "14-pr67-B-r2-ask_discriminates",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "a765ff5c5306af9256d93e2ef59c4bbec83214c47c2bed2c889b16e91b3d894d",
+        "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+        "prefix_sha256": "89cc265bb98a9a9a0703dc77f16c43628c22502b4d67bcbba191b4d65feda7ed",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 17,
+          "files": {
+            "native/manifest.json": "8ecb9995dc5b9a34def6e57272b0f135aa36c1ebffd0c8656c6fcf5c0cf4b328",
+            "native/raw/serene__browse_verified.jsonl": "a548f53906f4feb6c683fe8176854d019bc3250c892984eefb43303527caf7a2",
+            "native/scores.json": "fdd698106f12a4c97b47273ca471110baa60c1b38983c7c717bf19f022c0c014"
+          },
+          "index": 15,
+          "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+          "repetition": 2,
+          "scenario": "browse_verified",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "15-pr67-A-r2-browse_verified",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "69b1697720a89fb50bfcb6b5e8be5ce62963c4e56fc25d6e67c86b2cae9ab96c",
+        "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+        "prefix_sha256": "9e099d0e49b9a2c30c2c637db68ce55218ed59597e966b3ce45f0e1285a983f8",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 15,
+          "files": {
+            "native/manifest.json": "279eec14ee4df4f7f5847c47af51bd3e3fe19a619a1c9e456e5dbc834f2c12f3",
+            "native/raw/serene__browse_verified.jsonl": "a33106ca05fdad1c3cb32cdd15b18d9015f13ddbe65f64a8342f5125fa33bf6f",
+            "native/scores.json": "84f906bbe1befd990edb612a86729e01758b40ff1f6d1e4140ffe0e8220c2a83"
+          },
+          "index": 16,
+          "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+          "repetition": 2,
+          "scenario": "browse_verified",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "16-pr67-B-r2-browse_verified",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "aa1115c307ddf53197d22bbf033ac72c0cbd8bea82625f851f10240bcb5063ed",
+        "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+        "prefix_sha256": "7b4406cfdd519f6fb2f0baeaae8a11e6cfee7bd56a7879f662aa1fa6268cd7da",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 8,
+          "files": {
+            "native/manifest.json": "ec1de0dea0fdab2d3084dace34921205fc7ed3175b38d0901b58f9348fc56c7f",
+            "native/raw/serene__browse_unsupported_page.jsonl": "8dbefb7546ba2c5baf1d9d77ce865fac9c526602dfc7778d009bc9c9dc20caf5",
+            "native/scores.json": "aa583e4c942778119c078aaad30ea7c6a7aa41dd6c8dffce783b6f5b3a03f9c3"
+          },
+          "index": 17,
+          "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+          "repetition": 2,
+          "scenario": "browse_unsupported_page",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "17-pr67-A-r2-browse_unsupported_page",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "033d984847a7539098daa758f4855a0a395f81d99385bd33e116c1828dc338c1",
+        "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+        "prefix_sha256": "4d0c7ae05b4e0787ba1ce3d362bd0ac30461d976d92fb85b6b6d863253a9848e",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 17,
+          "files": {
+            "native/manifest.json": "d0caee189f5bf696314b430462d7cbe97b61616fae800a1db3ce7dcf25b9ba10",
+            "native/raw/serene__browse_unsupported_page.jsonl": "3fbd418ade95b0bff8f3759043079dc82852e7a878622ad7c5bb753d5a669ea1",
+            "native/scores.json": "67def1a25eeef8eaa5cdfefb7799240ea6c4b10db2b1744e5d402dfde46402d8"
+          },
+          "index": 18,
+          "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+          "repetition": 2,
+          "scenario": "browse_unsupported_page",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "18-pr67-B-r2-browse_unsupported_page",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "35d4f57e262fefcd6eaf5c2b9d58d50b3e5d01fa38b13fb0d882e0640dc97159",
+        "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+        "prefix_sha256": "c2af0f5a658a1ddfe9e284b988fa9e259f3aa55a62b336e58b4f0cc5db89849a",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 19,
+          "files": {
+            "native/manifest.json": "55079ce05d5a49c0e02720543e917084b85bd1832a656285525cdd2a64fea9a7",
+            "native/raw/serene__browser_flaky_restart.jsonl": "42ea8d6e84d3df872aa9a0788e045f8d8aa6eefb693b0726bc98706b274a93ef",
+            "native/scores.json": "086992f7b87167699ea926d413a9a1a74a9f90b4b6be86f19c9d4f1fe71f945f"
+          },
+          "index": 19,
+          "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+          "repetition": 2,
+          "scenario": "browser_flaky_restart",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "19-pr67-A-r2-browser_flaky_restart",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "27123d89b18f0047ffc656f574b808ac42ef4dd1d2f8ee74b12b130b617b8b6c",
+        "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+        "prefix_sha256": "7252d81b5f777e5ad0e9177b13a7b5896874e5f9315114153d93c4a335483f05",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 18,
+          "files": {
+            "native/manifest.json": "0ab5e57a700558b1dac12103b4f0eaeef651383b614bb9b2acc49c59e5574b4c",
+            "native/raw/serene__browser_flaky_restart.jsonl": "4e0b2f0b5306c55a623992c7a080a447029bd6614e31f7dfee5cc31a022ee2ae",
+            "native/scores.json": "52127784070c388c4619bad6bb343d3d25b14a08530de1ab821db803b6ff3543"
+          },
+          "index": 20,
+          "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+          "repetition": 2,
+          "scenario": "browser_flaky_restart",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "20-pr67-B-r2-browser_flaky_restart",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "aea6bdd6d41241187b4532b4bf7f60a4779ece3d33397a890e42571aa589aa98",
+        "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+        "prefix_sha256": "0cbd78a3097091dbd1dfb046cd4d8e90ca0a321667715dfb58cdd0b770de00d1",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 10,
+          "files": {
+            "native/manifest.json": "9b9a1193793467cf7c43f2a77ab408931e79aa5656d88d85e7366357cd6bbbeb",
+            "native/raw/serene__parent_silent.jsonl": "4dda6bd6ea3e083b591dea6c67d79c131aedeea7efa14dfcdfe7e09b8929d615",
+            "native/scores.json": "445c80d7dba8cd8dbcecd19d22261481da825f87520bfbc087497f2b255e4b9d"
+          },
+          "index": 21,
+          "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+          "repetition": 2,
+          "scenario": "parent_silent",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "21-pr67-A-r2-parent_silent",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "c6d885ddcd8c0441a01f5a8bf600f4ab80dc0535a7a7c4c595854d20b40ba6b8",
+        "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+        "prefix_sha256": "abaaf277be6aee2a59947e67de451e7d201af1144ce18b2fc9476285068688de",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 17,
+          "files": {
+            "native/manifest.json": "fdd761c6011cbf400b740c9311d4ea41123b9999edbfa355829df3f13600d0a0",
+            "native/raw/serene__parent_silent.jsonl": "54af82c86c888c1b45c9af0fcfccfe9940b2bf61cd7e47412eed0ce6a6f3d55c",
+            "native/scores.json": "f503c2de9ced268d2e506be1eab7cec611e7c60156922e232ff8323a1e9d7f54"
+          },
+          "index": 22,
+          "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+          "repetition": 2,
+          "scenario": "parent_silent",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "22-pr67-B-r2-parent_silent",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "b2d688554e8e0e4aea97748cae70583bed82abed11bd8b590475950939925d8a",
+        "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+        "prefix_sha256": "66980c5493e5fa211e29a89731e0a3597eaf5fd9371f870731655ed2a78dd0d4",
+        "protocol_version": "live-gate/4",
+        "status": "no_divergence",
+        "tape": {
+          "exchange_count": 5,
+          "files": {
+            "native/manifest.json": "906f2a826667150c316d9afb0e5c1375fccfc3c2eb719cd2d9e7192072d6e931",
+            "native/raw/serene__planner_down.jsonl": "63f3496462af1d9bfa476f953934a4e6c07d1fa2e2eaef2bf8daff3279a945fe",
+            "native/scores.json": "143b139e3434d5f75def19c8ce3cd5501095f766ff82c36f56e91ed75b899a7c"
+          },
+          "index": 23,
+          "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+          "repetition": 2,
+          "scenario": "planner_down",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "23-pr67-A-r2-planner_down",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "5f0c1b327c4e8ff670f422f5db398446e3ef11be8995711a298e7dbd0518c527",
+        "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+        "prefix_sha256": "044f574d6f2444787e4ee8480c7f4b7ed731de5e4fb71ae876d6cad908e2a9d4",
+        "protocol_version": "live-gate/4",
+        "status": "no_divergence",
+        "tape": {
+          "exchange_count": 5,
+          "files": {
+            "native/manifest.json": "00d8df186fcdd5333ec10410abda5ac7e78c617ebd52961099844bf8b2e7d02d",
+            "native/raw/serene__planner_down.jsonl": "f4946d840ee96fe2cf59473e31988297a499211922dd4933b51b78de25292b96",
+            "native/scores.json": "487c469ad929032301fdb7e1911e4e5e4fed44789837705a4264c39a7eee253b"
+          },
+          "index": 24,
+          "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+          "repetition": 2,
+          "scenario": "planner_down",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "24-pr67-B-r2-planner_down",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "9184f7f227508d75484622f0ad7a321cafda132541f2102e19042658d68ffe83",
+        "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+        "prefix_sha256": "1b5af4f8adda7a2f233f6572c15aca5d6c21b0a1552859bc95a99873c94b7fbd",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 17,
+          "files": {
+            "native/manifest.json": "8384cc7eb382cbc61d09b513bd285246756faa2ee1afb7d5176c3b6ee40c1c3b",
+            "native/raw/serene__ask_discriminates.jsonl": "65a8fd05a0f740aa7b63a5adfeeca80204044daba8bc6f3b7de9a5b111587884",
+            "native/scores.json": "4408f2c647c7498caee9f6aff720b0c414de5bb5a41b9f99bb117a61aa0f2f44"
+          },
+          "index": 25,
+          "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+          "repetition": 3,
+          "scenario": "ask_discriminates",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "25-pr67-A-r3-ask_discriminates",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "165e461cb0e90c5983ae436e4a9df500267adfde0a6cd1e5c2164be083657e76",
+        "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+        "prefix_sha256": "d2af22fefd999a640ebac0da8d4d46f4ca5d1aca3b6b17ec62fbfaaa90d2700e",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 14,
+          "files": {
+            "native/manifest.json": "c8b4190ffeb32974116d15805cddad3f3fb8e31eeffa2d236d971b54fa4c686b",
+            "native/raw/serene__ask_discriminates.jsonl": "04a9faabf2c2f15048a7c0f732318f0a47319210e304b4225c0298c72461ec42",
+            "native/scores.json": "599bb20669db9f776e5d5a6692c901f6f7ff5fd86174d0527c6cb966abf3fa5b"
+          },
+          "index": 26,
+          "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+          "repetition": 3,
+          "scenario": "ask_discriminates",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "26-pr67-B-r3-ask_discriminates",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "f8d2eaca6eef8b918510021ef1e99887f268ecf8b20ab4ddb88e3320862bdb5f",
+        "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+        "prefix_sha256": "9a4812332b60fd1c6ab641ebe1588b742ba1dd0d9f4344f1d3c4842f5a4e7bf7",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 15,
+          "files": {
+            "native/manifest.json": "7a33f850784d3bd1a592fe9acd88e30f2eb6df7fbc1e9b5929b46de54da6d605",
+            "native/raw/serene__browse_verified.jsonl": "667edeea42daabe3a1aa8774af8473913b77268d725023055c9139740b2c28d1",
+            "native/scores.json": "189604b182a4ae1e183b3331bdaede917c4d5cc7e689f66f5354f904c1ab5e51"
+          },
+          "index": 27,
+          "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+          "repetition": 3,
+          "scenario": "browse_verified",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "27-pr67-A-r3-browse_verified",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "c0a034f343cb37f24d1895461e35f9cdc6414810d5916898df1876e632a4ff17",
+        "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+        "prefix_sha256": "3de665d39af52bd18d452832ccdf15d8cf94a878f255cb179037b594aa372023",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 16,
+          "files": {
+            "native/manifest.json": "6bb33782cabcc4383540a25a5082df210ecbf02884a17c54b285fad19f2e9ef5",
+            "native/raw/serene__browse_verified.jsonl": "ad29c1c674983e7dcc8cf0a8c1b219ec18c9f6909b1341f7b49f06bf11632831",
+            "native/scores.json": "bb529982590e41d3bfc811e7a61d5c52301f1e7c4135e62c3360e1463d692f82"
+          },
+          "index": 28,
+          "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+          "repetition": 3,
+          "scenario": "browse_verified",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "28-pr67-B-r3-browse_verified",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "9fb11621feb5753681157ba599ac1341dacb06956b05cca506c1dceee27563be",
+        "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+        "prefix_sha256": "bfb4123db5e7526632eb22a044c469940d33dad50afaae5833aee1fe33dc694b",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 14,
+          "files": {
+            "native/manifest.json": "7dfca000ad47f57205e9a5916fef54d96cf164d8a15a50599a6b1c9c222f4d90",
+            "native/raw/serene__browse_unsupported_page.jsonl": "f51b9649cab9cd60f55ee67181a5c5a67590402f00f3e18ed4fda5717407fef0",
+            "native/scores.json": "b36c5c4a4d2c5c051f9910cfe53238de22153f9db79737ede7c0b5bc9729c915"
+          },
+          "index": 29,
+          "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+          "repetition": 3,
+          "scenario": "browse_unsupported_page",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "29-pr67-A-r3-browse_unsupported_page",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "40045921c3353b615f58e7fe6a0a9947fe61801dc0abc96921ac5fb2e350781e",
+        "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+        "prefix_sha256": "6da229570d9ca7bc4314bf9a10f0ad8d90344bfe7f0f72e5e8e0641285095064",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 18,
+          "files": {
+            "native/manifest.json": "2cc33c7c0193c6976a2c7531be3cec8d5ac8e76573fa637c34687310d79378a9",
+            "native/raw/serene__browse_unsupported_page.jsonl": "560d979d35c9c3f86d114c3bdf4804f777627d589ba35c41e2ffae48129c8302",
+            "native/scores.json": "b771727665d5d34076390e2c6a451c1a2d199e9ca0a82cf8629cddbbdc9170ec"
+          },
+          "index": 30,
+          "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+          "repetition": 3,
+          "scenario": "browse_unsupported_page",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "30-pr67-B-r3-browse_unsupported_page",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "0f1ea29326bb6a521a1c23b1addc057ffbacc2cf886fe517dca9eadbb35e2579",
+        "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+        "prefix_sha256": "c982d7a1940d6f1663c843633932cc7c754e04d9e6e19c5e7b48c08639749e0a",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 19,
+          "files": {
+            "native/manifest.json": "873a6c6515eacae0e9639dd53e2cacec26229e2303698aaed232e47e91e840e9",
+            "native/raw/serene__browser_flaky_restart.jsonl": "b8d475e29c5db47bd4a634df6e44cbb754964404afd1f93b53fba2ef930ec9a9",
+            "native/scores.json": "72e2d823455f0f7f54a0e57694edc13444424e8d078d6db7579b19a45e527399"
+          },
+          "index": 31,
+          "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+          "repetition": 3,
+          "scenario": "browser_flaky_restart",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "31-pr67-A-r3-browser_flaky_restart",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "a9d233cc41d99f1344bf431c2570a3e93d62e09983db6467c53569336282a4c9",
+        "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+        "prefix_sha256": "c4289e1aa625b787bf16f4e749176edd1045fb2d7b576856ea0370450912a23f",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 17,
+          "files": {
+            "native/manifest.json": "9b3d451e4b0522aa6301e728224686917d1652fc98a2dbb00463d3c8a7fe298a",
+            "native/raw/serene__browser_flaky_restart.jsonl": "427cde7067f047e5a1952f7ccc6742867ff246d19db0885594a91e18b291bf05",
+            "native/scores.json": "852462b9b7375ea4cbf1b404f5f968abb546cdf516bc89ee55206af796660518"
+          },
+          "index": 32,
+          "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+          "repetition": 3,
+          "scenario": "browser_flaky_restart",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "32-pr67-B-r3-browser_flaky_restart",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "c757ca5c647aa08d195751633e6bced20aa4c72fc40c52446435f8bccc2a3cd2",
+        "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+        "prefix_sha256": "7720c9a9be7a0500b5d24c94ddb9c3923e3d9b9f16186079363e965f65793529",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 5,
+          "files": {
+            "native/manifest.json": "f1a5dece84496ab6fec59d68153ec3c7fdf1b0d7539b585ed664a646f11001aa",
+            "native/raw/serene__parent_silent.jsonl": "f895fef61cff007a8cfd13a94bf46cbc2910f8cab035f7d90f97e0e316c3c561",
+            "native/scores.json": "da4a88bfadb7258e9354017d3d6c041e2ab689386f599c42cc39b1aef1f6a3e6"
+          },
+          "index": 33,
+          "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+          "repetition": 3,
+          "scenario": "parent_silent",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "33-pr67-A-r3-parent_silent",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "b2625fe8a1cd5901a1daadacded8c46a153f8dbacee2aa96fbb5435699324ec1",
+        "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+        "prefix_sha256": "9d8eea6e2c64b612b0cdeba09fb11581f7e76d0066f6f31dfe3b84eacb4ea07b",
+        "protocol_version": "live-gate/4",
+        "status": "first_policy_divergence",
+        "tape": {
+          "exchange_count": 14,
+          "files": {
+            "native/manifest.json": "a1117c93182934bbdfdd18a01190804af82733aa960d6a3fd6f3f972584459c3",
+            "native/raw/serene__parent_silent.jsonl": "eab023195d59938e79a60aba1422747e7f2e14a63fa72647324c2f3174394504",
+            "native/scores.json": "fe3cec74701444448c838fad30e2fc806c072cbd67fbf8eb3021c4c9f0efe8a4"
+          },
+          "index": 34,
+          "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+          "repetition": 3,
+          "scenario": "parent_silent",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "34-pr67-B-r3-parent_silent",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "6b2dbf2a8fdc8a93d9993eb23d155609a7b21381ded808daee1b92cfcc7a2ed7",
+        "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+        "prefix_sha256": "da3a690dc1c4de334d7ab555346cff9661feeaa3d4c4639d8db49affa04a3038",
+        "protocol_version": "live-gate/4",
+        "status": "no_divergence",
+        "tape": {
+          "exchange_count": 5,
+          "files": {
+            "native/manifest.json": "15702deff3bd9c43660d6ada9c0f75795319c2dff19fe04fd12efd432ab3220c",
+            "native/raw/serene__planner_down.jsonl": "c25d7079029a235e1dc07ee4f8b7025327a742062d84d2de6cfd9033a552a4bf",
+            "native/scores.json": "c8f7ae8ef6a6357116cca50e7f1fcfaf8342049e00c63e6804f621e62fd91b9c"
+          },
+          "index": 35,
+          "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+          "repetition": 3,
+          "scenario": "planner_down",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "A",
+          "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+          "tape_id": "35-pr67-A-r3-planner_down",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      },
+      {
+        "live_calls": 0,
+        "local_pair_sha256": "849d8e89f06a0705b622108ab0af7cacdb15328d6acd2d0841f694d4dde45c96",
+        "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+        "prefix_sha256": "3f3702f54076a0f9e4aa0369e2c89484e100c5ab75c78586867e2ac1c63b1f4b",
+        "protocol_version": "live-gate/4",
+        "status": "no_divergence",
+        "tape": {
+          "exchange_count": 5,
+          "files": {
+            "native/manifest.json": "7b00366659e03edd4f97b50c11c7e6558d30c168ee49d4312d2ff0642eeadcc9",
+            "native/raw/serene__planner_down.jsonl": "87c45b6de38148ffec9c0e492fd86d48560d5c7b04a9e3cd31406cc231decf07",
+            "native/scores.json": "79143b20da2a297acd2962dbb0435dfafdfb8d852d70375c071bd1d9ba1cdad8"
+          },
+          "index": 36,
+          "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+          "repetition": 3,
+          "scenario": "planner_down",
+          "scorer_version": "runtime-scorers/2",
+          "source_arm": "B",
+          "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+          "tape_id": "36-pr67-B-r3-planner_down",
+          "trust_scorer_version": "trust-scorers/1"
+        }
+      }
+    ],
+    "prefix_oracle_product_identities_equal_v3": true,
+    "status_counts": {
+      "first_policy_divergence": 30,
+      "no_divergence": 6
+    },
+    "tapes": 36
+  },
+  "protocol_implementation_sha": "eb4fcb07fa827ecd759c69a8241b4b0731cb7a89",
+  "protocol_version": "live-gate/4",
+  "telemetry_exports": 0,
+  "v3_attempt_verdict": "INVALID",
+  "verification": {
+    "focused_pytest": {
+      "passed": 172,
+      "seconds": 8.12
+    },
+    "inspect": {
+      "gate": "PASS",
+      "kernel_invariants": "5/5 CORRECT",
+      "runtime_investigation": "6/6 CORRECT",
+      "trust_invariants": "9/9 CORRECT"
+    },
+    "installed_hermes_offline_probe": {
+      "live_conversation_tested": false,
+      "outbound_sockets": "blocked",
+      "private_pipe_pre_attempt_attestation": true,
+      "provider_http_transport": "in_memory_mock",
+      "real_constructor": true,
+      "real_request_builder": true,
+      "real_sdk_serialization": true,
+      "result": "OFFLINE_OWNED_STARTUP_OK"
+    },
+    "ledger": {
+      "chain_ok": true,
+      "events": 25,
+      "replay_identical": true,
+      "tamper_detected": true
+    },
+    "mypy": {
+      "result": "PASS",
+      "source_files": 91
+    },
+    "pytest": {
+      "command": "uv run pytest -q --tb=short",
+      "passed": 972,
+      "seconds": 179.45,
+      "warnings": 4
+    },
+    "ruff_check": "PASS",
+    "ruff_format": {
+      "files": 207,
+      "result": "PASS"
+    },
+    "secret_pii_scan_findings": 0,
+    "web": {
+      "playwright_existing_skipped": 1,
+      "playwright_passed": 29,
+      "production_build": "PASS",
+      "typecheck": "PASS"
+    }
+  }
+}
