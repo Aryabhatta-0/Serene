@@ -56,7 +56,7 @@ An `APPROVAL_GRANTED` is admitted only if **all** of these hold:
 | **Single use**: consumed by exactly one `EXPERIMENT_STARTED` | `APPROVAL_ALREADY_USED` |
 
 Prose is never authority. A parent typing "sure" is an observation; the
-runtime relaying it as a grant fails at the channel boundary. Only branch A's
+runtime relaying it as a grant fails at the channel boundary. Only the
 authenticated channel adapter can mint the `ChannelReceipt` on a real
 `APPROVAL_GRANTED` from the parent.
 
@@ -94,7 +94,7 @@ Structural requirements, recomputed at request, grant and start: an explicit
 intervention, outcome measure and comparison (no placeholders, all distinct);
 reversible; at most 4 contexts, all within the hypothesis scope; same
 investigation. Pure step functions (`nudge_due`, `timeout_due`, `start_due`,
-`learning_validity_due`) are the timer seam branch A's scheduler calls.
+`learning_validity_due`) are the timer seam the lifecycle service calls.
 
 ## 6. Authority invariants (scored, target zero violations)
 
@@ -107,8 +107,8 @@ every event with the same deterministic policies.
 ## 7. Cost never overrides safety (cfo.ai, #55)
 
 Current implementation and the genuinely populated cfo.ai Scenario are documented
-in [economics.md](economics.md). The table below is the historical v1 scaffold;
-its local arithmetic and evaluation fixture are retained for compatibility.
+in [economics.md](economics.md). The historical v1 scaffold's local arithmetic
+and evaluation fixture are retained for compatibility.
 The v2 model adds provenance, storage/memory-read/telemetry costs and sensitivity.
 Cost requires explicit policy eligibility and certified evidence equivalence;
 required parent questions disable the tradeoff.
@@ -118,23 +118,30 @@ value > cost**; cost only breaks ties inside the top equivalence class, unsafe
 options are dropped, and an unknown cost is never "free"
 (`serene/policies/acquisition.py`).
 
-The one decision cost informs - who to ask to confirm the daycare's new pickup
-cut-off - is persisted in `eval/fixtures/cfoai_acquisition_decision.json`:
+The current helper compares only optional first-hand pickup-cutoff confirmation
+from the parent versus an already authorized caregiver. Trusted policy must
+certify equal evidence requirements, admissibility, predictions and uncertainty
+reduction. Required parent questions disable the tradeoff. The helper cannot
+grant access, message a caregiver or override the independent verifier.
 
-| Option | Safety | Quality | Value | Cost (micro-USD) | Gross margin | Runway |
-| --- | --- | --- | --- | --- | --- | --- |
-| **ask_parent_telegram** (chosen) | SAFE | FIRST_HAND | HIGH | 9,038 | 77.51 % | 525 days |
-| ask_caregiver_telegram | SAFE | FIRST_HAND | HIGH | 14,452 | 76.96 % | 524 days |
-| browse_daycare_site | SAFE | AUTHORITATIVE_DOCUMENT | HIGH | 56,152 | 72.79 % | 517 days |
-| infer_from_history | SAFE | SECOND_HAND | MEDIUM | 5,520 | 77.86 % | 525 days |
-| scrape_parent_group_chat | **UNSAFE** | - | - | 4,810 | excluded | - |
+The provenance-bearing v2 model and genuine cfo.ai readback are in
+[economics.md](economics.md). Its prices, usage, revenue and cash are explicitly
+assumed; they are not actual provider spend. The old
+`eval/fixtures/cfoai_acquisition_decision.json` is preserved as a historical v1
+fixture, not the current financial result or a globally enabled runtime planner.
 
-Cost was decisive only between the two equivalent options (saving 64,968
-micro-USD per family-month). The cheaper second-hand inference and the unsafe
-scrape never win, whatever their price (tested by driving their cost to zero).
-Margin and runway assume USD 12 per family-month, 400 families, 12
-acquisitions per family-month, USD 18k fixed monthly cost and USD 250k cash
-(`SERENE_ECONOMICS_V1`). These are **local assumptions in cfo.ai's model
-structure**: the cfo.ai MCP server was not authenticated when this was built,
-so no figure was pulled from cfo.ai. Replace `SERENE_ECONOMICS_V1` with a
-reviewed cfo.ai scenario export; the decision rule does not change.
+## 8. Demo, non-goals and excluded technologies
+
+The [Maya demo](maya-demo.md) (#56) proves that its GREEN proposal is approved
+through the real Telegram callback binding before start, and that outcome,
+promotion and Dream memory review follow in order. Synthetic outcomes describe
+one fictional scoped trial; they are not a recommendation for a real child.
+Negative/adversarial tests remain the evidence for RED and forged approval
+refusals, which the happy-path demonstration does not perform.
+
+Serene provides no medical diagnosis/treatment, autonomous intervention or
+permission inferred from prose. A parent cannot override a RED classification.
+The kernel classifier/admission and Supabase RLS suffice for this MVP; adding
+OPA/OpenFGA/SpiceDB or an external workflow engine would not replace these
+authority checks. See [architecture.md](architecture.md) for rationale and
+[privacy.md](privacy.md) for the separate unresolved audit boundary (#59).

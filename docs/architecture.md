@@ -1,9 +1,10 @@
 # Serene Architecture
 
-> **Status:** the Domain Kernel, event ledger, projections, ports and the
-> deterministic trust foundation are implemented (see "Implemented vs planned").
-> Hermes wiring, investigation loop, Telegram, Dream and UI are planned work on
-> the two branches in [parallel-handoff.md](parallel-handoff.md).
+> **Status:** the kernel, investigation/evidence loop, Telegram boundary,
+> experiment lifecycle, Dream and Causal Twin are implemented. The canonical
+> [Maya demo](maya-demo.md) runs their real services with deterministic offline
+> model/browser I/O. This proves integration, not live provider connectivity or
+> production readiness. Privacy audit #59 and merge enforcement #58 remain open.
 
 ## 1. Thesis
 
@@ -61,13 +62,14 @@ importing the kernel loads none of them.
 | Concern | Owner | Notes |
 | --- | --- | --- |
 | Interpretation / planning | Model via `AgentRuntime` (Hermes adapter) | Returns typed proposals (`AgentProposal` union) or `Abstain` / `NeedEvidence` |
-| Side effects (browse, message, schedule) | Hermes behind `EvidenceBrowser` / gateway adapters | Bounded by request contracts (domains, fields, max actions, forbidden actions) |
+| Investigation phases and acquisition selection | `InvestigationService` + `MinimumDataPolicy` | Ledger-guarded phase machine, bounded budgets and deterministic request selection |
+| Browser execution / message delivery | `EvidenceBrowser` / Telegram adapters | Bounded by request contracts (domains, fields, max actions, forbidden actions); live browser execution uses Hermes |
 | Trust of inputs | Kernel validation + `EvidenceVerifier` | Telegram/browser/model text is data; only verifier verdicts mark evidence VERIFIED/REJECTED |
 | Epistemic authority | `policies.promotion` | Rung-by-rung; model rationale never consulted |
 | Safety authority | `policies.safety` | GREEN/AMBER/RED; RED fails closed everywhere |
 | Approval authority | Parent, recorded as `APPROVAL_GRANTED` from an authenticated channel | Bound to approver, intervention digest, expiry, single use |
 | Truth / history | `serene.domain_events` ledger | Append-only, hash-chained; projections are disposable |
-| Memory writes | Memory Committer (branch B) via `MemoryRepository.commit` | Ledger-backed authorization only |
+| Memory writes | `MemoryCommitter` via `MemoryRepository.commit` | Deterministic Critic and ledger-backed authorization only; Dream drafts cannot write directly |
 
 Every ledger append passes, in order: closed-taxonomy + payload-schema check →
 actor-kind and verification-status permissions → hash-chain verification of the
@@ -79,9 +81,10 @@ Admission *recomputes* the decision for every authority-bearing event, so even a
 
 ## 4. Hermes boundary
 
-Hermes (NousResearch/hermes-agent, pinned to tag `v2026.9.24`) is replaceable
-infrastructure for reasoning, tools, skills, the Telegram gateway, the browser
-and model routing.
+Hermes is replaceable infrastructure for reasoning, browser tools and model
+routing. The installed integration uses its OpenAI-compatible Responses API;
+Serene owns the authenticated Telegram ingress and investigation controller.
+See [runtime.md](runtime.md) for the transport contract and tested setup.
 
 | Hermes may | Hermes must never |
 | --- | --- |
@@ -90,8 +93,9 @@ and model routing.
 | Deliver Telegram messages; relay parent callbacks to the channel adapter | Turn message text into an approval (approval requires a channel receipt from the authenticated adapter, on `TELEGRAM`/`WEB_APP` source) |
 | Keep its own conversational memory | Be read as Serene memory or belief (its memory is context, never authority) |
 
-Only `serene/adapters/hermes/` may import Hermes. The current adapter fails
-closed (`HermesNotConfigured`) until branch A implements it.
+Only `serene/adapters/hermes/` may integrate the Hermes runtime. Missing live
+configuration fails closed; the canonical demo instead supplies scripted
+transport responses through this same adapter. It does not bypass admission.
 
 ## 5. Two representative trajectories
 
@@ -118,9 +122,9 @@ Each refusal raises `AdmissionRejected` and leaves the stream byte-identical.
 | --- | --- | --- |
 | Domain events | `serene.domain_events` (Supabase Postgres) | Truth; append-only, hash-chained per child |
 | Read models | `serene.projection_state` / in-process `KernelState` | Disposable; rebuilt by replay |
-| Durable reviewed knowledge | `memory_repo/` (Git + Markdown) | Written only by the Memory Committer (branch B) |
+| Durable reviewed knowledge | `memory_repo/` (Git + Markdown) | Written only by the Memory Committer |
 | Runtime conversation / scratch | Hermes | Advisory context only |
-| Telemetry | neatlogs | Opaque ids only; never read back for decisions |
+| Telemetry | NeatLogs / recording sink | Redacted diagnostic metadata; never read back for decisions. Known audit gaps are recorded in [privacy.md](privacy.md) |
 
 ## 7. Integrity and concurrency
 
@@ -146,26 +150,26 @@ Each refusal raises `AdmissionRejected` and leaves the stream byte-identical.
 | D7 | Information value and acquisition order are **ordinal** | Numeric expected information gain | No fake precision; deterministic | Coarser ranking |
 | D8 | No statistical causal inference | DoWhy-style estimation | Out of scope; N-of-1 support is recorded, not estimated | Level 4 means "tested with supporting outcome", not "causal effect estimated" |
 
-## 9. Implemented vs planned
+## 9. Implementation and demo boundaries
 
-Implemented here: domain contracts (#1), ledger + hash chain + taxonomy (#3, #4,
-#5), projections (#6), lineage validation/tracing (#7), ladder + gate + every
-transition tested (#17, #18, #19), GREEN/AMBER/RED + forbidden RED (#22, #23),
-approval lifecycle core (#24), ports incl. `AgentRuntime` / `EvidenceBrowser` /
-`EvidenceVerifier` contracts (#2, #15 contracts only), neatlogs seam (#52),
-cfo.ai seam (#55), Inspect AI scaffold (#41), CI gates (#58), secret/PII scan (#59).
+| Capability | Implementation / evidence | Issues |
+| --- | --- | --- |
+| Domain, ledger, replay, lineage | `serene/domain`, `ledger`, `projections`, `lineage`; real Postgres and deterministic tests | #1–#8 |
+| Investigation and evidence | `serene/investigation`, `evidence`, `adapters/browser`; independent re-fetch verifier | #9–#16, #21 |
+| Promotion, safety, approval and trials | `serene/policies`, `experiments`; adversarial authority tests | #17–#26 |
+| Causal Twin and reviewed memory | `serene/causal`, `memory`, `adapters/git_memory.py`; accepted/rejected Dream patches | #27–#32 |
+| Runtime telemetry and economics | NeatLogs adapter (#52); genuine synthetic cfo.ai Scenario and local integer model (#55) | #52, #55 |
+| Canonical synthetic demonstration | Real Telegram channel, real controller/verifier/lifecycle/Dream; offline external I/O; repeatable reset | #56, #57 |
+| Evaluation and release assurance | Inspect tasks and fail-closed scorer gate implemented; controlled live result pending; privacy/required-check gaps remain | #41–#51, #53, #58, #59 |
 
-Planned: see [parallel-handoff.md](parallel-handoff.md).
+The web app is a tested read-only synthetic shell; the canonical E2E artifact is
+the demo's JSON/HTML report. It is not a claim that the web shell is wired to a
+live family database. [parallel-handoff.md](parallel-handoff.md) is historical
+branch-planning context, not current delivery status.
 
-Branch B (`feat/trust-experiments-memory`) adds: explicit ladder transition
-table and strengthened Promotion Gate incl. Level-5 counterevidence rules
-(#17-#20), approval binding + AMBER escalation (#24), N-of-1 lifecycle with
-`WAITING_FOR_OUTCOME` timeout (`serene/experiments`, #25, #26), learning
-validity (#20), Causal Twin relationship state (`serene/causal`, #27), Git +
-Markdown memory with Critic, single-writer Memory Committer and Dream
-(`serene/memory`, `serene/adapters/git_memory.py`, #28-#32), parent/caregiver
-RLS (#8), Authority & Safety and Epistemic Correctness scorers (#46, #47) and
-the cfo.ai cost-constrained acquisition decision (#55).
+Non-goals: clinical diagnosis/treatment, statistical causal effect estimation,
+unsupervised interventions, autonomous approval, model-written durable memory,
+production family-data hosting, and a new orchestration/evaluation platform.
 
 ## 10. Excluded technology (MVP)
 
@@ -173,9 +177,9 @@ the cfo.ai cost-constrained acquisition decision (#55).
 | --- | --- |
 | Graphiti, Supermemory, Vektori, Mem0, Hindsight | Memory must be inspectable Git + Markdown with a single writer |
 | OpenClaw | Hermes is the runtime |
-| LangGraph, Temporal, Restate, Hatchet, DBOS | Orchestration is Hermes-owned; the kernel retains authority |
+| LangGraph, Temporal, Restate, Hatchet, DBOS | The existing ledger-backed investigation controller and bounded Hermes execution suffice for this demo |
 | Ax | Prompts are not the authority boundary |
 | DoWhy, pgmpy, Cleanlab | The epistemic engine is deterministic and custom |
 | OPA, OpenFGA, SpiceDB | Authorization is Supabase RLS + kernel code |
 | SurrealDB, ElectricSQL | Supabase/PostgreSQL is canonical |
-| PostHog, Jev | neatlogs + Entire + cfo.ai cover observability, provenance and economics |
+| PostHog, Jev | NeatLogs is the existing tracing seam; adding another service is unnecessary. Entire's #54 provenance limitation is not evidence of a completed integration |

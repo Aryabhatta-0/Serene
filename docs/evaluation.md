@@ -1,16 +1,21 @@
 # Serene Evaluation
 
-> **Status:** design specification. Implemented by issues #41–#51, #53, #58.
+> **Status:** Inspect tasks, deterministic scorers, replay/rescore tooling and
+> regression-gate code are implemented (#41–#51). Historical live measurements
+> exist; they do not establish a controlled win. The separate controlled-dev/1
+> experiment is still running as of 2026-10-12. #53 remains open pending its
+> final verdict and preserved trace evidence. #58 lacks required merge checks.
 
 ## 1. Goal
 
-Prove that Serene's epistemic architecture beats ordinary assistant/memory
-approaches — **using equivalent information, model and tool budgets** — and
-guard against regressions deterministically.
+Measure whether Serene's epistemic architecture improves on ordinary
+assistant/memory approaches under declared information/model/tool budgets,
+and guard against regressions deterministically. This is a goal, not a claim
+that the present live results establish superiority.
 
 ## 2. Harness (#41)
 
-Scaffold implemented: `eval/tasks/kernel_invariants.py` runs five frozen,
+`eval/tasks/kernel_invariants.py` runs five frozen,
 deterministic kernel scenarios (full ladder, level skip, unverified evidence, RED
 with forged approval, tampered history) with an external exact-match scorer and
 no model calls:
@@ -31,7 +36,9 @@ scoring is done by deterministic scorers over captured structure.
 | A — Plain Hermes (#42) | Same model/task/information/basic tools | Serene epistemic architecture |
 | B — Hermes + ordinary memory/RAG (#43) | Same history, browser, model, tool budget | Ladder, Promotion Gate, lineage governance, controlled investigation loop, Dream verification, experiment policy |
 
-Serene is only interesting if it beats these at equal budget.
+Matched budgets are a design requirement; measured consumption, model availability
+and historical protocol validity must also be reported. A synthetic scripted
+demo is an integration test, not evidence that a live model beats either baseline.
 
 ## 4. Scenarios (#44, #45)
 
@@ -108,6 +115,40 @@ changed are archived byte-for-byte under `eval/reports/archive/`, never regenera
 
 ## 7. Measured improvement story (#53)
 
-The hackathon requires one **measured before -> after** improvement: capture a
-real failure (e.g. premature causation), diagnose it from neatlogs traces, make
-an architectural correction, and preserve the measurable before/after evidence.
+Issue #53 requires exactly one genuine **failure -> trace diagnosis -> architecture
+change -> measured result** story. Assess it only after controlled-dev/1 finishes.
+Incomplete runs, invalid harnesses, a new scorer, or a deterministic scripted
+success cannot supply that result. Leave #53 open if the evidence does not qualify.
+
+## 8. Published results and their limits
+
+The [2026-10-11 live report](live-eval-2026-10-11.md) records six synthetic Serene
+runs at commit `89e41cd`: strict success 0/6, verified evidence 5/5, and six
+unnecessary questions. Plain Hermes and ordinary-memory baselines also scored
+strict success 0/6. Serene used 83 model calls and 988,176 tokens; the baselines
+used six calls each. Monetary spend was not reported. This historical comparison
+does not prove an equal-consumption improvement. Its exact tables, versions and
+NeatLogs receipts remain the source of record.
+
+Historical #67 DEV is FAIL, paired replay INCONCLUSIVE, and live-gate/3 and
+live-gate/4 INVALID; see [v3 decision](shared-prefix-dev-v3-decision.md),
+[v4 record](live-gate-v4.md) and [v5 record](live-gate-v5.md). These historical
+records are preserved, not reinterpreted as a successful product result.
+Controlled-dev/1 runs in its separate frozen checkout. This documentation work
+does not alter or rerun it, #67/#69, frozen tapes/scorers or holdout.
+
+## 9. CI, authority and non-goals
+
+CI runs backend/property/real-Postgres migration tests, Ruff/mypy, frontend
+typecheck/unit/build, Playwright desktop/tablet/mobile, and all three Inspect
+smoke tasks. `scripts/inspect_gate.py` requires every sample of every named task
+to be CORRECT; a safety or promotion failure fails CI. Main currently has no
+required-check branch protection, so #58 stays open despite these jobs existing.
+
+Scorers are external deterministic code; the evaluated agent cannot grade itself
+or rewrite the oracle. Gates refuse missing/incompatible evidence instead of
+manufacturing a score. There is no new evaluation protocol, favorable rerun,
+holdout tuning, clinical validation, population-level causal claim or statistical
+significance claim in this sprint. Inspect and existing gates suffice; Ax or an
+LLM-as-judge service would add no needed authority assurance. Broader excluded
+technology decisions are in [architecture.md](architecture.md).
