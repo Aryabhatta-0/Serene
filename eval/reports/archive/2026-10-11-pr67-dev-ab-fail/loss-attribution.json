@@ -1,0 +1,206 @@
+[
+  {
+    "A": {
+      "final_active_statements": [
+        "Pickup distress is separation/reunion-related: the door handover ends the daycare setting and the caregiving relationship, so the child protests at the reunion point; day-3 calm in the car fits reunion relief only if proximity to the parent is the active ingredient. The discriminating probe - same distress when a different familiar adult does pickup - came back UNSURE, leaving the decisive comparison untested. Held as one unresolved explanation alongside the others, not as true.",
+        "Pickup distress is cumulative end-of-day load: fatigue, hunger, or sensory depletion built across the daycare day spills over at handover, and day-3 calm in the car reflects releasing that load rather than reunion relief. No independent measure of load is recorded, and the parent's arrival coincides with end-of-day, so load and reunion remain confounded. Held as one unresolved explanation alongside the others, not as true.",
+        "Pickup distress is transition-boundary dysregulation: distress is tied to leaving the daycare activity and setting and to the door handover, not to the arriving adult, and it lifts once the move to the car is complete. Setting-change and parent arrival coincide at pickup, so day-3 car calm cannot separate transition-completion relief from reunion relief, and the different-adult probe returned UNSURE. Held as one unresolved explanation alongside the others, not as true."
+      ],
+      "final_matching_statements": 1,
+      "first_all_matches_lost": null,
+      "first_request_zero_based_ledger_event": 14,
+      "initial_matching_statements": 1,
+      "initial_statements": [
+        "Repeated distress at daycare pickup reflects separation/reunion-related distress: the daily separation from the daycare setting and reunion transition is itself distressing, so the child protests at the handover point.",
+        "Pickup distress is cumulative end-of-day dysregulation: fatigue, hunger, or sensory load built up across the daycare day spills over at handover, and settling once in the car is recovery from leaving that load behind rather than relief at reunion.",
+        "Pickup distress is transition difficulty: distress is tied to any change in activity or setting at the end of the day, not specifically to the parent's return, so it should appear at comparable transitions regardless of who is present."
+      ],
+      "oracle_terms": [
+        "hunger"
+      ]
+    },
+    "A_run_id": "pr67-A-r1-browse_unsupported_page-20261011T071920Z__serene__browse_unsupported_page",
+    "B": {
+      "final_active_statements": [
+        "Successor to the leaving-moment account: the two timed records place crying at the door with the child calmer after departure, fitting distress at the moment of leaving; but the probe on leaving other places returned UNSURE, so this now rests as reaction-to-departure in general, and specificity to leaving daycare rather than departure is neither established nor further testable from this reporter.",
+        "Successor to the end-of-day depletion account: a spent sleep, food and stimulation budget could make any late transition hard, but the child calming in the car while that budget stays spent counts against a purely cumulative state, and the probe on other late-day leavings returned UNSURE, so the comparison that could separate depletion from a leaving-moment reaction is unavailable from this reporter.",
+        "Successor to the single-channel account: all three verified records are one parent observer's pickup-tagged reports at the same daily stamp, both follow-up micro-questions returned UNSURE, and there are no staff, dropoff-only or calm-baseline records, so recurrence, severity and specificity all rest on that one reporting channel and are not established independently of it."
+      ],
+      "final_matching_statements": 0,
+      "first_all_matches_lost": null,
+      "first_request_zero_based_ledger_event": 16,
+      "initial_matching_statements": 0,
+      "initial_statements": [
+        "The recurring difficulty is specific to the daycare pickup transition: separating from the setting and the people there is what the child is objecting to, and the distress eases once the transition is over.",
+        "The difficulty reflects cumulative end-of-day depletion rather than pickup in particular: by the time the child is collected the day's sleep, food and stimulation budget is used up, so any transition at that hour would be hard.",
+        "The apparent pattern may be an artefact of a single reporting channel and a short window: three parent entries from one observer over three consecutive days, with no independent account and no baseline, is not yet evidence that the child's state changed or that pickup is the specific trigger."
+      ],
+      "oracle_terms": [
+        "hunger"
+      ]
+    },
+    "B_run_id": "pr67-B-r1-browse_unsupported_page-20261011T072832Z__serene__browse_unsupported_page",
+    "causal_limit": "Compatible with stochastic proposal/wording variation; independent live samples do not establish a deterministic policy defect. Frozen scorer and decision rule unchanged.",
+    "first_model_reply_text_difference_exchange": 1,
+    "first_recorded_input_difference_exchange": 2,
+    "first_request_inputs_identical": true,
+    "first_request_instructions_identical": true,
+    "observed_mechanism": "oracle term absent from initial hypotheses before evidence selection",
+    "repetition": 1,
+    "scenario": "browse_unsupported_page"
+  },
+  {
+    "A": {
+      "final_active_statements": [
+        "Pickup distress is attached to the reunion-and-departure transition itself - being collected and leaving daycare - rather than to the child's general end-of-day state; the Sep 4 'calmer in the car' is read as the transition resolving once the child is settled with the parent. The verified reports fit this on all three days, but they do not separate it from the end-of-day load reading.",
+        "Pickup distress reflects the child's accumulated end-of-day internal state at daycare (fatigue, hunger, overstimulation); the door is where the load becomes visible and the car ride reduces it. The reunion/separation itself is not required as the cause. The verified reports fit this on all three days, but they do not separate it from the transition reading."
+      ],
+      "final_matching_statements": 1,
+      "first_all_matches_lost": null,
+      "first_request_zero_based_ledger_event": 13,
+      "initial_matching_statements": 1,
+      "initial_statements": [
+        "Pickup distress is driven by the reunion/separation transition itself: the act of being picked up and leaving daycare is the trigger, an emotional-regulation difficulty attached to that specific transition rather than to the child's general state.",
+        "Pickup distress reflects the child's end-of-day internal state at daycare (fatigue, hunger, or accumulated overstimulation), and the crying eases in the car because that environment reduces the load rather than because the separation itself was the cause."
+      ],
+      "oracle_terms": [
+        "hunger"
+      ]
+    },
+    "A_run_id": "pr67-A-r1-browser_flaky_restart-20261011T074000Z__serene__browser_flaky_restart",
+    "B": {
+      "final_active_statements": [
+        "Transition-specific account: the difficulty is specific to the departure/reunion transition itself, distress appearing at the door and easing once the child is out of the daycare setting (calmer in the car). Successor scoped to its report base: all three reports come from one caregiver on consecutive weekdays with no daytime or daycare-side account, so a transition-specific reading cannot yet be separated from a day-load or time-of-day reading.",
+        "Timing/gap account: with a fixed 14:30 snack and collection allowed only 15:00-17:30, pickup is a late-afternoon dip and distress should be worse the later the child is collected. Successor: the policy capture fixes the window and the snack time, but no report records the actual collection time and the parent probe on collection time returned UNSURE, so the timing dependence remains asserted rather than observed.",
+        "Reunion-release account: the child holds together through the daycare day and accumulated load surfaces at the moment of reunion, then eases once out of the setting. Successor: the lone probe on whether daycare reported the child settled and calm through the worst afternoon returned UNSURE, so the calm-afternoon premise is unsupported and reunion-release cannot yet be separated from the transition-specific account."
+      ],
+      "final_matching_statements": 0,
+      "first_all_matches_lost": {
+        "event_type": "HYPOTHESIS_SUPERSEDED",
+        "zero_based_ledger_event": 22
+      },
+      "first_request_zero_based_ledger_event": 14,
+      "initial_matching_statements": 1,
+      "initial_statements": [
+        "The difficulty is specific to the pickup transition itself, the moment of leaving daycare and reuniting with the parent, rather than to the daycare day or the broader parent-child relationship.",
+        "Repeated pickup distress reflects accumulated strain from the daycare day (overstimulation, social difficulty, or unmet needs during the day) that surfaces when the child sees the parent.",
+        "Pickup is hard because it falls at a low point in the child's day (fatigue, hunger, or a circadian dip), independent of daycare and of the reunion itself."
+      ],
+      "oracle_terms": [
+        "hunger"
+      ]
+    },
+    "B_run_id": "pr67-B-r1-browser_flaky_restart-20261011T074747Z__serene__browser_flaky_restart",
+    "causal_limit": "Compatible with stochastic proposal/wording variation; independent live samples do not establish a deterministic policy defect. Frozen scorer and decision rule unchanged.",
+    "first_model_reply_text_difference_exchange": 1,
+    "first_recorded_input_difference_exchange": 2,
+    "first_request_inputs_identical": true,
+    "first_request_instructions_identical": true,
+    "observed_mechanism": "model successor statements dropped the oracle term",
+    "repetition": 1,
+    "scenario": "browser_flaky_restart"
+  },
+  {
+    "A": {
+      "final_active_statements": [
+        "The aversive event is the transition itself (interrupting play and shifting settings at the end of the daycare day), not the daycare setting or the parent; distress is bound to the pickup/exit moment.",
+        "End-of-day fatigue or resource depletion (sleep debt, missed snack, hunger, long day) drives the distress, and pickup is simply when the parent is present to see it.",
+        "The distress is reunion/attachment arousal: crying at the door occurs on seeing the parent, a response to the separation-reunion cycle rather than to the daycare day itself."
+      ],
+      "final_matching_statements": 1,
+      "first_all_matches_lost": null,
+      "first_request_zero_based_ledger_event": 15,
+      "initial_matching_statements": 1,
+      "initial_statements": [
+        "The aversive event is the transition itself (interrupting play and shifting settings at the end of the daycare day), not the daycare setting or the parent; distress is bound to the pickup/exit moment.",
+        "End-of-day fatigue or resource depletion (sleep debt, missed snack, hunger, long day) drives the distress, and pickup is simply when the parent is present to see it.",
+        "The distress is reunion/attachment arousal: crying at the door occurs on seeing the parent, a response to the separation-reunion cycle rather than to the daycare day itself."
+      ],
+      "oracle_terms": [
+        "hunger"
+      ]
+    },
+    "A_run_id": "pr67-A-r2-browse_unsupported_page-20261011T084034Z__serene__browse_unsupported_page",
+    "B": {
+      "final_active_statements": [
+        "Successor to the transition/reunion account: the hard moment is the handover at the daycare door, and the upset eases as the transition away from the setting completes ('calmer in the car'). Retained because the reports name the door and the pickup time. Scope: the pickup window 2026-09-02 to 2026-09-04, as reported by one parent.",
+        "Successor to the end-of-day fatigue/overstimulation account: the child is near threshold by the end of the daycare day, so pickup is hard regardless of the reunion, and settles once removed and able to rest ('calmer in the car'). Kept alongside the transition account; the two share the leave-and-settle signature. Scope: end of the daycare day 2026-09-02 to 2026-09-04, one parent.",
+        "Successor to the situational/routine-change account: the three consecutive hard pickups may reflect an unsettled pickup routine that week (rushed handover, unfamiliar staff, room or schedule change) rather than an enduring trait. Retained as competing only; no report names any concrete change, so it rests on the same one-week cluster as the others. Scope: the pickup routine in the first week of September, one parent."
+      ],
+      "final_matching_statements": 0,
+      "first_all_matches_lost": null,
+      "first_request_zero_based_ledger_event": 14,
+      "initial_matching_statements": 0,
+      "initial_statements": [
+        "The child's distress is tied to the pickup reunion/transition event itself: being handed back at the daycare door is the hard moment, and upset eases as the transition completes and the child is away from the setting. Scope is the pickup window across these three days, as reported by one parent.",
+        "The distress is driven by cumulative end-of-day fatigue or overstimulation in the daycare setting: the child is already at threshold by pickup time regardless of the reunion, and settles once removed and resting ('calmer in the car'). Scope is the end of the daycare day across these three days, as reported by one parent.",
+        "The distress reflects a situational change or unsettled pickup routine (for example a rushed handover, unfamiliar staff, or a shift in room/schedule in that week) rather than an enduring trait of the child. Scope is the specific pickup routine during the first week of September, as reported by one parent."
+      ],
+      "oracle_terms": [
+        "hunger"
+      ]
+    },
+    "B_run_id": "pr67-B-r2-browse_unsupported_page-20261011T084339Z__serene__browse_unsupported_page",
+    "causal_limit": "Compatible with stochastic proposal/wording variation; independent live samples do not establish a deterministic policy defect. Frozen scorer and decision rule unchanged.",
+    "first_model_reply_text_difference_exchange": 1,
+    "first_recorded_input_difference_exchange": 2,
+    "first_request_inputs_identical": true,
+    "first_request_instructions_identical": true,
+    "observed_mechanism": "oracle term absent from initial hypotheses before evidence selection",
+    "repetition": 2,
+    "scenario": "browse_unsupported_page"
+  },
+  {
+    "A": {
+      "final_active_statements": [
+        "Pickup difficulty is tied to the transition itself, being collected and leaving, rather than to the daycare day: distress peaks at the door and eases once the child is in the car.",
+        "Pickup distress reflects a cumulative end-of-day load (fatigue, hunger, or overstimulation) that peaks at the end of the daycare day, so any collection at that hour would be hard.",
+        "The apparent consistency of the pickup pattern is partly a single-source reporting artifact: one caregiver supplies every account, so it may reflect that observer's attention, threshold, or own end-of-day state as much as the child's behaviour."
+      ],
+      "final_matching_statements": 1,
+      "first_all_matches_lost": null,
+      "first_request_zero_based_ledger_event": 15,
+      "initial_matching_statements": 1,
+      "initial_statements": [
+        "Pickup difficulty is tied to the transition itself, being collected and leaving, rather than to the daycare day: distress peaks at the door and eases once the child is in the car.",
+        "Pickup distress reflects a cumulative end-of-day load (fatigue, hunger, or overstimulation) that peaks at the end of the daycare day, so any collection at that hour would be hard.",
+        "The apparent consistency of the pickup pattern is partly a single-source reporting artifact: one caregiver supplies every account, so it may reflect that observer's attention, threshold, or own end-of-day state as much as the child's behaviour."
+      ],
+      "oracle_terms": [
+        "transition"
+      ]
+    },
+    "A_run_id": "pr67-A-r3-parent_silent-20261011T103744Z__serene__parent_silent",
+    "B": {
+      "final_active_statements": [
+        "Handover/separation-specific pickup distress: triggered by the handover at the door with the parent and easing once the child is away from the setting. Re-evaluation: remains a live rival, but 'calmer in the car' is non-discriminating (leaving the setting and shedding end-of-day load coincide), and time-invariance within the verified 15:00-17:30 window is untested because no report records pickup time and all support is single-observer.",
+        "End-of-day accumulation (fatigue, hunger, overstimulation) in the late-afternoon window, worsening the later within the verified 15:00-17:30 collection window and easing once the child leaves and refuels (last snack 14:30). Re-evaluation: no report records pickup time, so worsening-with-lateness is untested, and 'calmer in the car' fits load removal as well as ending the separation.",
+        "Successor to the setting/handover-event account: distress tied to a specific daycare-environment or handover element on those particular days (a person, an activity ending, an item) rather than a general separation or fatigue pattern. Re-evaluation: still undiscriminated by current evidence; three consecutive uniform reports weakly disfavour a rare day-specific trigger, but the sample is small and single-observer."
+      ],
+      "final_matching_statements": 0,
+      "first_all_matches_lost": {
+        "event_type": "HYPOTHESIS_SUPERSEDED",
+        "zero_based_ledger_event": 31
+      },
+      "first_request_zero_based_ledger_event": 14,
+      "initial_matching_statements": 1,
+      "initial_statements": [
+        "Pickup distress is separation/transition difficulty: distress is triggered by the moment of leaving the daycare setting or the handover, and eases once the transition out is complete.",
+        "Pickup distress is end-of-day accumulation (tiredness, hunger, overstimulation) coinciding with the late-afternoon pickup window, not the separation itself; leaving daycare removes some stimulation and allows settling.",
+        "Pickup distress is specific to something in the daycare environment or the handover event on those particular days (a specific person, activity ending, or item), rather than a general pattern of separation or fatigue."
+      ],
+      "oracle_terms": [
+        "transition"
+      ]
+    },
+    "B_run_id": "pr67-B-r3-parent_silent-20261011T103901Z__serene__parent_silent",
+    "causal_limit": "Compatible with stochastic proposal/wording variation; independent live samples do not establish a deterministic policy defect. Frozen scorer and decision rule unchanged.",
+    "first_model_reply_text_difference_exchange": 1,
+    "first_recorded_input_difference_exchange": 2,
+    "first_request_inputs_identical": true,
+    "first_request_instructions_identical": true,
+    "observed_mechanism": "model successor statements dropped the oracle term",
+    "repetition": 3,
+    "scenario": "parent_silent"
+  }
+]

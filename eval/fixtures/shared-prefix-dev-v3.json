@@ -1,0 +1,639 @@
+{
+  "experiment": "pr67-ab-20261011",
+  "historical_protocol_sha256": "8269c330cab202e7202aef9816e50795be77cd7679244125de00e98013f3a49d",
+  "historical_verdict": "FAIL",
+  "protocol_version": "live-gate/3",
+  "selection": "All 36 completed run identities in original index order; no outcome eligibility/filtering. Fixed source study, not all studies on disk.",
+  "source_protected_sha256": {
+    "eval/fixtures/pages/daycare-pickup-policy.html": "c2be99557c2396a3145f98d8524b630dca74475b6932b311a861e800bf4614b5",
+    "eval/runners/runtime_live_compare.py": "ccb5eebf77a08dcf714459ea596e8d766de5212e5e50e42fe7cb37a0285fb9bd",
+    "eval/scenarios/runtime_live.py": "53ec44b5a5e645e5ca9264ce2447b5a00e9def65b6688675460ca355b3fb61e1",
+    "eval/scenarios/runtime_scenarios.py": "370d2db1807febeda3f7fdc660b51c16a9ca67ab746e50135daac6568267d9f5",
+    "eval/scorers/runtime_scorers.py": "4fc034db6eb4dd4e088b5e7e6054233eba6c89a20cec10267010c11e2e3a96f3",
+    "serene/adapters/browser/fetch.py": "67ab8a3f3a7749d74ac8494e5192afbb0bade1a0657e0023a1f9d648f4e096db",
+    "serene/adapters/browser/hermes_browser.py": "c83698735182252064fd0155c850dea86e38124cfbc7efc7d6f9ba4ee1b2ba98",
+    "serene/adapters/hermes/runtime.py": "4ab8967c4b7b6dd80a61b9114e3e44ad6abce6ca7f1c19a697716698769129f6",
+    "serene/adapters/hermes/transport.py": "7ce72a0880b5076212b6050ab6b9d8c87aa48abc6e4c6789760917a138bd3ced",
+    "serene/adapters/hermes/wire.py": "1cb77037d448e1bd22a4d14fcc8907e3a7d4782fba603051b54d0c7d7a9ee110",
+    "serene/adapters/neatlogs_sink.py": "e5b62918bda8c1bb0b4cd53bdb2c355522d846163cbaaceb592a044bdcfaa32c",
+    "serene/evidence/verifier.py": "77466d4e3c017f5fe67acc72762718bfc76a57d0ca6a63ba5c46dc48bc5897cd",
+    "serene/observability/telemetry.py": "ef613cbc3c594a1ba7bc774f537c2c1e2f95d49662264e26fcef0713bb8eb527",
+    "serene/policies/scorers.py": "b41feffed76b5f1f0436a9c8308974802f7de54177802c038e589b9814d6959a",
+    "tests/evidence_support.py": "d0af29bbc57fb196f8de24a9263597508d149408f93d0c12466186e8b5e400ef",
+    "tests/investigation_support.py": "54da15b8b6d158856fa3ec1946ba76809c73fd3d876c4cc9c3959f82aea92a38"
+  },
+  "tapes": [
+    {
+      "exchange_count": 15,
+      "files": {
+        "native/manifest.json": "5f965e99da6f5aed04963d30e8a6ec6eed99de38a9a4b8b88a026a1a0cc16dcd",
+        "native/raw/serene__ask_discriminates.jsonl": "009624be6f3d9f47a26e91a4786ec2f3b346dcef138c97ac3d7b6ac3ddaea19c",
+        "native/scores.json": "da1bbe8cd2657f267b7381736b5e7f9f99c492732aacbcf3f7e86632a64170a5"
+      },
+      "index": 1,
+      "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+      "repetition": 1,
+      "scenario": "ask_discriminates",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "01-pr67-A-r1-ask_discriminates",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 16,
+      "files": {
+        "native/manifest.json": "f539370c56da4d62d9bfea7c3b7b20f4692076a81cf8a3a4d1c85975524098f4",
+        "native/raw/serene__ask_discriminates.jsonl": "2b77118b5c76b7eab76b3b3216504943147a6f160fec3d465c967ccdd6ef32d5",
+        "native/scores.json": "89506e3013b708eca6a67a0911aca27854efe31aedfdf99522851ebaa1f68100"
+      },
+      "index": 2,
+      "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+      "repetition": 1,
+      "scenario": "ask_discriminates",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "02-pr67-B-r1-ask_discriminates",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 13,
+      "files": {
+        "native/manifest.json": "c04cd3ce3c3273b2acb431c263ef312387aae7e64a4c94836fbf888da4fd288c",
+        "native/raw/serene__browse_verified.jsonl": "8e9bf780ff0676336231d84ba38f43893788924445eda781029716b80e70fd35",
+        "native/scores.json": "cff92e3b49883eebcc5d40243bf1d96e66211d366e4148c2653aec6375d87e65"
+      },
+      "index": 3,
+      "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+      "repetition": 1,
+      "scenario": "browse_verified",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "03-pr67-A-r1-browse_verified",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 16,
+      "files": {
+        "native/manifest.json": "d844b55a39feb5b0e27bc53d9c18b6573c474a9c492f5459c9e944a401d05262",
+        "native/raw/serene__browse_verified.jsonl": "ebc4461b194c53a5d0be9dbebc026206468414da1d616e91fdcc5f6383791964",
+        "native/scores.json": "549bd5c190d3abbd5b7e6d04f2b66433aaec84317da706bde07605302505b5af"
+      },
+      "index": 4,
+      "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+      "repetition": 1,
+      "scenario": "browse_verified",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "04-pr67-B-r1-browse_verified",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 17,
+      "files": {
+        "native/manifest.json": "2f4971c3f29cc227006567b1b12d5c02780ccad3b7c8b3753e147559f0cc6cb0",
+        "native/raw/serene__browse_unsupported_page.jsonl": "91f80119c86545479e2f88cc374ce9a5cb89c55cb067b71fed26a3099d004231",
+        "native/scores.json": "97a007c6c63ff9ab33e109e7dedb0fe5c737c7d6db8411548b683b027be58907"
+      },
+      "index": 5,
+      "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+      "repetition": 1,
+      "scenario": "browse_unsupported_page",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "05-pr67-A-r1-browse_unsupported_page",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 16,
+      "files": {
+        "native/manifest.json": "6ec23317e5e5a82c2bd4af6d041f9edda967d6ef7329b371371253c3f7dab26d",
+        "native/raw/serene__browse_unsupported_page.jsonl": "403756e71811f41d124d1d8d14cf41997fc36c35bef99a3eb84ff629e11bd19c",
+        "native/scores.json": "1e9b897e264eff4c511c5bca2bfab78add4c116a973aaa93c377feafc6ae1802"
+      },
+      "index": 6,
+      "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+      "repetition": 1,
+      "scenario": "browse_unsupported_page",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "06-pr67-B-r1-browse_unsupported_page",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 19,
+      "files": {
+        "native/manifest.json": "29827745f295c77fd345ae2a2ada00f1fad0bdb370219dd1bcea94a877c0b5fd",
+        "native/raw/serene__browser_flaky_restart.jsonl": "9a0757b3197b6f4bad9b6502a6dcffe487dfe0b9fe049f719b2cf4f1038d5e1f",
+        "native/scores.json": "6595ae71795b49c93acedc3a4d4f7af5ec7ae77612d1328450ef748257331bc0"
+      },
+      "index": 7,
+      "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+      "repetition": 1,
+      "scenario": "browser_flaky_restart",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "07-pr67-A-r1-browser_flaky_restart",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 19,
+      "files": {
+        "native/manifest.json": "1e74ad52071779478a486ec5da976d991e80022834d47a41837b8a91a48b29f9",
+        "native/raw/serene__browser_flaky_restart.jsonl": "40fd76b7515f738fd8e23008817931a487b743019998795f03cde814240a15f3",
+        "native/scores.json": "c6fb47afad1fcfa3f384b7d6fc4d285841885c4656692b2def27135edfdef88d"
+      },
+      "index": 8,
+      "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+      "repetition": 1,
+      "scenario": "browser_flaky_restart",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "08-pr67-B-r1-browser_flaky_restart",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 5,
+      "files": {
+        "native/manifest.json": "1b94f386ca1fd5e262a6fa4667559ce141988108c2ffd7f251d7ded319f2c679",
+        "native/raw/serene__parent_silent.jsonl": "2485a27a108b279b40c7c9274f9254463772f3bbc01eba60a19035d237dc9a0c",
+        "native/scores.json": "7ab8f7e28247ce1056881f50a43e010a423c7729a25f6e8ebab2c662168c4726"
+      },
+      "index": 9,
+      "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+      "repetition": 1,
+      "scenario": "parent_silent",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "09-pr67-A-r1-parent_silent",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 10,
+      "files": {
+        "native/manifest.json": "2c9be1e99e3c35708a005e73b8182ba8bcacb52813eef883373adfb1def2a434",
+        "native/raw/serene__parent_silent.jsonl": "0e8b4538720d375881c3f04c4c7d7fc77ed05a643ce38ee09dd9e3d3e18badd0",
+        "native/scores.json": "1565dfb703e0549c6d8cc6506f30a6aa03d2e2be46710962c38a15fc14a20362"
+      },
+      "index": 10,
+      "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+      "repetition": 1,
+      "scenario": "parent_silent",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "10-pr67-B-r1-parent_silent",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 5,
+      "files": {
+        "native/manifest.json": "f133f7e1acd67b83d5064888e8be88a030bfcc8b75c4918d2d567c5cf641bd78",
+        "native/raw/serene__planner_down.jsonl": "ed979d5426b8a8cf12a0e4a0798a6e86ba47aa37a445bda1174c7e5004cb9c29",
+        "native/scores.json": "bfdbb3d3d81376d3225686d88d77a27ec0b37876e9f1c4b6da970684786dddd9"
+      },
+      "index": 11,
+      "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+      "repetition": 1,
+      "scenario": "planner_down",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "11-pr67-A-r1-planner_down",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 5,
+      "files": {
+        "native/manifest.json": "60c387d8ed8ea6f6cb0e3961e6e40cd8c7de29d554402d80a329080a43ff8924",
+        "native/raw/serene__planner_down.jsonl": "7e1fb4fab8a5c50937e1bd7cbd639dcb0d82ef3cd10fd61bb394536a3ef6f5e9",
+        "native/scores.json": "f03a3f65087303b70192f1f63ca7f97381bb37f0722a5c8c6b374c25a13ffb63"
+      },
+      "index": 12,
+      "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+      "repetition": 1,
+      "scenario": "planner_down",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "12-pr67-B-r1-planner_down",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 16,
+      "files": {
+        "native/manifest.json": "7b05259a97dd4f7e8ac395f444a37405ee8df3b76ebca202d89c7fc6cd36a211",
+        "native/raw/serene__ask_discriminates.jsonl": "7f67917670216d0eb6769a0451ad3e314aa9aec5ee327e1e580a2b75326d9348",
+        "native/scores.json": "48103a2d51a47b4e40518095fa3c4f3dcda87e37b7a51eb72bfc885d1cd477e7"
+      },
+      "index": 13,
+      "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+      "repetition": 2,
+      "scenario": "ask_discriminates",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "13-pr67-A-r2-ask_discriminates",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 15,
+      "files": {
+        "native/manifest.json": "3f82303c2f9100b6f04f73f5ff36749bf89f8ad3282b9554008f908b6d6b6fd3",
+        "native/raw/serene__ask_discriminates.jsonl": "5d1e5ca049e1b66146835fbff59f6682530b3b54b37c05a2fb07b515ffc4fad0",
+        "native/scores.json": "27c6ff46b3fb2e7c9554ac10df1699af3790cb85732ed8ac3903a1dacc643b15"
+      },
+      "index": 14,
+      "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+      "repetition": 2,
+      "scenario": "ask_discriminates",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "14-pr67-B-r2-ask_discriminates",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 17,
+      "files": {
+        "native/manifest.json": "8ecb9995dc5b9a34def6e57272b0f135aa36c1ebffd0c8656c6fcf5c0cf4b328",
+        "native/raw/serene__browse_verified.jsonl": "a548f53906f4feb6c683fe8176854d019bc3250c892984eefb43303527caf7a2",
+        "native/scores.json": "fdd698106f12a4c97b47273ca471110baa60c1b38983c7c717bf19f022c0c014"
+      },
+      "index": 15,
+      "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+      "repetition": 2,
+      "scenario": "browse_verified",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "15-pr67-A-r2-browse_verified",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 15,
+      "files": {
+        "native/manifest.json": "279eec14ee4df4f7f5847c47af51bd3e3fe19a619a1c9e456e5dbc834f2c12f3",
+        "native/raw/serene__browse_verified.jsonl": "a33106ca05fdad1c3cb32cdd15b18d9015f13ddbe65f64a8342f5125fa33bf6f",
+        "native/scores.json": "84f906bbe1befd990edb612a86729e01758b40ff1f6d1e4140ffe0e8220c2a83"
+      },
+      "index": 16,
+      "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+      "repetition": 2,
+      "scenario": "browse_verified",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "16-pr67-B-r2-browse_verified",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 8,
+      "files": {
+        "native/manifest.json": "ec1de0dea0fdab2d3084dace34921205fc7ed3175b38d0901b58f9348fc56c7f",
+        "native/raw/serene__browse_unsupported_page.jsonl": "8dbefb7546ba2c5baf1d9d77ce865fac9c526602dfc7778d009bc9c9dc20caf5",
+        "native/scores.json": "aa583e4c942778119c078aaad30ea7c6a7aa41dd6c8dffce783b6f5b3a03f9c3"
+      },
+      "index": 17,
+      "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+      "repetition": 2,
+      "scenario": "browse_unsupported_page",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "17-pr67-A-r2-browse_unsupported_page",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 17,
+      "files": {
+        "native/manifest.json": "d0caee189f5bf696314b430462d7cbe97b61616fae800a1db3ce7dcf25b9ba10",
+        "native/raw/serene__browse_unsupported_page.jsonl": "3fbd418ade95b0bff8f3759043079dc82852e7a878622ad7c5bb753d5a669ea1",
+        "native/scores.json": "67def1a25eeef8eaa5cdfefb7799240ea6c4b10db2b1744e5d402dfde46402d8"
+      },
+      "index": 18,
+      "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+      "repetition": 2,
+      "scenario": "browse_unsupported_page",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "18-pr67-B-r2-browse_unsupported_page",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 19,
+      "files": {
+        "native/manifest.json": "55079ce05d5a49c0e02720543e917084b85bd1832a656285525cdd2a64fea9a7",
+        "native/raw/serene__browser_flaky_restart.jsonl": "42ea8d6e84d3df872aa9a0788e045f8d8aa6eefb693b0726bc98706b274a93ef",
+        "native/scores.json": "086992f7b87167699ea926d413a9a1a74a9f90b4b6be86f19c9d4f1fe71f945f"
+      },
+      "index": 19,
+      "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+      "repetition": 2,
+      "scenario": "browser_flaky_restart",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "19-pr67-A-r2-browser_flaky_restart",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 18,
+      "files": {
+        "native/manifest.json": "0ab5e57a700558b1dac12103b4f0eaeef651383b614bb9b2acc49c59e5574b4c",
+        "native/raw/serene__browser_flaky_restart.jsonl": "4e0b2f0b5306c55a623992c7a080a447029bd6614e31f7dfee5cc31a022ee2ae",
+        "native/scores.json": "52127784070c388c4619bad6bb343d3d25b14a08530de1ab821db803b6ff3543"
+      },
+      "index": 20,
+      "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+      "repetition": 2,
+      "scenario": "browser_flaky_restart",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "20-pr67-B-r2-browser_flaky_restart",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 10,
+      "files": {
+        "native/manifest.json": "9b9a1193793467cf7c43f2a77ab408931e79aa5656d88d85e7366357cd6bbbeb",
+        "native/raw/serene__parent_silent.jsonl": "4dda6bd6ea3e083b591dea6c67d79c131aedeea7efa14dfcdfe7e09b8929d615",
+        "native/scores.json": "445c80d7dba8cd8dbcecd19d22261481da825f87520bfbc087497f2b255e4b9d"
+      },
+      "index": 21,
+      "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+      "repetition": 2,
+      "scenario": "parent_silent",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "21-pr67-A-r2-parent_silent",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 17,
+      "files": {
+        "native/manifest.json": "fdd761c6011cbf400b740c9311d4ea41123b9999edbfa355829df3f13600d0a0",
+        "native/raw/serene__parent_silent.jsonl": "54af82c86c888c1b45c9af0fcfccfe9940b2bf61cd7e47412eed0ce6a6f3d55c",
+        "native/scores.json": "f503c2de9ced268d2e506be1eab7cec611e7c60156922e232ff8323a1e9d7f54"
+      },
+      "index": 22,
+      "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+      "repetition": 2,
+      "scenario": "parent_silent",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "22-pr67-B-r2-parent_silent",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 5,
+      "files": {
+        "native/manifest.json": "906f2a826667150c316d9afb0e5c1375fccfc3c2eb719cd2d9e7192072d6e931",
+        "native/raw/serene__planner_down.jsonl": "63f3496462af1d9bfa476f953934a4e6c07d1fa2e2eaef2bf8daff3279a945fe",
+        "native/scores.json": "143b139e3434d5f75def19c8ce3cd5501095f766ff82c36f56e91ed75b899a7c"
+      },
+      "index": 23,
+      "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+      "repetition": 2,
+      "scenario": "planner_down",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "23-pr67-A-r2-planner_down",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 5,
+      "files": {
+        "native/manifest.json": "00d8df186fcdd5333ec10410abda5ac7e78c617ebd52961099844bf8b2e7d02d",
+        "native/raw/serene__planner_down.jsonl": "f4946d840ee96fe2cf59473e31988297a499211922dd4933b51b78de25292b96",
+        "native/scores.json": "487c469ad929032301fdb7e1911e4e5e4fed44789837705a4264c39a7eee253b"
+      },
+      "index": 24,
+      "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+      "repetition": 2,
+      "scenario": "planner_down",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "24-pr67-B-r2-planner_down",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 17,
+      "files": {
+        "native/manifest.json": "8384cc7eb382cbc61d09b513bd285246756faa2ee1afb7d5176c3b6ee40c1c3b",
+        "native/raw/serene__ask_discriminates.jsonl": "65a8fd05a0f740aa7b63a5adfeeca80204044daba8bc6f3b7de9a5b111587884",
+        "native/scores.json": "4408f2c647c7498caee9f6aff720b0c414de5bb5a41b9f99bb117a61aa0f2f44"
+      },
+      "index": 25,
+      "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+      "repetition": 3,
+      "scenario": "ask_discriminates",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "25-pr67-A-r3-ask_discriminates",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 14,
+      "files": {
+        "native/manifest.json": "c8b4190ffeb32974116d15805cddad3f3fb8e31eeffa2d236d971b54fa4c686b",
+        "native/raw/serene__ask_discriminates.jsonl": "04a9faabf2c2f15048a7c0f732318f0a47319210e304b4225c0298c72461ec42",
+        "native/scores.json": "599bb20669db9f776e5d5a6692c901f6f7ff5fd86174d0527c6cb966abf3fa5b"
+      },
+      "index": 26,
+      "oracle_sha256": "538ead311ec29f7382658a3959817e015a695719b79ce6ae1771910f590f0ca7",
+      "repetition": 3,
+      "scenario": "ask_discriminates",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "26-pr67-B-r3-ask_discriminates",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 15,
+      "files": {
+        "native/manifest.json": "7a33f850784d3bd1a592fe9acd88e30f2eb6df7fbc1e9b5929b46de54da6d605",
+        "native/raw/serene__browse_verified.jsonl": "667edeea42daabe3a1aa8774af8473913b77268d725023055c9139740b2c28d1",
+        "native/scores.json": "189604b182a4ae1e183b3331bdaede917c4d5cc7e689f66f5354f904c1ab5e51"
+      },
+      "index": 27,
+      "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+      "repetition": 3,
+      "scenario": "browse_verified",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "27-pr67-A-r3-browse_verified",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 16,
+      "files": {
+        "native/manifest.json": "6bb33782cabcc4383540a25a5082df210ecbf02884a17c54b285fad19f2e9ef5",
+        "native/raw/serene__browse_verified.jsonl": "ad29c1c674983e7dcc8cf0a8c1b219ec18c9f6909b1341f7b49f06bf11632831",
+        "native/scores.json": "bb529982590e41d3bfc811e7a61d5c52301f1e7c4135e62c3360e1463d692f82"
+      },
+      "index": 28,
+      "oracle_sha256": "bb503686d70f1d673832bffcd4730e167918042fb75ea231120a7c11c58fa527",
+      "repetition": 3,
+      "scenario": "browse_verified",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "28-pr67-B-r3-browse_verified",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 14,
+      "files": {
+        "native/manifest.json": "7dfca000ad47f57205e9a5916fef54d96cf164d8a15a50599a6b1c9c222f4d90",
+        "native/raw/serene__browse_unsupported_page.jsonl": "f51b9649cab9cd60f55ee67181a5c5a67590402f00f3e18ed4fda5717407fef0",
+        "native/scores.json": "b36c5c4a4d2c5c051f9910cfe53238de22153f9db79737ede7c0b5bc9729c915"
+      },
+      "index": 29,
+      "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+      "repetition": 3,
+      "scenario": "browse_unsupported_page",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "29-pr67-A-r3-browse_unsupported_page",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 18,
+      "files": {
+        "native/manifest.json": "2cc33c7c0193c6976a2c7531be3cec8d5ac8e76573fa637c34687310d79378a9",
+        "native/raw/serene__browse_unsupported_page.jsonl": "560d979d35c9c3f86d114c3bdf4804f777627d589ba35c41e2ffae48129c8302",
+        "native/scores.json": "b771727665d5d34076390e2c6a451c1a2d199e9ca0a82cf8629cddbbdc9170ec"
+      },
+      "index": 30,
+      "oracle_sha256": "d29bf3f9cbf324fbc41abe2b89ff6ce56cb11c432bae0e17481f03bb163835b3",
+      "repetition": 3,
+      "scenario": "browse_unsupported_page",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "30-pr67-B-r3-browse_unsupported_page",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 19,
+      "files": {
+        "native/manifest.json": "873a6c6515eacae0e9639dd53e2cacec26229e2303698aaed232e47e91e840e9",
+        "native/raw/serene__browser_flaky_restart.jsonl": "b8d475e29c5db47bd4a634df6e44cbb754964404afd1f93b53fba2ef930ec9a9",
+        "native/scores.json": "72e2d823455f0f7f54a0e57694edc13444424e8d078d6db7579b19a45e527399"
+      },
+      "index": 31,
+      "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+      "repetition": 3,
+      "scenario": "browser_flaky_restart",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "31-pr67-A-r3-browser_flaky_restart",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 17,
+      "files": {
+        "native/manifest.json": "9b3d451e4b0522aa6301e728224686917d1652fc98a2dbb00463d3c8a7fe298a",
+        "native/raw/serene__browser_flaky_restart.jsonl": "427cde7067f047e5a1952f7ccc6742867ff246d19db0885594a91e18b291bf05",
+        "native/scores.json": "852462b9b7375ea4cbf1b404f5f968abb546cdf516bc89ee55206af796660518"
+      },
+      "index": 32,
+      "oracle_sha256": "0b08af7a405778f6874fe74c73f81e0e98454c714f2bfc664f01783b6a463f51",
+      "repetition": 3,
+      "scenario": "browser_flaky_restart",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "32-pr67-B-r3-browser_flaky_restart",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 5,
+      "files": {
+        "native/manifest.json": "f1a5dece84496ab6fec59d68153ec3c7fdf1b0d7539b585ed664a646f11001aa",
+        "native/raw/serene__parent_silent.jsonl": "f895fef61cff007a8cfd13a94bf46cbc2910f8cab035f7d90f97e0e316c3c561",
+        "native/scores.json": "da4a88bfadb7258e9354017d3d6c041e2ab689386f599c42cc39b1aef1f6a3e6"
+      },
+      "index": 33,
+      "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+      "repetition": 3,
+      "scenario": "parent_silent",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "33-pr67-A-r3-parent_silent",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 14,
+      "files": {
+        "native/manifest.json": "a1117c93182934bbdfdd18a01190804af82733aa960d6a3fd6f3f972584459c3",
+        "native/raw/serene__parent_silent.jsonl": "eab023195d59938e79a60aba1422747e7f2e14a63fa72647324c2f3174394504",
+        "native/scores.json": "fe3cec74701444448c838fad30e2fc806c072cbd67fbf8eb3021c4c9f0efe8a4"
+      },
+      "index": 34,
+      "oracle_sha256": "616d5051fedb708012b9f7da64813bbefe874f9365ef7c9009d7036d3c3a83aa",
+      "repetition": 3,
+      "scenario": "parent_silent",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "34-pr67-B-r3-parent_silent",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 5,
+      "files": {
+        "native/manifest.json": "15702deff3bd9c43660d6ada9c0f75795319c2dff19fe04fd12efd432ab3220c",
+        "native/raw/serene__planner_down.jsonl": "c25d7079029a235e1dc07ee4f8b7025327a742062d84d2de6cfd9033a552a4bf",
+        "native/scores.json": "c8f7ae8ef6a6357116cca50e7f1fcfaf8342049e00c63e6804f621e62fd91b9c"
+      },
+      "index": 35,
+      "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+      "repetition": 3,
+      "scenario": "planner_down",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "A",
+      "source_sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093",
+      "tape_id": "35-pr67-A-r3-planner_down",
+      "trust_scorer_version": "trust-scorers/1"
+    },
+    {
+      "exchange_count": 5,
+      "files": {
+        "native/manifest.json": "7b00366659e03edd4f97b50c11c7e6558d30c168ee49d4312d2ff0642eeadcc9",
+        "native/raw/serene__planner_down.jsonl": "87c45b6de38148ffec9c0e492fd86d48560d5c7b04a9e3cd31406cc231decf07",
+        "native/scores.json": "79143b20da2a297acd2962dbb0435dfafdfb8d852d70375c071bd1d9ba1cdad8"
+      },
+      "index": 36,
+      "oracle_sha256": "2bdac1430419c51593c0d4a674dcbd55db38119dc27706d68c9502bad56e02d9",
+      "repetition": 3,
+      "scenario": "planner_down",
+      "scorer_version": "runtime-scorers/2",
+      "source_arm": "B",
+      "source_sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2",
+      "tape_id": "36-pr67-B-r3-planner_down",
+      "trust_scorer_version": "trust-scorers/1"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "arms": {
+    "A": {
+      "clean": true,
+      "protected_files_unchanged": true,
+      "sha": "c999fd0cb170c74d8e679edbe0e1d8f3a94b4093"
+    },
+    "B": {
+      "clean": true,
+      "protected_files_unchanged": true,
+      "sha": "41d3bf60daf591b8dc8fe0c18cd0a30d18b80aa2"
+    }
+  },
+  "checked_utc": "2026-10-11T10:53:08.119691+00:00",
+  "hermes_configuration_unchanged": true,
+  "primary_checkout_clean_at_B": true,
+  "protocol_unchanged": true,
+  "raw_wire_equals_incremental_capture_all_36": true,
+  "unique_neatlogs_sessions": 36
+}

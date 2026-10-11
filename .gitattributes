@@ -7,3 +7,6 @@
 *.ico binary
 *.woff binary
 *.woff2 binary
+
+# Preserve the original failed experiment byte-for-byte, including its checksums.
+eval/reports/archive/2026-10-11-pr67-dev-ab-fail/* -text whitespace=cr-at-eol
