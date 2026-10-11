@@ -80,7 +80,7 @@ jobs:
           kernel_invariants trust_invariants runtime_investigation
 
   web:
-    name: Web (next.js typecheck + build)
+    name: Web (next.js typecheck + unit tests + build)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
@@ -93,6 +93,7 @@ jobs:
           node-version: "20"
       - run: npm ci
       - run: npm run typecheck
+      - run: npm test
       - run: npm run build
 
   web-e2e:

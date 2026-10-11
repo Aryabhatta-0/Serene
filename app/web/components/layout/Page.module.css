@@ -82,6 +82,10 @@
   scroll-margin-top: calc(var(--topbar-height) + var(--space-5));
 }
 
+.body[data-width="wide"] {
+  max-width: 76rem;
+}
+
 @media (min-width: 45rem) {
   .hero {
     padding-top: var(--space-7);

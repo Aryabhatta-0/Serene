@@ -1,9 +1,9 @@
 import styles from "./LineMark.module.css";
 
-// How firmly something is known, drawn as line style. The four kinds mirror
-// the Causal Twin edge categories in Issue #38; this component only draws the
-// notation and never implies that any such belief exists.
-export type Certainty = "unknown" | "observed" | "tested" | "refuted";
+// How firmly something is known, drawn as line style. The kinds mirror the
+// Causal Twin edge categories (lib/causal-twin/categories.ts); this component
+// only draws the notation and never implies that any such belief exists.
+export type Certainty = "unknown" | "observed" | "tested" | "refuted" | "superseded";
 
 type LineMarkProps = {
   certainty: Certainty;
@@ -33,6 +33,9 @@ export function LineMark({
       <line className={styles.stroke} {...end} />
       {certainty === "refuted" ? (
         <line className={styles.strike} {...end} />
+      ) : null}
+      {certainty === "superseded" ? (
+        <line className={styles.hollow} {...end} />
       ) : null}
     </svg>
   );

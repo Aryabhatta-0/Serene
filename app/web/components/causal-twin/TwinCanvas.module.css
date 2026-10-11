@@ -1,0 +1,242 @@
+/*
+ * The map: a raised sheet of its own, dotted like the page (the dot is the
+ * mark for "not yet known"), with variables as paper tiles and links drawn in
+ * the certainty notation. React Flow supplies pan and zoom; nothing here
+ * borrows its default look.
+ */
+
+.frame {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.canvas {
+  position: relative;
+  height: min(34rem, 70svh);
+  min-height: 22rem;
+  border: 1px solid var(--rule-strong);
+  background: var(--ground-raised);
+  /* The cut-out core of a hollow (replaced) line matches the sheet. */
+  --hollow-core: var(--ground-raised);
+}
+
+.canvas :global(.react-flow__pane) {
+  cursor: grab;
+}
+
+.canvas :global(.react-flow__pane.dragging) {
+  cursor: grabbing;
+}
+
+.canvas :global(.react-flow__attribution) {
+  padding: 0 var(--space-2);
+  background: var(--ground-raised);
+  font-size: var(--text-2xs);
+}
+
+.canvas :global(.react-flow__attribution a) {
+  color: var(--ink-faint);
+}
+
+.node {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--ink);
+  background: var(--ground);
+  text-align: center;
+}
+
+.nodeLabel {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  color: var(--ink);
+}
+
+.extent {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Anchor points only: links are never drawn by hand. */
+.handle {
+  width: 1px;
+  height: 1px;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  background: transparent;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.edge {
+  pointer-events: none;
+}
+
+.hit {
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+.halo {
+  fill: none;
+  stroke: var(--selection);
+  stroke-width: 14;
+  stroke-linecap: round;
+}
+
+.hollowCore {
+  stroke: var(--hollow-core);
+}
+
+.label {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: max-content;
+  max-width: 11rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--rule-strong);
+  background: var(--ground-raised);
+  color: var(--ink);
+  font: inherit;
+  text-align: start;
+  pointer-events: all;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) ease, background-color var(--dur-fast) ease;
+}
+
+@media (hover: hover) {
+  .label:hover {
+    border-color: var(--ink);
+  }
+}
+
+.label[aria-pressed="true"] {
+  z-index: 1;
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--ground);
+}
+
+.label[data-category="refuted"],
+.label[data-category="superseded"] {
+  color: var(--ink-faint);
+}
+
+.label[aria-pressed="true"][data-category] {
+  color: var(--ground);
+}
+
+.label[aria-pressed="true"] .labelMark {
+  color: var(--ground);
+  --hollow-core: var(--ink);
+}
+
+.labelHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.labelMark {
+  flex: none;
+  width: 1.75rem;
+}
+
+.labelTerm {
+  font-family: var(--font-display);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.labelText {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+}
+
+/* Refuted links are corrected, not erased: their words are struck too. */
+.label[data-category="refuted"] .labelText {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.labelFlag {
+  font-size: var(--text-2xs);
+  font-style: italic;
+}
+
+/* On narrow screens a label names the kind of link only; its full statement
+ * is in the selected-link panel and the list. */
+.canvas[data-direction="TB"] .labelText {
+  display: none;
+}
+
+.toolbar {
+  display: flex;
+  align-self: flex-end;
+  border: 1px solid var(--ink);
+  background: var(--ground);
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: var(--tap-target);
+  height: var(--tap-target);
+  padding: 0 var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color var(--dur-fast) ease, color var(--dur-fast) ease;
+}
+
+.control + .control {
+  border-left: 1px solid var(--rule-strong);
+}
+
+@media (hover: hover) {
+  .control:hover {
+    background: var(--ink);
+    color: var(--ground);
+  }
+}
+
+.control:focus-visible {
+  outline-offset: -4px;
+}
+
+.control svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
