@@ -1,0 +1,10 @@
+{
+  "base_version": "0.21.6",
+  "commit": "f925b01791fe052e7d55dc975750c0bd985aff91",
+  "dependency_records_sha256": "77401c06db1e489e7c10a723b1a3cc197ef224ebe0c5f708a370fd50fc22154f",
+  "display_version": "0.21.6+509.gf925b01",
+  "executable_sha256": "703536cd5d48b90407300079f490247e81244057652895d5a60df1e7d2991962",
+  "install_stamp_sha256": "d4e333ed19ca6efe41afb043fe9049ce16ea9ab5e6d3a56f90f0f5d5b3729a4b",
+  "source_file_count": 2068,
+  "source_inventory_sha256": "b736406855a78bfada3cef6f0e653ea7cce3e03e2b1b4e17c7a4867949b3a382"
+}
