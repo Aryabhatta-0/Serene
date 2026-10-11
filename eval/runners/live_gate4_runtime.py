@@ -285,7 +285,7 @@ class OwnedRuntime:
         self.root = root.resolve()
         self.python = python.resolve()
         self.site_packages = (site_packages or python.parent.parent / "Lib/site-packages").resolve()
-        self.identity = dict(frozen_identity)
+        self._identity = encoded(frozen_identity)
         self.process: subprocess.Popen[str] | None = None
         self._temporary: tempfile.TemporaryDirectory[str] | None = None
         self.home: Path | None = None
@@ -295,6 +295,10 @@ class OwnedRuntime:
         self._process_identity: dict[str, Any] = {}
         self._sessions: set[str] = set()
         self.offline_probe = False
+
+    @property
+    def identity(self) -> dict[str, Any]:
+        return json.loads(self._identity)
 
     def start(
         self,

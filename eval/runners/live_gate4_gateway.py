@@ -78,13 +78,13 @@ def main() -> None:
     from hermes_cli.version_info import get_version_info
     from hermes_constants import get_hermes_home
 
-    agent_sessions: set[str] = set()
+    current_agent_session: list[str | None] = [None]
 
     def environment_ok() -> None:
         current = dict(os.environ)
         session_environment = current.pop("HERMES_SESSION_ID", None)
         require(
-            session_environment is None or session_environment in agent_sessions,
+            session_environment == current_agent_session[0],
             "SESSION_ENVIRONMENT_OVERRIDE",
         )
         # This is Hermes' config bridge, never an allowed inherited override.
@@ -172,7 +172,7 @@ def main() -> None:
         require(not adapter._model_routes and adapter.gateway_runner is None, "DAEMON_OVERRIDE")
         agent = original(adapter, *args, **kwargs)
         require(agent.session_id == kwargs.get("session_id"), "SESSION_OVERRIDE")
-        agent_sessions.add(agent.session_id)
+        current_agent_session[0] = agent.session_id
         require(
             agent.provider == PROVIDER
             and agent.model == MODEL

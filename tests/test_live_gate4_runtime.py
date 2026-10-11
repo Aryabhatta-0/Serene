@@ -235,6 +235,13 @@ def test_fresh_home_and_state_not_normal_daemon(owned: Any) -> None:
     assert not home.exists()
 
 
+def test_frozen_package_identity_cannot_be_mutated_through_public_snapshot(owned: Any) -> None:
+    runtime, _, _ = owned
+    snapshot = runtime.identity
+    snapshot["base_version"] = "drift"
+    assert runtime.identity["base_version"] == "0.21.6"
+
+
 def test_config_mutation_after_launch_blocks_next_attempt(owned: Any) -> None:
     runtime, _, _ = owned
     (runtime.home / "config.yaml").write_bytes(b"mutated")
