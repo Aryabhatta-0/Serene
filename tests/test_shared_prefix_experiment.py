@@ -24,7 +24,10 @@ from eval.runners.shared_prefix_experiment import (
     run_frozen_pair,
 )
 from eval.runners.shared_prefix_protocol import Exchange, Refused, digest
+from tests.frozen_contract import frozen_contract_root  # noqa: F401 - pytest fixture
 from tests.test_shared_prefix import boundary, divergent_prefix, record, request
+
+pytestmark = pytest.mark.usefixtures("frozen_contract_root")
 
 
 @pytest.fixture

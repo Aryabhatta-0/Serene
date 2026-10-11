@@ -19,7 +19,7 @@ class InMemoryEventStore:
             stream = self._streams.setdefault(event.child_id, [])
             head = stream[-1].event_hash if stream else GENESIS_HASH
             if head != expected_prev_hash or event.prev_event_hash != head:
-                raise ConcurrencyConflict(f"stream head moved for {event.child_id}")
+                raise ConcurrencyConflict("STREAM_HEAD_MOVED")
             if event.sequence != len(stream) + 1:
                 raise ConcurrencyConflict("sequence does not extend the stream")
             stream.append(event)

@@ -33,7 +33,7 @@ from dataclasses import dataclass
 from typing import Any, Final
 from urllib.parse import urlsplit
 
-from serene.observability.telemetry import NoopSink, SafeTelemetry, redact
+from serene.observability.telemetry import NoopSink, SafeTelemetry, redact, safe_name, safe_token
 from serene.ports.observability import AttributeValue, ObservabilitySink
 
 DEFAULT_ENDPOINT: Final = "https://ingest.neatlogs.com/v1/trace"
@@ -88,7 +88,9 @@ def _urllib_opener(request: urllib.request.Request, timeout: float) -> int:
 
 
 def _token(value: str | None) -> str | None:
-    return value if value is not None and _ROOT_TOKEN.match(value) else None
+    return (
+        value if value is not None and _ROOT_TOKEN.fullmatch(value) and safe_token(value) else None
+    )
 
 
 def endpoint_allowed(endpoint: str) -> bool:
@@ -155,7 +157,7 @@ class NeatlogsSink:
         timeout_s: float = 10.0,
         opener: Opener = _urllib_opener,
     ) -> None:
-        self.workflow_name = workflow_name
+        self.workflow_name = _token(workflow_name) or "serene-kernel"
         self._api_key = api_key
         self.endpoint = endpoint or DEFAULT_ENDPOINT
         self.session_id = session_id
@@ -181,6 +183,9 @@ class NeatlogsSink:
         return len(self._pending)
 
     def emit(self, name: str, attributes: Mapping[str, AttributeValue]) -> None:
+        if not safe_name(name):
+            self._dropped += 1
+            return
         if len(self._pending) >= self._max_pending:
             self._dropped += 1
             return
