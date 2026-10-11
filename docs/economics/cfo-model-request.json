@@ -1,0 +1,576 @@
+{
+  "tool": "edit_table_blocks",
+  "arguments": {
+    "scenario": "Serene economics #55 - assumed operating case",
+    "create": {
+      "name": "Serene55 unit economics and sensitivity",
+      "page": "Serene economics #55",
+      "rows": [
+        {
+          "variable": "Serene55 llm.rate",
+          "formula": "6000",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 llm.monthly_usage",
+          "formula": "400000",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 llm.acquisition_usage",
+          "formula": "1500",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 llm.rate_units",
+          "formula": "1000",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 browser.rate",
+          "formula": "20000",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 browser.monthly_usage",
+          "formula": "6",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 browser.acquisition_usage",
+          "formula": "0",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 browser.rate_units",
+          "formula": "1",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 database_write.rate",
+          "formula": "2",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 database_write.monthly_usage",
+          "formula": "3000",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 database_write.acquisition_usage",
+          "formula": "4",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 database_write.rate_units",
+          "formula": "1",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 database_read.rate",
+          "formula": "1",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 database_read.monthly_usage",
+          "formula": "60000",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 database_read.acquisition_usage",
+          "formula": "30",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 database_read.rate_units",
+          "formula": "1",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 storage.rate",
+          "formula": "20000",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 storage.monthly_usage",
+          "formula": "1",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 storage.acquisition_usage",
+          "formula": "0",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 storage.rate_units",
+          "formula": "1",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 memory_write.rate",
+          "formula": "50",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 memory_write.monthly_usage",
+          "formula": "60",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 memory_write.acquisition_usage",
+          "formula": "0",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 memory_write.rate_units",
+          "formula": "1",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 memory_read.rate",
+          "formula": "1",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 memory_read.monthly_usage",
+          "formula": "600",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 memory_read.acquisition_usage",
+          "formula": "0",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 memory_read.rate_units",
+          "formula": "1",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 verification.rate",
+          "formula": "100",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 verification.monthly_usage",
+          "formula": "12",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 verification.acquisition_usage",
+          "formula": "0",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 verification.rate_units",
+          "formula": "1",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 telemetry.rate",
+          "formula": "500",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 telemetry.monthly_usage",
+          "formula": "12000",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 telemetry.acquisition_usage",
+          "formula": "0",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 telemetry.rate_units",
+          "formula": "1000",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 acquisitions",
+          "formula": "12",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 subscription",
+          "formula": "12000000",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 families",
+          "formula": "400",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 fixed_cost",
+          "formula": "18000000000",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 cash",
+          "formula": "250000000000",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 caregiver.llm",
+          "formula": "2400",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 caregiver.database_write",
+          "formula": "6",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 caregiver.database_read",
+          "formula": "40",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 llm.monthly_cost",
+          "formula": "-floor(-(`Serene55 llm.monthly_usage` + `Serene55 acquisitions` * `Serene55 llm.acquisition_usage`) * `Serene55 llm.rate` / `Serene55 llm.rate_units`, 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 browser.monthly_cost",
+          "formula": "-floor(-(`Serene55 browser.monthly_usage` + `Serene55 acquisitions` * `Serene55 browser.acquisition_usage`) * `Serene55 browser.rate` / `Serene55 browser.rate_units`, 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 database_write.monthly_cost",
+          "formula": "-floor(-(`Serene55 database_write.monthly_usage` + `Serene55 acquisitions` * `Serene55 database_write.acquisition_usage`) * `Serene55 database_write.rate` / `Serene55 database_write.rate_units`, 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 database_read.monthly_cost",
+          "formula": "-floor(-(`Serene55 database_read.monthly_usage` + `Serene55 acquisitions` * `Serene55 database_read.acquisition_usage`) * `Serene55 database_read.rate` / `Serene55 database_read.rate_units`, 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 storage.monthly_cost",
+          "formula": "-floor(-(`Serene55 storage.monthly_usage` + `Serene55 acquisitions` * `Serene55 storage.acquisition_usage`) * `Serene55 storage.rate` / `Serene55 storage.rate_units`, 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 memory_write.monthly_cost",
+          "formula": "-floor(-(`Serene55 memory_write.monthly_usage` + `Serene55 acquisitions` * `Serene55 memory_write.acquisition_usage`) * `Serene55 memory_write.rate` / `Serene55 memory_write.rate_units`, 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 memory_read.monthly_cost",
+          "formula": "-floor(-(`Serene55 memory_read.monthly_usage` + `Serene55 acquisitions` * `Serene55 memory_read.acquisition_usage`) * `Serene55 memory_read.rate` / `Serene55 memory_read.rate_units`, 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 verification.monthly_cost",
+          "formula": "-floor(-(`Serene55 verification.monthly_usage` + `Serene55 acquisitions` * `Serene55 verification.acquisition_usage`) * `Serene55 verification.rate` / `Serene55 verification.rate_units`, 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 telemetry.monthly_cost",
+          "formula": "-floor(-(`Serene55 telemetry.monthly_usage` + `Serene55 acquisitions` * `Serene55 telemetry.acquisition_usage`) * `Serene55 telemetry.rate` / `Serene55 telemetry.rate_units`, 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 cost_per_family_month",
+          "formula": "`Serene55 llm.monthly_cost` + `Serene55 browser.monthly_cost` + `Serene55 database_write.monthly_cost` + `Serene55 database_read.monthly_cost` + `Serene55 storage.monthly_cost` + `Serene55 memory_write.monthly_cost` + `Serene55 memory_read.monthly_cost` + `Serene55 verification.monthly_cost` + `Serene55 telemetry.monthly_cost`",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 parent_acquisition_cost",
+          "formula": "`Serene55 llm.acquisition_usage` * `Serene55 llm.rate` / `Serene55 llm.rate_units` + `Serene55 browser.acquisition_usage` * `Serene55 browser.rate` / `Serene55 browser.rate_units` + `Serene55 database_write.acquisition_usage` * `Serene55 database_write.rate` / `Serene55 database_write.rate_units` + `Serene55 database_read.acquisition_usage` * `Serene55 database_read.rate` / `Serene55 database_read.rate_units` + `Serene55 storage.acquisition_usage` * `Serene55 storage.rate` / `Serene55 storage.rate_units` + `Serene55 memory_write.acquisition_usage` * `Serene55 memory_write.rate` / `Serene55 memory_write.rate_units` + `Serene55 memory_read.acquisition_usage` * `Serene55 memory_read.rate` / `Serene55 memory_read.rate_units` + `Serene55 verification.acquisition_usage` * `Serene55 verification.rate` / `Serene55 verification.rate_units` + `Serene55 telemetry.acquisition_usage` * `Serene55 telemetry.rate` / `Serene55 telemetry.rate_units`",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 caregiver_acquisition_cost",
+          "formula": "`Serene55 caregiver.llm` * `Serene55 llm.rate` / `Serene55 llm.rate_units` + `Serene55 caregiver.database_write` * `Serene55 database_write.rate` + `Serene55 caregiver.database_read` * `Serene55 database_read.rate`",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 monthly_saving",
+          "formula": "`Serene55 acquisitions` * (`Serene55 caregiver_acquisition_cost` - `Serene55 parent_acquisition_cost`)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 gross_margin_bps",
+          "formula": "floor((`Serene55 subscription` - `Serene55 cost_per_family_month`) * 10000 / `Serene55 subscription`, 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 variable_cost_month",
+          "formula": "`Serene55 families` * `Serene55 cost_per_family_month`",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 revenue_month",
+          "formula": "`Serene55 families` * `Serene55 subscription`",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 burn_month",
+          "formula": "`Serene55 fixed_cost` + `Serene55 variable_cost_month` - `Serene55 revenue_month`",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 runway_days",
+          "formula": "floor(`Serene55 cash` * 30 / `Serene55 burn_month`, 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 llm_cost_share_bps",
+          "formula": "floor(`Serene55 llm.monthly_cost` * 10000 / `Serene55 cost_per_family_month`, 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 sensitivity.low_subscription",
+          "formula": "8000000",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 sensitivity.high_subscription",
+          "formula": "16000000",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 sensitivity.llm_usage_bps",
+          "formula": "20000",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 sensitivity.low_margin_bps",
+          "formula": "floor((`Serene55 sensitivity.low_subscription` - `Serene55 cost_per_family_month`) * 10000 / `Serene55 sensitivity.low_subscription`, 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 sensitivity.high_margin_bps",
+          "formula": "floor((`Serene55 sensitivity.high_subscription` - `Serene55 cost_per_family_month`) * 10000 / `Serene55 sensitivity.high_subscription`, 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 sensitivity.double_llm_cost",
+          "formula": "`Serene55 cost_per_family_month` + `Serene55 llm.monthly_cost` * (`Serene55 sensitivity.llm_usage_bps` / 10000 - 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        },
+        {
+          "variable": "Serene55 sensitivity.double_llm_margin_bps",
+          "formula": "floor((`Serene55 subscription` - `Serene55 sensitivity.double_llm_cost`) * 10000 / `Serene55 subscription`, 1)",
+          "new": true,
+          "format": {
+            "numberFormat": "INTEGER"
+          }
+        }
+      ],
+      "columns": [],
+      "window": {
+        "granularity": "NO_GRANULARITY"
+      }
+    }
+  }
+}

@@ -83,6 +83,22 @@ ALLOWED_KEYS: Final = frozenset(
 )
 _TOKEN = re.compile(r"^[A-Za-z0-9_:\-.,/]{0,256}$")
 _NAME = re.compile(r"^[a-z][a-z0-9_.]{0,63}$")
+# Token syntax alone is insufficient: credentials and person ids can be tokens.
+_PRIVATE_TOKEN = re.compile(
+    r"(?:chd_|act_|person_|parent_|caregiver_)[A-Za-z0-9_-]+"
+    r"|(?:sk-|gh[pousr]_|github_pat_|AKIA|ASIA|xox[baprs]-)[A-Za-z0-9_-]{8,}"
+    r"|eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_.-]+"
+    r"|\d{8,10}:AA[A-Za-z0-9_-]+"
+)
+
+
+def safe_token(value: str) -> bool:
+    """Shared lexical gate; callers must still supply codes, never private text."""
+    return _TOKEN.fullmatch(value) is not None and _PRIVATE_TOKEN.search(value) is None
+
+
+def safe_name(value: str) -> bool:
+    return _NAME.fullmatch(value) is not None and safe_token(value)
 
 
 def pseudonymize_child(child_id: str, key: bytes | None) -> str | None:
@@ -104,13 +120,17 @@ def redact(
             continue
         if key not in ALLOWED_KEYS:
             continue
-        if isinstance(value, bool | int) or (isinstance(value, str) and _TOKEN.match(value)):
+        if key == "child_ref" and (
+            not isinstance(value, str) or re.fullmatch(r"cref_[0-9a-f]{24}", value) is None
+        ):
+            continue
+        if isinstance(value, bool | int) or (isinstance(value, str) and safe_token(value)):
             out[key] = value
         elif isinstance(value, tuple | list) and all(
-            isinstance(v, str) and _TOKEN.match(v) for v in value
+            isinstance(v, str) and safe_token(v) for v in value
         ):
             joined = ",".join(value)
-            if _TOKEN.match(joined):
+            if safe_token(joined):
                 out[key] = joined
     return out
 
@@ -140,7 +160,7 @@ class SafeTelemetry:
 
     def emit(self, name: str, attributes: Mapping[str, object]) -> None:
         try:
-            if not _NAME.match(name):
+            if not safe_name(name):
                 self.dropped += 1
                 return
             self._sink.emit(name, redact(attributes, pseudonym_key=self._key))

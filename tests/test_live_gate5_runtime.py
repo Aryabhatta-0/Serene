@@ -36,6 +36,7 @@ from eval.runners.live_gate5_runtime import (
     reject_overrides,
     request_body,
 )
+from tests.frozen_contract import frozen_contract_root  # noqa: F401 - pytest fixture
 from tests.test_live_gate5_protocol import request
 
 
@@ -288,6 +289,7 @@ def test_pre_attempt_process_drift(owned: Any, kind: str) -> None:
         runtime._check(observed)
 
 
+@pytest.mark.usefixtures("frozen_contract_root")
 def test_v3_archives_and_decision_semantics_unchanged() -> None:
     # Compare functions themselves, not a duplicated set of expected answers.
     import ast

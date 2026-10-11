@@ -45,3 +45,19 @@
   stroke-dasharray: 1.5 11;
   stroke-dashoffset: -5;
 }
+
+/* Replaced beliefs stay visible too, drawn hollow: an outline with nothing
+ * left inside it. The core is cut in the colour of the sheet it lies on. */
+.mark[data-certainty="superseded"] {
+  color: var(--ink-faint);
+}
+
+.mark[data-certainty="superseded"] .stroke {
+  stroke-width: 5;
+}
+
+.hollow {
+  stroke: var(--hollow-core, var(--ground-raised));
+  stroke-width: 2;
+  stroke-linecap: round;
+}

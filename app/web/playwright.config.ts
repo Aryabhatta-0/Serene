@@ -4,6 +4,8 @@ const PORT = 3100;
 
 // Runs against a production build of the shell. No backend, model or
 // external service is involved: every surface renders from local code only.
+// The build also routes `page.fixture.tsx` pages (SERENE_FIXTURE_ROUTES=1),
+// which draw synthetic fixtures; a normal `npm run build` has none.
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -29,6 +31,7 @@ export default defineConfig({
   ],
   webServer: {
     command: `npm run build && npm run start -- --port ${PORT}`,
+    env: { SERENE_FIXTURE_ROUTES: "1" },
     url: `http://127.0.0.1:${PORT}/today`,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,

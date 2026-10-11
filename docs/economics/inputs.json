@@ -1,0 +1,297 @@
+{
+  "inputs": {
+    "version": "serene-economics/2-assumed",
+    "drivers": [
+      {
+        "name": "llm",
+        "rate": {
+          "name": "llm.rate",
+          "unit": "micro-USD/1000 token",
+          "value": 6000,
+          "source": "serene/adapters/cfoai.py SERENE_ECONOMICS_V1; local estimate, not provider billing",
+          "basis": "assumed"
+        },
+        "rate_per_units": 1000,
+        "base_units_per_family_month": {
+          "name": "llm.monthly_usage",
+          "unit": "token/family-month",
+          "value": 400000,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        },
+        "units_per_acquisition": {
+          "name": "llm.acquisition_usage",
+          "unit": "token/acquisition",
+          "value": 1500,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        }
+      },
+      {
+        "name": "browser",
+        "rate": {
+          "name": "browser.rate",
+          "unit": "micro-USD/1 session",
+          "value": 20000,
+          "source": "serene/adapters/cfoai.py SERENE_ECONOMICS_V1; local estimate, not provider billing",
+          "basis": "assumed"
+        },
+        "rate_per_units": 1,
+        "base_units_per_family_month": {
+          "name": "browser.monthly_usage",
+          "unit": "session/family-month",
+          "value": 6,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        },
+        "units_per_acquisition": {
+          "name": "browser.acquisition_usage",
+          "unit": "session/acquisition",
+          "value": 0,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        }
+      },
+      {
+        "name": "database_write",
+        "rate": {
+          "name": "database_write.rate",
+          "unit": "micro-USD/1 write",
+          "value": 2,
+          "source": "serene/adapters/cfoai.py SERENE_ECONOMICS_V1; local estimate, not provider billing",
+          "basis": "assumed"
+        },
+        "rate_per_units": 1,
+        "base_units_per_family_month": {
+          "name": "database_write.monthly_usage",
+          "unit": "write/family-month",
+          "value": 3000,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        },
+        "units_per_acquisition": {
+          "name": "database_write.acquisition_usage",
+          "unit": "write/acquisition",
+          "value": 4,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        }
+      },
+      {
+        "name": "database_read",
+        "rate": {
+          "name": "database_read.rate",
+          "unit": "micro-USD/1 read",
+          "value": 1,
+          "source": "serene/adapters/cfoai.py SERENE_ECONOMICS_V1; local estimate, not provider billing",
+          "basis": "assumed"
+        },
+        "rate_per_units": 1,
+        "base_units_per_family_month": {
+          "name": "database_read.monthly_usage",
+          "unit": "read/family-month",
+          "value": 60000,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        },
+        "units_per_acquisition": {
+          "name": "database_read.acquisition_usage",
+          "unit": "read/acquisition",
+          "value": 30,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        }
+      },
+      {
+        "name": "storage",
+        "rate": {
+          "name": "storage.rate",
+          "unit": "micro-USD/1 GB-month",
+          "value": 20000,
+          "source": "issue-55 synthetic storage/memory/telemetry budget; not provider billing",
+          "basis": "assumed"
+        },
+        "rate_per_units": 1,
+        "base_units_per_family_month": {
+          "name": "storage.monthly_usage",
+          "unit": "GB-month/family-month",
+          "value": 1,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        },
+        "units_per_acquisition": {
+          "name": "storage.acquisition_usage",
+          "unit": "GB-month/acquisition",
+          "value": 0,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        }
+      },
+      {
+        "name": "memory_write",
+        "rate": {
+          "name": "memory_write.rate",
+          "unit": "micro-USD/1 commit",
+          "value": 50,
+          "source": "serene/adapters/cfoai.py SERENE_ECONOMICS_V1; local estimate, not provider billing",
+          "basis": "assumed"
+        },
+        "rate_per_units": 1,
+        "base_units_per_family_month": {
+          "name": "memory_write.monthly_usage",
+          "unit": "commit/family-month",
+          "value": 60,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        },
+        "units_per_acquisition": {
+          "name": "memory_write.acquisition_usage",
+          "unit": "commit/acquisition",
+          "value": 0,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        }
+      },
+      {
+        "name": "memory_read",
+        "rate": {
+          "name": "memory_read.rate",
+          "unit": "micro-USD/1 lookup",
+          "value": 1,
+          "source": "issue-55 synthetic storage/memory/telemetry budget; not provider billing",
+          "basis": "assumed"
+        },
+        "rate_per_units": 1,
+        "base_units_per_family_month": {
+          "name": "memory_read.monthly_usage",
+          "unit": "lookup/family-month",
+          "value": 600,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        },
+        "units_per_acquisition": {
+          "name": "memory_read.acquisition_usage",
+          "unit": "lookup/acquisition",
+          "value": 0,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        }
+      },
+      {
+        "name": "verification",
+        "rate": {
+          "name": "verification.rate",
+          "unit": "micro-USD/1 incremental-check",
+          "value": 100,
+          "source": "serene/adapters/cfoai.py SERENE_ECONOMICS_V1; local estimate, not provider billing",
+          "basis": "assumed"
+        },
+        "rate_per_units": 1,
+        "base_units_per_family_month": {
+          "name": "verification.monthly_usage",
+          "unit": "incremental-check/family-month",
+          "value": 12,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        },
+        "units_per_acquisition": {
+          "name": "verification.acquisition_usage",
+          "unit": "incremental-check/acquisition",
+          "value": 0,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        }
+      },
+      {
+        "name": "telemetry",
+        "rate": {
+          "name": "telemetry.rate",
+          "unit": "micro-USD/1000 event",
+          "value": 500,
+          "source": "issue-55 synthetic storage/memory/telemetry budget; not provider billing",
+          "basis": "assumed"
+        },
+        "rate_per_units": 1000,
+        "base_units_per_family_month": {
+          "name": "telemetry.monthly_usage",
+          "unit": "event/family-month",
+          "value": 12000,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        },
+        "units_per_acquisition": {
+          "name": "telemetry.acquisition_usage",
+          "unit": "event/acquisition",
+          "value": 0,
+          "source": "issue-55 synthetic operating assumption; docs/economics.md",
+          "basis": "assumed"
+        }
+      }
+    ],
+    "acquisitions_per_family_month": {
+      "name": "acquisitions",
+      "unit": "acquisition/family-month",
+      "value": 12,
+      "source": "issue-55 synthetic operating assumption; docs/economics.md",
+      "basis": "assumed"
+    },
+    "subscription_per_family_month": {
+      "name": "subscription",
+      "unit": "micro-USD/family-month",
+      "value": 12000000,
+      "source": "issue-55 synthetic operating assumption; docs/economics.md",
+      "basis": "assumed"
+    },
+    "families": {
+      "name": "families",
+      "unit": "family",
+      "value": 400,
+      "source": "issue-55 synthetic operating assumption; docs/economics.md",
+      "basis": "assumed"
+    },
+    "fixed_cost_per_month": {
+      "name": "fixed_cost",
+      "unit": "micro-USD/month",
+      "value": 18000000000,
+      "source": "issue-55 synthetic operating assumption; docs/economics.md",
+      "basis": "assumed"
+    },
+    "cash": {
+      "name": "cash",
+      "unit": "micro-USD",
+      "value": 250000000000,
+      "source": "issue-55 synthetic operating assumption; docs/economics.md",
+      "basis": "assumed"
+    },
+    "days_per_month": {
+      "name": "days_per_month",
+      "unit": "day/month",
+      "source": "issue-55 planning convention; constant monthly burn converted using 30-day months",
+      "value": 30,
+      "basis": "assumed"
+    }
+  },
+  "caregiver_usage": {
+    "llm": {
+      "name": "caregiver.llm",
+      "unit": "token/acquisition",
+      "value": 2400,
+      "source": "issue-55 synthetic operating assumption; docs/economics.md",
+      "basis": "assumed"
+    },
+    "database_write": {
+      "name": "caregiver.database_write",
+      "unit": "write/acquisition",
+      "value": 6,
+      "source": "issue-55 synthetic operating assumption; docs/economics.md",
+      "basis": "assumed"
+    },
+    "database_read": {
+      "name": "caregiver.database_read",
+      "unit": "read/acquisition",
+      "value": 40,
+      "source": "issue-55 synthetic operating assumption; docs/economics.md",
+      "basis": "assumed"
+    }
+  }
+}

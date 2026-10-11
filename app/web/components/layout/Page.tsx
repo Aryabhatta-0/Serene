@@ -5,6 +5,8 @@ import styles from "./Page.module.css";
 type PageProps = {
   title: string;
   lead: string;
+  /** "wide" gives the sheet room for a map; text-only surfaces stay at reading width. */
+  width?: "reading" | "wide";
   children?: ReactNode;
 };
 
@@ -20,7 +22,7 @@ function titleMeasure(title: string): number {
 // the ruled sheet, what it is for in the left margin, Serene's promise in the
 // right, and the record status where a survey sheet keeps its legend. The
 // bloom belongs to the landing page alone.
-export function Page({ title, lead, children }: PageProps) {
+export function Page({ title, lead, width = "reading", children }: PageProps) {
   return (
     <div className={styles.page}>
       <header
@@ -43,7 +45,7 @@ export function Page({ title, lead, children }: PageProps) {
           <span className="visually-hidden">Read on</span>
         </a>
       </header>
-      <div id="surface-body" className={styles.body}>
+      <div id="surface-body" className={styles.body} data-width={width}>
         {children}
       </div>
     </div>

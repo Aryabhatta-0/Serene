@@ -159,6 +159,7 @@ Hairlines everywhere (1px). Pill buttons and a circular onward control, both wit
 - **Plate (Page):** title, lead, tagline, record status and the onward link, as described under Layout.
 - **Hellebore:** five copies of one photographic petal (`public/brand/bloom/petal.webp`), each pivoting at its base, around a cluster of stamens. Sized by `--petal-w`, `--petal-h` and `--centre`.
 - **Bloom (BloomArt):** a square scene in percentages and container units: three grained stems, a back and a main hellebore, the bud (`bud.webp`), and two glass panes. Decorative and hidden from assistive technology.
+- **Causal Twin map:** a raised sheet dotted like the page, with a hairline toolbar (zoom in, zoom out, fit to view) above it rather than over it. Variables are square paper tiles in ink; links are drawn in the certainty notation with an arrowhead, and each carries a paper label naming its kind in tracked capitals over its statement (narrow screens show the kind only). Refuted links stay on the map, struck through with cross-ticks and their words struck; replaced links are drawn hollow. The selected link fills its label with ink and lays a selection-tint halo under its line. Layout is deterministic: causes before effects, left to right or top to bottom, whichever shows the whole map larger, and no label covers another label or a variable.
 - **Logo (BloomMark):** the hellebore seen from above on a deep-olive tile. The favicon and icons are exported from it (`npm run brand:export`).
 
 ### Motion
@@ -168,7 +169,7 @@ Entering Serene: the glass, stems, bud, back flower and words fade (320ms); a co
 
 ## Do's and Don'ts
 
-- **Do** draw certainty with line style: dotted, dashed, solid, struck.
+- **Do** draw certainty with line style: dotted, dashed, solid, struck, and hollow for a replaced belief.
 - **Do** let the grid show; put long text on a raised sheet or a paper strip.
 - **Do** keep every keyframe animating *from* a hidden state to the drawn default, so content is visible without scripts.
 - **Don't** put numbers, dates or counts on a surface before they are recorded (enforced by e2e).

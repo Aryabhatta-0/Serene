@@ -10,20 +10,23 @@ At runtime the kernel never calls cfo.ai. Engineers maintain the economics model
 in cfo.ai (via the MCP server registered in `.mcp.json`) and export per-option
 unit costs into a reviewed table; `TableCostModel` serves that table.
 
-`EconomicsModel` mirrors that model's structure in exact integer micro-USD:
-LLM / browser / database / memory unit costs, per-family usage, pricing, gross
-margin and runway. `SERENE_ECONOMICS_V1` holds the reviewed assumptions; replace
-it with the cfo.ai export when one is published (docs/safety.md section 7).
+`EconomicsModel` and `SERENE_ECONOMICS_V1` retain the historical scaffold for
+fixture compatibility. The provenance-bearing model in `serene.economics`
+supplies the current optional pickup decision; docs/economics.md records its
+assumptions and genuine cfo.ai Scenario receipts.
 """
 
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Final
 
 from serene.domain.events import InformationValue
+from serene.economics import Assumption, EconomicsInputs, ReviewedCostTable, evaluate
+from serene.observability.telemetry import SafeTelemetry
 from serene.policies.acquisition import (
+    AcquisitionDecision,
     AcquisitionOption,
     AcquisitionSafety,
     EvidenceQuality,
@@ -31,17 +34,8 @@ from serene.policies.acquisition import (
 )
 
 
-class TableCostModel:
+class TableCostModel(ReviewedCostTable):
     """`CostModel` backed by a reviewed, exported cost table (integer micro-USD)."""
-
-    def __init__(self, costs: Mapping[str, int]) -> None:
-        for option_id, cost in costs.items():
-            if cost < 0:
-                raise ValueError(f"negative cost for {option_id}")
-        self._costs = dict(costs)
-
-    def estimate_cost_micro_usd(self, option_id: str) -> int | None:
-        return self._costs.get(option_id)
 
 
 # ------------------------------------------------------------------ economics model
@@ -167,12 +161,14 @@ PICKUP_CUTOFF_OPTIONS: Final = (
         AcquisitionSafety.SAFE,
         EvidenceQuality.FIRST_HAND,
         InformationValue.HIGH,
+        equivalence_key="optional_pickup_cutoff_confirmation",
     ),
     AcquisitionOption(
         "ask_caregiver_telegram",
         AcquisitionSafety.SAFE,
         EvidenceQuality.FIRST_HAND,
         InformationValue.HIGH,
+        equivalence_key="optional_pickup_cutoff_confirmation",
     ),
     AcquisitionOption(
         "browse_daycare_site",
@@ -233,3 +229,44 @@ def evidence_acquisition_decision(model: EconomicsModel = SERENE_ECONOMICS_V1) -
             "cash_micro_usd": model.company.cash,
         },
     }
+
+
+def pickup_confirmation_decision(
+    inputs: EconomicsInputs,
+    caregiver_usage: Mapping[str, Assumption],
+    *,
+    eligible_options: frozenset[str],
+    required_parent_question: bool,
+    telemetry: SafeTelemetry,
+) -> AcquisitionDecision:
+    """The one optional acquisition tradeoff; eligibility is supplied by policy.
+
+    Only use after trusted policy establishes that both authorized observers can
+    supply the same first-hand schedule confirmation with the same predictions.
+    Never substitute a caregiver answer for a mandatory parent question.
+    """
+    driver_names = {d.name for d in inputs.drivers}
+    if not set(caregiver_usage) <= driver_names:
+        raise ValueError("unknown caregiver usage driver")
+    data = inputs.model_dump()
+    for driver in data["drivers"]:
+        if driver["name"] in caregiver_usage:
+            driver["units_per_acquisition"] = caregiver_usage[driver["name"]].model_dump()
+    caregiver = EconomicsInputs.model_validate(data)
+    costs = TableCostModel(
+        {
+            "ask_parent_telegram": evaluate(inputs).acquisition_cost_micro_usd,
+            "ask_caregiver_telegram": evaluate(caregiver).acquisition_cost_micro_usd,
+        }
+    )
+    options = tuple(
+        replace(
+            o,
+            policy_eligible=o.option_id in eligible_options
+            and (not required_parent_question or o.option_id == "ask_parent_telegram"),
+            required_parent_question=required_parent_question
+            and o.option_id == "ask_parent_telegram",
+        )
+        for o in PICKUP_CUTOFF_OPTIONS[:2]
+    )
+    return decide_acquisition(options, costs, telemetry=telemetry)

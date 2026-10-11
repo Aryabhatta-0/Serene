@@ -60,7 +60,7 @@ class PostgresEventStore:
                 ).fetchone()
                 head = row[0] if row else GENESIS_HASH
                 if head != expected_prev_hash:
-                    raise ConcurrencyConflict(f"stream head moved for {event.child_id}")
+                    raise ConcurrencyConflict("STREAM_HEAD_MOVED")
                 conn.execute(
                     f"insert into serene.domain_events ({_COLUMNS}) values "  # noqa: S608
                     "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
@@ -83,10 +83,10 @@ class PostgresEventStore:
                         event.event_hash,
                     ),
                 )
-        except errors.UniqueViolation as exc:
-            raise ConcurrencyConflict(str(exc)) from exc
-        except (errors.CheckViolation, errors.ForeignKeyViolation) as exc:
-            raise LedgerWriteRefused(str(exc)) from exc
+        except errors.UniqueViolation:
+            raise ConcurrencyConflict("LEDGER_UNIQUE_CONFLICT") from None
+        except (errors.CheckViolation, errors.ForeignKeyViolation):
+            raise LedgerWriteRefused("LEDGER_WRITE_REFUSED") from None
 
     def read_stream(self, child_id: str) -> Sequence[DomainEvent]:
         with self._connect() as conn:

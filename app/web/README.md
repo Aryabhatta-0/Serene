@@ -10,6 +10,7 @@ projection state is streamed in (Issue #33).
 npm ci
 npm run dev         # http://localhost:3000
 npm run typecheck
+npm test            # unit and component tests (Vitest, jsdom)
 npm run build
 ```
 
@@ -23,6 +24,15 @@ reduced motion, and the brand assets. CI runs the same suite (`web-e2e`):
 ```sh
 npx playwright install chromium   # once per machine
 npm run test:e2e
+```
+
+The e2e build is made with `SERENE_FIXTURE_ROUTES=1`, which also routes the
+test-only `page.fixture.tsx` pages (`/fixtures/causal-twin` draws the
+synthetic Causal Twin). A normal `npm run build` has no such route and
+bundles no fixture data. To look at the fixture map by hand:
+
+```sh
+SERENE_FIXTURE_ROUTES=1 npm run dev   # then open /fixtures/causal-twin
 ```
 
 No API keys, model providers or external services are needed for any of
@@ -47,7 +57,27 @@ these commands.
   scroll.
 - `components/notation/`: `LineMark` and `LineKey`, the certainty line
   notation (dotted = possibility, dashed = observed, solid = tested,
-  struck = refuted).
+  struck = refuted, hollow = replaced).
+- `lib/causal-twin/`: the Causal Twin as the kernel serializes it
+  (`model.ts`, a mirror of `serene/causal/model.py` with a parser that
+  re-checks the kernel's invariants and fails closed), how each edge is drawn
+  (`categories.ts`), the React Flow graph and its deterministic layout
+  (`graph.ts`), the provenance panel's reading of an edge (`provenance.ts`:
+  ids typed by prefix, support against counterevidence, lineage and
+  supersession followed by id), and where the twin comes from (`source.ts`:
+  not connected until Issue #33).
+- `components/causal-twin/`: `CausalTwinSurface` (what pages render: the
+  view with the provenance panel wired in), `CausalTwinView` (unconnected,
+  loading, error, empty and map states), the map (`TwinCanvas`,
+  `VariableNode`, `BeliefEdge`), the selected-link summary (`SelectedLink`),
+  the provenance panel (`EdgeProvenance`, Issue #39, attached through
+  `renderEdgeDetail`) and the text list of every link (`LinkList`). The
+  panel shows only what `CausalEdge` carries; what it does not carry (what
+  each item says, which evidence is external, which experiment an outcome
+  came from) is stated in the panel, not filled in.
+- `fixtures/synthetic-causal-twin.json`: a synthetic twin for tests only. It
+  is in the kernel's wire format and validates against
+  `CausalTwin.model_validate_json`.
 - `app/globals.css`: colour, type, space and motion tokens (light only),
   and the ruled grid. Palette: Warm Paper `#E0DFD8`, Sage Green `#A9B887`,
   Deep Olive `#2E3D28`. Motion respects `prefers-reduced-motion`. The full

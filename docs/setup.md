@@ -68,3 +68,21 @@ applies `supabase/migrations/`.
 | Entire | development provenance: architecture checkpoints on commits | storing secrets; auto-pushing transcripts of a public repo |
 | cfo.ai | unit-economics model; later the cost table behind `CostModel` | overriding safety or evidence quality (cost is a tie-breaker only) |
 | Inspect AI | frozen, deterministic evaluation harness | LLM-as-judge where a deterministic scorer exists |
+
+## 5. Merge gates (#58)
+
+`main` is protected by the repository ruleset **`main: required CI`**. A
+change reaches `main` only through a pull request whose four `CI` jobs
+(`.github/workflows/ci.yml`, run on every PR and every push to `main`) pass:
+
+| Required check (job `name:`) | What it blocks |
+| --- | --- |
+| `Kernel (lint, types, tests, ledger + secret checks)` | Ruff, strict mypy, all backend + deterministic policy tests (promotion, safety, approval), every `supabase/migrations/*.sql` applied to a real Postgres 17 (`test_migrations`, `test_postgres_ledger`, `test_rls`), ledger self-check, secret/PII scan |
+| `Inspect AI eval gate (no model keys)` | `scripts/inspect_gate.py`: any INCORRECT sample or missing task in the kernel, trust or runtime scenarios |
+| `Web (next.js typecheck + unit tests + build)` | frontend typecheck, unit tests, production build |
+| `Web E2E (Playwright, Chromium - desktop, tablet, mobile)` | browser acceptance suite |
+
+The checks are pinned to the GitHub Actions app. Renaming a job changes its
+check name, so the ruleset must be updated in the same change or every PR
+stays blocked. No approvals, up-to-date branch or linear history are
+required, and there is no bypass list.
