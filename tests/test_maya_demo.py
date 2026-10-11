@@ -1,6 +1,8 @@
 from pathlib import Path
 
 from serene.demo.maya import MayaDemo
+from serene.demo.report import verify_report
+from serene.domain.canonical import canonical_json
 from serene.domain.events import EventType
 from serene.domain.values import SourceKind
 
@@ -24,3 +26,12 @@ def test_maya_competes_and_asks_for_missing_evidence(tmp_path: Path) -> None:
     assert len(state.investigation_hypotheses[inv]) == 3
     assert state.investigation_phases[inv].value == "ASKING_HUMAN"
     assert demo.tap(1) == "ANSWER_RECORDED"
+
+
+def test_maya_full_chain(tmp_path: Path) -> None:
+    report = MayaDemo(tmp_path / "memory").run()
+    assert report["phase"] == "COMPLETE"
+    assert report["event_counts"]["MEMORY_PATCH_COMMITTED"] == 1
+    assert report["event_counts"]["MEMORY_PATCH_REJECTED"] == 1
+    assert len(verify_report(report)) == 18
+    assert canonical_json(report) == canonical_json(MayaDemo(tmp_path / "second-memory").run())

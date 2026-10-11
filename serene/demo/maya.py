@@ -10,6 +10,7 @@ from typing import Any
 from serene.adapters.browser import HermesBrowser
 from serene.adapters.git_memory import GitMemoryRepository
 from serene.adapters.hermes import HermesAgentRuntime, ScriptedHermesTransport, wire_response
+from serene.adapters.hermes.transport import HermesToolCall, HermesTransportError
 from serene.adapters.telegram import (
     InMemoryPromptRegistry,
     RecordingOutbox,
@@ -18,16 +19,21 @@ from serene.adapters.telegram import (
     TelegramChannel,
     TelegramPrompter,
 )
+from serene.causal import build_causal_twin
 from serene.domain.entities import Evidence, Observation
-from serene.domain.values import SourceKind
+from serene.domain.events import EventType
+from serene.domain.values import ActorKind, ActorRef, ModelRef, SourceKind
 from serene.evidence.service import EvidenceService
 from serene.evidence.verifier import FetchedPage, IndependentEvidenceVerifier
 from serene.experiments.lifecycle import LifecycleContext
 from serene.experiments.service import ExperimentLifecycleService
 from serene.investigation.assembly import KernelActors, build_stack
+from serene.memory.committer import MemoryCommitter
+from serene.memory.consolidation import run_consolidation
+from serene.memory.dream import DreamContext, DreamDraft, DreamPipeline
 from serene.observability.telemetry import RecordingSink, SafeTelemetry
 from serene.testing import SyntheticFamily
-from serene.testing.synthetic import T0
+from serene.testing.synthetic import SYNTHETIC_MODEL, T0
 
 SEED = "maya-daycare-pickup-v1"
 SECRET = "synthetic-maya-webhook-only"  # noqa: S105 - offline fixture, never a credential
@@ -69,6 +75,7 @@ class MayaDemo:
             telemetry=self.telemetry,
             new_entity_id=f.new_id,
             pinned_sources=(URL,),
+            max_transport_retries=0,  # expose the one injected failure to ledger-counted recovery
         )
         evidence = EvidenceService(
             f.ledger,
@@ -248,19 +255,223 @@ class MayaDemo:
         return inv
 
     def plan(self, inv: str, field: str, *, human: bool = False) -> None:
-        hyps = self.family.state().investigation_hypotheses[inv]
         candidate: dict[str, Any] = {
             "candidate_id": field,
             "requested_fields": [field],
             "acquisition_mode": "ASK_PARENT" if human else "BROWSE",
             "rationale": "Missing evidence distinguishes hunger, fatigue and transitions",
-            "predictions": [
-                {"hypothesis_id": h, "expected": answer}
-                for h, answer in zip(hyps, ("UNSURE", "YES", "NO"), strict=True)
-            ],
         }
         if human:
             candidate["question"] = "Was synthetic Maya calmer after her usual snack?"
         else:
             candidate.update(subject="daycare_pickup", allowed_domains=["example.org"])
-        self.transport.push("plan_evidence", wire_response({"candidates": [candidate]}))
+
+        def reply(request: Any) -> Any:
+            hyps = self.family.state().investigation_hypotheses[inv]
+            candidate["predictions"] = [
+                {"hypothesis_id": h, "expected": answer}
+                for h, answer in zip(hyps, ("NO", "YES", "NO"), strict=True)
+            ]
+            return wire_response({"candidates": [candidate]})
+
+        self.transport.push("plan_evidence", reply)
+
+    def browse_reply(self, field: str, *, unsuitable: bool) -> None:
+        excerpt = (
+            "Synthetic daycare pickup policy. Pickup notice is unnecessary." if unsuitable else PAGE
+        )
+        value = "unnecessary" if unsuitable else "five-minute"
+        self.transport.push(
+            "browse",
+            wire_response(
+                {
+                    "captures": [
+                        {
+                            "url": URL,
+                            "subject": "daycare_pickup",
+                            "effective_date": "2026-09-01",
+                            "fields": {field: value},
+                            "excerpt": excerpt,
+                        }
+                    ]
+                },
+                tool_calls=(
+                    HermesToolCall(
+                        call_id="synthetic-page-read",
+                        name="web_extract",
+                        arguments=json.dumps({"urls": [URL]}),
+                        output=excerpt,
+                    ),
+                ),
+            ),
+        )
+
+    def abstain(self) -> None:
+        self.transport.push(
+            "propose",
+            wire_response(
+                {
+                    "proposals": [
+                        {
+                            "kind": "abstain",
+                            "reason": "Retain competitors; seek suitable missing evidence",
+                        }
+                    ]
+                }
+            ),
+        )
+
+    def run(self) -> dict[str, Any]:
+        """Run all eighteen beats; fail visibly if any runtime step fails."""
+        f = self.family
+        inv = self.open_investigation()
+        before = build_causal_twin(f.state(), f.clock.now()).model_dump(mode="json")
+        if self.tap(1) != "ANSWER_RECORDED":  # NO: the snack did not settle the distress
+            raise RuntimeError("Missing parent answer")
+        self.abstain()
+        for _ in range(2):  # evaluating selects, NEEDS_EVIDENCE records the selected item
+            self.plan(inv, "pickup_notice")
+        self.transport.push("browse", HermesTransportError("TRANSIENT", "INJECTED_DEMO_FAILURE"))
+        retry = self.stack.investigations.drive(f.child_id, inv)
+        if retry[-1].action != "RETRY_SCHEDULED":
+            raise RuntimeError(f"Injected failure did not schedule recovery: {retry}")
+        self.browse_reply("pickup_notice", unsuitable=True)
+        self.abstain()
+        for _ in range(2):
+            self.plan(inv, "warning_duration")
+        self.browse_reply("warning_duration", unsuitable=False)
+
+        # The real verifier must reject the first excerpt before this proposal is admitted.
+        def experiment(request: Any) -> Any:
+            hyps = f.state().investigation_hypotheses[inv]
+            return wire_response(
+                {
+                    "proposals": [
+                        {
+                            "kind": "experiment",
+                            "hypothesis_ref": hyps[2],
+                            "category": "TRANSITION_SUPPORT",
+                            "description": "Give a five-minute heads-up before leaving daycare",
+                            "reversible": True,
+                            "max_duration_days": 7,
+                            "burden": "LOW",
+                            "comparison": "usual pickups in the prior week without a heads-up",
+                            "outcome_measure": "parent-reported calm pickup (yes/no)",
+                        }
+                    ]
+                }
+            )
+
+        self.transport.push("propose", experiment)
+        approval = self.stack.investigations.drive(f.child_id, inv)
+        if approval[-1].action != "WAITING_FOR_APPROVAL":
+            raise RuntimeError(f"Maya never reached approval: {approval}")
+        if self.tap(0) != "APPROVAL_GRANTED":
+            raise RuntimeError("Missing exact-interaction parent approval")
+        self.abstain()
+        self.transport.push("plan_evidence", wire_response({"candidates": []}))
+        self.stack.investigations.drive(f.child_id, inv)
+        (record,) = f.state().experiments.values()
+        exp = record.experiment
+        baseline_observations = {k for k in f.state().entities if k.startswith("obs_")}
+        self.say("Synthetic Maya had a calm pickup after the five-minute heads-up")
+        self.say("Synthetic Maya had another calm pickup with the heads-up")
+        state = f.state()
+        # SyntheticFamily is the existing fixture builder; keep its lineage index in sync
+        # with entities produced through the runtime, rather than building another ladder.
+        f.introduced_by.update({k: r.introduced_by for k, r in state.entities.items()})
+        observations = tuple(
+            r.entity
+            for k, r in state.entities.items()
+            if isinstance(r.entity, Observation) and k not in baseline_observations
+        )
+        f.outcome(exp, observations)
+        completion = self.lifecycle.complete(f.child_id, exp.experiment_id)
+        learning = self.lifecycle.promote_to_learning(
+            f.child_id, exp.hypothesis_id, reviewer=f.parent
+        )
+        if completion.refused or learning.refused or not f.state().learnings:
+            raise RuntimeError(f"Promotion failed: {completion} {learning}")
+        learning_id = next(iter(f.state().learnings))
+        dreamer = MayaDreamer(f.agent, learning_id, observations[0].observation_id)
+        committer = MemoryCommitter(
+            f.ledger,
+            self.repo,
+            f.clock,
+            committer=ActorRef(kind=ActorKind.MEMORY_COMMITTER, actor_id=f.new_id("act")),
+            policy=f.policy,
+            new_source_id=lambda: f.new_id("src"),
+        )
+        consolidation = run_consolidation(
+            DreamPipeline(
+                f.ledger,
+                self.repo,
+                dreamer,
+                f.clock,
+                system=f.system,
+                new_entity_id=f.new_id,
+            ),
+            committer,
+            f.child_id,
+        )
+        if len(consolidation.committed) != 1 or len(consolidation.rejected) != 1:
+            raise RuntimeError("Dream did not accept one patch and reject one patch")
+        events = f.ledger.get_events_for_child(f.child_id)
+        if not f.ledger.verify_hash_chain(f.child_id).ok:
+            raise RuntimeError("Demo ledger hash chain invalid")
+        return {
+            "fixture": SEED,
+            "seed": f.seed,
+            "synthetic": True,
+            "mode": "offline-scripted-io",
+            "investigation_id": inv,
+            "events": [e.model_dump(mode="json") for e in events],
+            "prompts": [
+                {"text": text, "buttons": [b[0] for b in buttons]}
+                for _, text, buttons in self.outbox.sent
+            ],
+            "twin_before": before,
+            "twin_after": build_causal_twin(f.state(), f.clock.now()).model_dump(mode="json"),
+            "memory": {
+                p: doc.content
+                for p in self.repo.list_paths("")
+                if (doc := self.repo.read(p)) is not None
+            },
+            "memory_head": self.repo.head(),
+            "dream_rejections": [list(r.reason_codes) for r in consolidation.rejected],
+            "phase": f.state().investigation_phases[inv].value,
+            "hash_chain_valid": True,
+            "browser_calls": sum(r.purpose == "browse" for r in self.transport.requests),
+            "retry_action": retry[-1].action,
+            "event_counts": {
+                kind.value: sum(e.event_type is kind for e in events)
+                for kind in EventType
+                if any(e.event_type is kind for e in events)
+            },
+        }
+
+
+class MayaDreamer:
+    """Two synthetic model drafts, reviewed by the production Dream Critic."""
+
+    model: ModelRef | None = SYNTHETIC_MODEL
+
+    def __init__(self, actor: ActorRef, learning: str, observation: str) -> None:
+        self.actor, self.learning, self.observation = actor, learning, observation
+
+    def reflect(self, context: DreamContext) -> list[DreamDraft]:
+        return [
+            DreamDraft(
+                self.learning,
+                "learnings/maya-pickup.md",
+                "Weekday pickup heads-up",
+                "Synthetic Maya's weekday daycare pickups were calmer with a heads-up. "
+                "This scoped synthetic result does not establish a universal cause.",
+            ),
+            DreamDraft(
+                self.observation,
+                "child/every-transition.md",
+                "Universal transition rule",
+                "Maya always needs a warning for every transition everywhere.",
+            ),
+        ]
