@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
-import { EmptyState } from "@/components/layout/EmptyState";
 import { Page } from "@/components/layout/Page";
+import { MemoryView } from "@/components/memory/MemoryView";
+import { UNCONNECTED } from "@/lib/memory/source";
 
 export const metadata: Metadata = { title: "Memory" };
+
+// The memory view is not connected yet (Issue #33), so the surface draws the
+// honest unconnected state. Once it is, the live source replaces this
+// constant and the same view shows memory and Dream runs.
+const source = UNCONNECTED;
 
 export default function MemoryPage() {
   return (
@@ -10,13 +16,7 @@ export default function MemoryPage() {
       title="Memory"
       lead="What Serene remembers about your family, and where each memory came from."
     >
-      <EmptyState title="No memories yet">
-        <p>
-          A memory is only kept after review. Each one will link back to the
-          evidence it came from, and anything Serene decided not to keep will
-          say why.
-        </p>
-      </EmptyState>
+      <MemoryView source={source} />
     </Page>
   );
 }
