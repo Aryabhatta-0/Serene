@@ -2,16 +2,17 @@
 name: Serene
 description: A survey sheet for a family's questions, with a sage hellebore blooming out of it.
 colors:
-  soft-white: "#e8e9df"
-  soft-white-raised: "#f1f2ea"
-  soft-white-sunken: "#dddfd2"
+  warm-paper: "#e0dfd8"
+  paper-raised: "#eae9e3"
+  paper-sunken: "#d5d4cc"
   deep-olive: "#2e3d28"
-  olive-muted: "#4c5944"
-  olive-faint: "#5e6a55"
+  ink: "#1d2718"
+  olive-muted: "#3b4734"
+  olive-faint: "#4d5945"
   sage-green: "#a9b887"
   sage-deep: "#66784a"
   leaf-deep: "#7c8e58"
-  rule: "#cdd0c1"
+  rule: "#c7c7bc"
   rule-strong: "#9da58c"
   selection: "#cbd5ae"
 typography:
@@ -52,23 +53,23 @@ spacing:
   "8": "64px"
 components:
   button:
-    textColor: "{colors.deep-olive}"
+    textColor: "{colors.ink}"
     typography: "{typography.label}"
     rounded: "{rounded.pill}"
     padding: "0 24px"
     height: "44px"
   button-hover:
-    backgroundColor: "{colors.deep-olive}"
-    textColor: "{colors.soft-white}"
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.warm-paper}"
   sheet:
-    backgroundColor: "{colors.soft-white-raised}"
+    backgroundColor: "{colors.paper-raised}"
     padding: "48px"
   nav-link:
     textColor: "{colors.olive-muted}"
     typography: "{typography.label}"
     height: "44px"
   nav-link-current:
-    textColor: "{colors.deep-olive}"
+    textColor: "{colors.ink}"
 ---
 
 # Design System: Serene
@@ -113,7 +114,7 @@ Three swatches (Warm Paper, Sage Green and Deep Olive), with tints derived from 
 - **Warm Paper** (#e0dfd8): the page ground. The sheet is always light; there is no dark mode.
 - **Paper Raised** (#eae9e3): content sheets that lie on the grid.
 - **Olive Muted** (#3b4734, 7.4:1) and **Olive Faint** (#4d5945, 5.6:1): secondary text.
-- **Rule** (#c7c7bc) and **Rule Strong** (#9da58c): dividers and sheet borders. The grid lines use deep olive at 15%, and the dots near-black olive at 85%.
+- **Rule** (#c7c7bc) and **Rule Strong** (#9da58c): dividers and sheet borders. The grid lines use deep olive at 5%, and the dots near-black olive at 22%.
 
 
 ### Named Rules

@@ -108,7 +108,8 @@
 
 @media (hover: hover) {
   .enter:hover svg {
-    translate: 3px 0;
+    /* 3px, or none under reduced motion. */
+    translate: calc(var(--rise) / 2) 0;
   }
 }
 

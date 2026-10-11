@@ -13,8 +13,12 @@ npm run typecheck
 npm run build
 ```
 
-End-to-end checks (entering from the landing page, navigation across all
-five surfaces, no fabricated data, skip link) run against a production build in Chromium:
+End-to-end checks run against a production build in Chromium at desktop
+(1440px), tablet (768px) and phone (390px) sizes. They cover entering from the
+landing page, exactly five surfaces, navigation and the current route, no
+fabricated data, the skip link, the menu sheet (Esc and focus return), one h1
+per route, no horizontal overflow from 360 to 1440px, a clean console,
+reduced motion, and the brand assets. CI runs the same suite (`web-e2e`):
 
 ```sh
 npx playwright install chromium   # once per machine
@@ -47,7 +51,8 @@ these commands.
 - `app/globals.css`: colour, type, space and motion tokens (light only),
   and the ruled grid. Palette: Warm Paper `#E0DFD8`, Sage Green `#A9B887`,
   Deep Olive `#2E3D28`. Motion respects `prefers-reduced-motion`. The full
-  system is recorded in the repository's `DESIGN.md`.
+  system is recorded in `DESIGN.md`, and the product context it serves in
+  `PRODUCT.md`.
 
 ## Brand assets
 

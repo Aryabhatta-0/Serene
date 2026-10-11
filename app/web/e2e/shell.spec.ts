@@ -111,3 +111,78 @@ test("the bloom plays on the landing page only and gives way to any input", asyn
   await expect(page.getByRole("heading", { level: 1, name: "Today" })).toBeVisible();
   await expect(html).not.toHaveAttribute("data-bloom", /.*/);
 });
+
+const ROUTES = ["/", ...SURFACES.map((s) => s.path)];
+
+// Each project also checks the neighbouring width it stands in for, so the
+// sweep covers 360, 390, 768, 1024 and 1440px.
+const WIDTHS: Record<string, readonly number[]> = {
+  desktop: [1440, 1024],
+  tablet: [768],
+  mobile: [390, 360],
+};
+
+test("every route has one h1, no horizontal overflow and a clean console", async ({
+  page,
+}, testInfo) => {
+  const errors: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error" || message.type() === "warning") errors.push(message.text());
+  });
+  page.on("pageerror", (error) => errors.push(error.message));
+
+  const height = page.viewportSize()!.height;
+  for (const width of WIDTHS[testInfo.project.name]) {
+    await page.setViewportSize({ width, height });
+    for (const route of ROUTES) {
+      await page.goto(route);
+      await expect(page.locator("h1")).toHaveCount(1);
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow, `${route} at ${width}px`).toBeLessThanOrEqual(0);
+    }
+  }
+  // Hydration mismatches surface here as console errors.
+  expect(errors).toEqual([]);
+});
+
+test("the menu sheet closes on Escape and gives focus back", async ({ page }) => {
+  await page.goto("/experiments");
+  const trigger = page.getByRole("button", { name: "Surfaces" });
+  test.skip(!(await trigger.isVisible()), "the inline nav replaces the sheet at this width");
+
+  await trigger.focus();
+  await page.keyboard.press("Enter");
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+  // Focus moves into the sheet, and Tab stays inside it.
+  await expect(dialog.locator(":focus")).toHaveCount(1);
+  for (let i = 0; i < 8; i++) {
+    await page.keyboard.press("Tab");
+    await expect(dialog.locator(":focus")).toHaveCount(1);
+  }
+
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+  await expect(trigger).toBeFocused();
+});
+
+test.describe("with reduced motion", () => {
+  test.use({ reducedMotion: "reduce" });
+
+  test("spatial motion is removed", async ({ page }) => {
+    await page.goto("/");
+    const token = (name: string) =>
+      page.evaluate((n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim(), name);
+    expect(await token("--rise")).toBe("0px");
+    expect(await token("--dur-settle")).toBe("1ms");
+
+    // Entering still lands on Today, with no flight across the page.
+    await page.getByRole("button", { name: "Enter Serene" }).click();
+    await expect(page).toHaveURL(/\/today$/);
+    await expect(page.getByRole("heading", { level: 1, name: "Today" })).toBeVisible();
+  });
+});
