@@ -17,7 +17,10 @@ from psycopg.types.json import Jsonb
 
 from serene.domain.canonical import canonical_json, format_timestamp, to_canonical_data
 from serene.domain.events import GENESIS_HASH, DomainEvent
+from serene.ledger.service import AfterAppend
 from serene.ports.event_store import ConcurrencyConflict
+from serene.projections.state import KernelState
+from serene.projections.views import project
 
 _COLUMNS = (
     "event_id, child_id, sequence, event_type, schema_version, hash_version, source, actor, "
@@ -122,6 +125,39 @@ class PostgresProjectionStore:
                     (child_id, name, Jsonb(state), last_sequence, last_event_hash),
                 )
 
+    def advance(
+        self,
+        child_id: str,
+        projections: dict[str, dict[str, Any]],
+        *,
+        last_sequence: int,
+        last_event_hash: str,
+    ) -> None:
+        """Bring the rows up to `last_sequence` in place (issue #33).
+
+        Unlike `replace`, this never deletes a projection that still exists, so a
+        Realtime subscriber sees one update per changed row and no transient gap.
+        It is monotonic: a row already at a later sequence is left alone, so a
+        late or repeated publish can never move the read state backwards.
+        """
+        with psycopg.connect(self._conninfo) as conn, conn.transaction():
+            for name, state in sorted(projections.items()):
+                conn.execute(
+                    "insert into serene.projection_state "
+                    "(child_id, projection, state, last_sequence, last_event_hash) "
+                    "values (%s, %s, %s, %s, %s) "
+                    "on conflict (child_id, projection) do update set "
+                    "state = excluded.state, last_sequence = excluded.last_sequence, "
+                    "last_event_hash = excluded.last_event_hash, rebuilt_at = now() "
+                    "where serene.projection_state.last_sequence < excluded.last_sequence",
+                    (child_id, name, Jsonb(state), last_sequence, last_event_hash),
+                )
+            conn.execute(
+                "delete from serene.projection_state "
+                "where child_id = %s and not (projection = any(%s)) and last_sequence <= %s",
+                (child_id, sorted(projections), last_sequence),
+            )
+
     def load(self, child_id: str) -> dict[str, dict[str, Any]]:
         with psycopg.connect(self._conninfo) as conn:
             rows = conn.execute(
@@ -134,3 +170,17 @@ class PostgresProjectionStore:
     def delete(self, child_id: str) -> None:
         with psycopg.connect(self._conninfo) as conn, conn.transaction():
             conn.execute("delete from serene.projection_state where child_id = %s", (child_id,))
+
+
+def projection_publisher(store: PostgresProjectionStore) -> AfterAppend:
+    """An `EventLedger(after_append=...)` hook that keeps projection_state in step."""
+
+    def advance(event: DomainEvent, state: KernelState) -> None:
+        store.advance(
+            event.child_id,
+            project(state),
+            last_sequence=event.sequence,
+            last_event_hash=event.event_hash,
+        )
+
+    return advance

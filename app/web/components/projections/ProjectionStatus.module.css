@@ -1,0 +1,16 @@
+.status {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+
+.status[data-sync="live"] {
+  color: var(--ink);
+}
+
+/* Not current: ruled at the side as well as written. */
+.status[data-sync="reconnecting"],
+.status[data-sync="error"] {
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--ink);
+  color: var(--ink);
+}
