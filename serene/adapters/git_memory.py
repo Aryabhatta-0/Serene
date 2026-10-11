@@ -59,7 +59,7 @@ class GitMemoryRepository:
         self._root = Path(root)
         self._clock = clock
         if not (self._root / ".git").is_dir():
-            raise GitError(f"not a memory repository: {self._root}")
+            raise GitError("NOT_A_MEMORY_REPOSITORY")
 
     # ------------------------------------------------------------------ plumbing
     @staticmethod
@@ -95,7 +95,7 @@ class GitMemoryRepository:
             check=False,
         )
         if check and result.returncode != 0:
-            raise GitError(f"git {args[0]} failed: {result.stderr.decode(errors='replace')[:300]}")
+            raise GitError(f"GIT_COMMAND_FAILED: exit={result.returncode}")
         return result
 
     def _git(self, *args: str, **kwargs: object) -> bytes:

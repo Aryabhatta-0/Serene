@@ -12,7 +12,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error(error);
+    console.error("Serene client error"); // Exception messages/stacks may contain private input.
   }, [error]);
 
   return (
