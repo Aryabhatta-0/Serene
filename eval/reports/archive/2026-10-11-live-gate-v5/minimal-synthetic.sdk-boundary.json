@@ -1,0 +1,37 @@
+{
+  "case": "minimal-synthetic",
+  "live_provider_calls": 0,
+  "local_http_status": 200,
+  "process_alive": true,
+  "provider_network_denied": true,
+  "request_sha256": "d31e3729814e0675728f73eb6bae37dd8aa21a3c2d359f014946414102d40649",
+  "runtime_attested": true,
+  "sdk_boundary_reached": true,
+  "sdk_receipt": {
+    "config_sha256": "7f139ac000f9e99bf44cd5db05bf90c86ce7210711175acd04531010f26198e8",
+    "generated_session_id": "a28c624c-7de2-41bf-9ca9-bd88c9aef317",
+    "max_turns": 500,
+    "model": "deepseek-v4.1-flash",
+    "permit": {
+      "arm": "A",
+      "attempt": 2,
+      "body_sha256": "d31e3729814e0675728f73eb6bae37dd8aa21a3c2d359f014946414102d40649",
+      "envelope_sha256": "b4618899e1f186d73e2c20d317acb65ee088cd5cd3debe4f9e17bee9e871a211",
+      "manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "pair": 1,
+      "permit_id": "live-gate5-8fa4903a2371ba53cf0e68656f0ca248fe4e4283a2a1944f",
+      "prefix_sha256": "8bed4f11366ab2754dc70460ce9e1bc993ff72d520e02aa970e6eb1a9c9c4e2a",
+      "request_sha256": "1492f2332dc99fc04c1367861ba9bb896f396bcb5653f515ddfa93359893bdf0",
+      "tape_id": "minimal-synthetic"
+    },
+    "pid": 12676,
+    "provider": "opencode-go",
+    "provider_base_url": "https://opencode.ai/zen/go/v1",
+    "reasoning": {
+      "effort": "high",
+      "enabled": true
+    },
+    "sdk_payload_sha256": "cbcb042ce10a02400c9153830cafeab48b9270056ca725bdd2079df1e0b0727a"
+  },
+  "telemetry_exports": 0
+}
