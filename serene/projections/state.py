@@ -121,6 +121,11 @@ class ExperimentRecord:
     outcome_ids: list[str] = field(default_factory=list)
     started_at: datetime | None = None
     outcome_timed_out: bool = False
+    # read-view detail for the experiments surface (issue #37)
+    classification_reasons: tuple[str, ...] = ()
+    blocked_reasons: tuple[str, ...] = ()
+    abandoned_reasons: tuple[str, ...] = ()
+    ended_at: datetime | None = None
 
 
 @dataclass(slots=True)
@@ -136,6 +141,8 @@ class ApprovalRecord:
     consumed_by: str | None = None
     requested_at: datetime | None = None
     receipt_key: str | None = None
+    decided_at: datetime | None = None
+    decided_via: str | None = None  # channel kind of the decision's receipt
 
 
 @dataclass(slots=True)
@@ -146,6 +153,9 @@ class PromotionRecord:
     to_level: EpistemicLevel
     granted: bool
     consumed_by: str | None = None
+    reason_codes: tuple[str, ...] = ()
+    derived_from: tuple[str, ...] = ()
+    recorded_at: datetime | None = None
 
 
 @dataclass(slots=True)
@@ -326,6 +336,9 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
                 from_level=payload.from_level,
                 to_level=payload.to_level,
                 granted=granted,
+                reason_codes=payload.reason_codes,
+                derived_from=event.derived_from,
+                recorded_at=event.recorded_at,
             )
             if granted and payload.subject_id in state.hypothesis_levels:
                 state.hypothesis_levels[payload.subject_id] = payload.to_level
@@ -347,8 +360,11 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
             record_e.safety_class = payload.safety_class
             record_e.intervention_digest = payload.intervention_digest
             record_e.status = ExperimentStatus.CLASSIFIED
-        case ExperimentBlocked(experiment_id=exp_id):
+            record_e.classification_reasons = payload.reason_codes
+        case ExperimentBlocked(experiment_id=exp_id, reason_codes=reason_codes):
             state.experiments[exp_id].status = ExperimentStatus.BLOCKED
+            state.experiments[exp_id].blocked_reasons = reason_codes
+            state.experiments[exp_id].ended_at = event.recorded_at
         case ApprovalRequested():
             state.approvals[payload.approval_request_id] = ApprovalRecord(
                 approval_request_id=payload.approval_request_id,
@@ -370,17 +386,23 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
             approval = state.approvals[apr_id]
             approval.state = ApprovalState.GRANTED
             approval.receipt_key = receipt_key(receipt.channel.value, receipt.message_ref)
+            approval.decided_at = event.recorded_at
+            approval.decided_via = receipt.channel.value
             state.channel_receipts[approval.receipt_key] = apr_id
             state.experiments[approval.experiment_id].status = ExperimentStatus.APPROVED
         case ApprovalRejected(approval_request_id=apr_id, receipt=receipt):
             approval = state.approvals[apr_id]
             approval.state = ApprovalState.REJECTED
             approval.receipt_key = receipt_key(receipt.channel.value, receipt.message_ref)
+            approval.decided_at = event.recorded_at
+            approval.decided_via = receipt.channel.value
             state.channel_receipts[approval.receipt_key] = apr_id
             state.experiments[approval.experiment_id].status = ExperimentStatus.ABANDONED
+            state.experiments[approval.experiment_id].ended_at = event.recorded_at
         case ApprovalTimedOut(approval_request_id=apr_id):
             approval = state.approvals[apr_id]
             approval.state = ApprovalState.PARKED_UNRESOLVED
+            approval.decided_at = event.recorded_at
             parked = state.experiments[approval.experiment_id]
             if parked.status is ExperimentStatus.AWAITING_APPROVAL:  # never revive a terminal one
                 parked.status = ExperimentStatus.PARKED_UNRESOLVED
@@ -395,11 +417,15 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
             state.experiments[outcome.experiment_id].outcome_ids.append(outcome.outcome_id)
         case ExperimentCompleted(experiment_id=exp_id):
             state.experiments[exp_id].status = ExperimentStatus.COMPLETED
-        case ExperimentAbandoned(experiment_id=exp_id):
+            state.experiments[exp_id].ended_at = event.recorded_at
+        case ExperimentAbandoned(experiment_id=exp_id, reason_codes=reason_codes):
             state.experiments[exp_id].status = ExperimentStatus.ABANDONED
+            state.experiments[exp_id].abandoned_reasons = reason_codes
+            state.experiments[exp_id].ended_at = event.recorded_at
         case ExperimentOutcomeTimedOut(experiment_id=exp_id):
             state.experiments[exp_id].status = ExperimentStatus.ABANDONED
             state.experiments[exp_id].outcome_timed_out = True
+            state.experiments[exp_id].ended_at = event.recorded_at
         case LearningRecorded(learning=learning, promotion_event_id=promotion_id):
             _register(state, learning, event)
             state.promotions[promotion_id].consumed_by = event.event_id

@@ -1,0 +1,550 @@
+{
+  "version": "experiments-view/1",
+  "ledger_head": "8703433923f789bb8ec5b3bf120f7ee99b68c38279e47d4436979d3518d36e28",
+  "as_of": "2026-09-07T12:10:00Z",
+  "experiments": [
+    {
+      "experiment_id": "exp_d0d48bb28bd58afd37246db5dd9635ec",
+      "hypothesis_id": "hyp_0219dbc3f02b5febb3e6923155578884",
+      "hypothesis_statement": "abrupt transitions drive distress",
+      "investigation_id": "inv_75e4f76a83dd4d65c4705531eab9f651",
+      "intervention": {
+        "category": "COMMUNICATION",
+        "description": "Talk through the evening plan at drop-off",
+        "reversible": true,
+        "max_duration_days": 7,
+        "burden": "LOW"
+      },
+      "comparison": "pickups in the week before the heads-up",
+      "outcome_measure": "parent-reported calm pickup (yes/no)",
+      "contexts": [
+        "daycare_pickup",
+        "weekday_evening"
+      ],
+      "safety_class": null,
+      "classification_reasons": [],
+      "phase": "PROPOSED",
+      "proposed_at": "2026-09-07T12:10:00Z",
+      "started_at": null,
+      "outcome_due_at": null,
+      "ended_at": null,
+      "blocked_reasons": [],
+      "abandoned_reasons": [],
+      "outcome_timed_out": false,
+      "approval": null,
+      "outcomes": [],
+      "promotion": null
+    },
+    {
+      "experiment_id": "exp_81ae7b7181da7864509fbdf5604f8a0f",
+      "hypothesis_id": "hyp_0b82eede85f945a47f4857b1df421fe7",
+      "hypothesis_statement": "abrupt transitions drive distress",
+      "investigation_id": "inv_de497c54b933b7fc62cda5caff25d2b6",
+      "intervention": {
+        "category": "ENVIRONMENT",
+        "description": "Wait in the quiet room for pickup",
+        "reversible": true,
+        "max_duration_days": 7,
+        "burden": "LOW"
+      },
+      "comparison": "pickups in the week before the heads-up",
+      "outcome_measure": "parent-reported calm pickup (yes/no)",
+      "contexts": [
+        "daycare_pickup",
+        "weekday_evening"
+      ],
+      "safety_class": "GREEN",
+      "classification_reasons": [
+        "LOW_RISK_REVERSIBLE"
+      ],
+      "phase": "CLASSIFIED",
+      "proposed_at": "2026-09-07T12:00:00Z",
+      "started_at": null,
+      "outcome_due_at": null,
+      "ended_at": null,
+      "blocked_reasons": [],
+      "abandoned_reasons": [],
+      "outcome_timed_out": false,
+      "approval": null,
+      "outcomes": [],
+      "promotion": null
+    },
+    {
+      "experiment_id": "exp_93d7a401a10e315921b8fff715bba8c0",
+      "hypothesis_id": "hyp_f14dddd14346245abe8e122fe90c3841",
+      "hypothesis_statement": "abrupt transitions drive distress",
+      "investigation_id": "inv_4f2db15433b3567d9a93c0dc32b5ad46",
+      "intervention": {
+        "category": "TRANSITION_SUPPORT",
+        "description": "Give a five-minute heads-up before leaving daycare",
+        "reversible": true,
+        "max_duration_days": 7,
+        "burden": "LOW"
+      },
+      "comparison": "pickups in the week before the heads-up",
+      "outcome_measure": "parent-reported calm pickup (yes/no)",
+      "contexts": [
+        "daycare_pickup",
+        "weekday_evening"
+      ],
+      "safety_class": "GREEN",
+      "classification_reasons": [
+        "LOW_RISK_REVERSIBLE"
+      ],
+      "phase": "AWAITING_APPROVAL",
+      "proposed_at": "2026-09-07T11:50:00Z",
+      "started_at": null,
+      "outcome_due_at": null,
+      "ended_at": null,
+      "blocked_reasons": [],
+      "abandoned_reasons": [],
+      "outcome_timed_out": false,
+      "approval": {
+        "approval_request_id": "apr_539be8f51daee580ef00382131f236a2",
+        "state": "PENDING",
+        "safety_class": "GREEN",
+        "intervention_digest": "0460ae3ada0d26d1684763c7be30c15f8160e8d4b29ec4df75a70bc11232c899",
+        "requested_at": "2026-09-07T11:50:00Z",
+        "expires_at": "2026-09-09T11:50:00Z",
+        "nudges": 0,
+        "decided_at": null,
+        "decided_via": null,
+        "decision_open": true
+      },
+      "outcomes": [],
+      "promotion": null
+    },
+    {
+      "experiment_id": "exp_378637ac98b17c4174d9e056e03bcf0e",
+      "hypothesis_id": "hyp_e2b75ff7e14470f9b587fba9d4e9f508",
+      "hypothesis_statement": "abrupt transitions drive distress",
+      "investigation_id": "inv_7869dc3f7cf0df97fa1a9ba27032ac5d",
+      "intervention": {
+        "category": "SLEEP_SCHEDULE",
+        "description": "Move the afternoon nap thirty minutes earlier",
+        "reversible": true,
+        "max_duration_days": 7,
+        "burden": "LOW"
+      },
+      "comparison": "pickups in the week before the heads-up",
+      "outcome_measure": "parent-reported calm pickup (yes/no)",
+      "contexts": [
+        "daycare_pickup",
+        "weekday_evening"
+      ],
+      "safety_class": "AMBER",
+      "classification_reasons": [
+        "ESCALATED_CATEGORY:SLEEP_SCHEDULE"
+      ],
+      "phase": "AWAITING_APPROVAL",
+      "proposed_at": "2026-09-07T11:40:00Z",
+      "started_at": null,
+      "outcome_due_at": null,
+      "ended_at": null,
+      "blocked_reasons": [],
+      "abandoned_reasons": [],
+      "outcome_timed_out": false,
+      "approval": {
+        "approval_request_id": "apr_466acd7885819e0724272ef912d20972",
+        "state": "PENDING",
+        "safety_class": "AMBER",
+        "intervention_digest": "a20e51e8c681af4196f39d68266ec0d4c555103b3ede5448fb9f6b74225ba889",
+        "requested_at": "2026-09-07T11:40:00Z",
+        "expires_at": "2026-09-10T11:40:00Z",
+        "nudges": 0,
+        "decided_at": null,
+        "decided_via": null,
+        "decision_open": true
+      },
+      "outcomes": [],
+      "promotion": null
+    },
+    {
+      "experiment_id": "exp_d7e383881daf05be6fba8e3377c2a71f",
+      "hypothesis_id": "hyp_f5dcd4b5d128faae3774eac72e526769",
+      "hypothesis_statement": "abrupt transitions drive distress",
+      "investigation_id": "inv_297ec6c557f7fd0490e513066df3bf8b",
+      "intervention": {
+        "category": "MEDICATION",
+        "description": "Give a calming supplement before pickup",
+        "reversible": true,
+        "max_duration_days": 7,
+        "burden": "LOW"
+      },
+      "comparison": "pickups in the week before the heads-up",
+      "outcome_measure": "parent-reported calm pickup (yes/no)",
+      "contexts": [
+        "daycare_pickup",
+        "weekday_evening"
+      ],
+      "safety_class": "RED",
+      "classification_reasons": [
+        "FORBIDDEN_CATEGORY:MEDICATION",
+        "FORBIDDEN_TERM"
+      ],
+      "phase": "BLOCKED",
+      "proposed_at": "2026-09-07T11:30:00Z",
+      "started_at": null,
+      "outcome_due_at": null,
+      "ended_at": "2026-09-07T11:30:00Z",
+      "blocked_reasons": [
+        "RED_FAIL_CLOSED",
+        "FORBIDDEN_CATEGORY:MEDICATION",
+        "FORBIDDEN_TERM"
+      ],
+      "abandoned_reasons": [],
+      "outcome_timed_out": false,
+      "approval": null,
+      "outcomes": [],
+      "promotion": null
+    },
+    {
+      "experiment_id": "exp_8167db02125fbb2e221605116ff7402b",
+      "hypothesis_id": "hyp_0d61fe372ddb78d8cd021525b6b50ddd",
+      "hypothesis_statement": "abrupt transitions drive distress",
+      "investigation_id": "inv_a3bf51fc3087204eb5ba546486e79760",
+      "intervention": {
+        "category": "TRANSITION_SUPPORT",
+        "description": "Sing the goodbye song before leaving",
+        "reversible": true,
+        "max_duration_days": 7,
+        "burden": "LOW"
+      },
+      "comparison": "pickups in the week before the heads-up",
+      "outcome_measure": "parent-reported calm pickup (yes/no)",
+      "contexts": [
+        "daycare_pickup",
+        "weekday_evening"
+      ],
+      "safety_class": "GREEN",
+      "classification_reasons": [
+        "LOW_RISK_REVERSIBLE"
+      ],
+      "phase": "APPROVED",
+      "proposed_at": "2026-09-07T11:20:00Z",
+      "started_at": null,
+      "outcome_due_at": null,
+      "ended_at": null,
+      "blocked_reasons": [],
+      "abandoned_reasons": [],
+      "outcome_timed_out": false,
+      "approval": {
+        "approval_request_id": "apr_5f9315fe5ca661818354e8af5b7618fa",
+        "state": "GRANTED",
+        "safety_class": "GREEN",
+        "intervention_digest": "428af1ccb52df1ae5ce25fdb71e37b35f08e0387c546b1043bbacd2b4b2cedb6",
+        "requested_at": "2026-09-07T11:20:00Z",
+        "expires_at": "2026-09-09T11:20:00Z",
+        "nudges": 0,
+        "decided_at": "2026-09-07T11:20:00Z",
+        "decided_via": "WEB_APP",
+        "decision_open": false
+      },
+      "outcomes": [],
+      "promotion": null
+    },
+    {
+      "experiment_id": "exp_1ef10abfccd20ec21583129a9c9feb9b",
+      "hypothesis_id": "hyp_71185b941b51dcf8c8a46996bf94f4b1",
+      "hypothesis_statement": "abrupt transitions drive distress",
+      "investigation_id": "inv_05141884be5f9af5e1d3047824d11c56",
+      "intervention": {
+        "category": "ROUTINE_TIMING",
+        "description": "Leave daycare ten minutes earlier",
+        "reversible": true,
+        "max_duration_days": 7,
+        "burden": "LOW"
+      },
+      "comparison": "pickups in the week before the heads-up",
+      "outcome_measure": "parent-reported calm pickup (yes/no)",
+      "contexts": [
+        "daycare_pickup",
+        "weekday_evening"
+      ],
+      "safety_class": "GREEN",
+      "classification_reasons": [
+        "LOW_RISK_REVERSIBLE"
+      ],
+      "phase": "WAITING_FOR_OUTCOME",
+      "proposed_at": "2026-09-07T11:09:00Z",
+      "started_at": "2026-09-07T11:10:00Z",
+      "outcome_due_at": "2026-09-17T11:10:00Z",
+      "ended_at": null,
+      "blocked_reasons": [],
+      "abandoned_reasons": [],
+      "outcome_timed_out": false,
+      "approval": {
+        "approval_request_id": "apr_14d834dbde799e4018c3e026850f0885",
+        "state": "GRANTED",
+        "safety_class": "GREEN",
+        "intervention_digest": "83083cac262c126e62ae1d473bd191c356f042ba6f20b4852bd26c0ad90e4dc4",
+        "requested_at": "2026-09-07T11:09:00Z",
+        "expires_at": "2026-09-09T11:09:00Z",
+        "nudges": 0,
+        "decided_at": "2026-09-07T11:09:00Z",
+        "decided_via": "WEB_APP",
+        "decision_open": false
+      },
+      "outcomes": [],
+      "promotion": null
+    },
+    {
+      "experiment_id": "exp_3dba6ab121d0fe1aa0d31a03fe0ce3ba",
+      "hypothesis_id": "hyp_84944ed34d08bc4faeff13730229c407",
+      "hypothesis_statement": "abrupt transitions drive distress",
+      "investigation_id": "inv_f1e04f6c9d73b6f85273b63b73d1c23a",
+      "intervention": {
+        "category": "TRANSITION_SUPPORT",
+        "description": "Give a five-minute heads-up before leaving",
+        "reversible": true,
+        "max_duration_days": 1,
+        "burden": "LOW"
+      },
+      "comparison": "pickups in the week before the heads-up",
+      "outcome_measure": "parent-reported calm pickup (yes/no)",
+      "contexts": [
+        "daycare_pickup",
+        "weekday_evening"
+      ],
+      "safety_class": "GREEN",
+      "classification_reasons": [
+        "LOW_RISK_REVERSIBLE"
+      ],
+      "phase": "OUTCOME_OVERDUE",
+      "proposed_at": "2026-09-03T09:58:00Z",
+      "started_at": "2026-09-03T09:59:00Z",
+      "outcome_due_at": "2026-09-07T09:59:00Z",
+      "ended_at": null,
+      "blocked_reasons": [],
+      "abandoned_reasons": [],
+      "outcome_timed_out": false,
+      "approval": {
+        "approval_request_id": "apr_e5c25d6b45c1b0d75b2cff87eb315279",
+        "state": "GRANTED",
+        "safety_class": "GREEN",
+        "intervention_digest": "f701e414d668db7a139a58f482c6639dd66482d026d857c14893b57710b43351",
+        "requested_at": "2026-09-03T09:58:00Z",
+        "expires_at": "2026-09-05T09:58:00Z",
+        "nudges": 0,
+        "decided_at": "2026-09-03T09:58:00Z",
+        "decided_via": "WEB_APP",
+        "decision_open": false
+      },
+      "outcomes": [],
+      "promotion": null
+    },
+    {
+      "experiment_id": "exp_6c8e40edfbde7dc77af368970ddc1ee6",
+      "hypothesis_id": "hyp_19a7bce2d367a76aa2f5de795f5849f5",
+      "hypothesis_statement": "abrupt transitions drive distress",
+      "investigation_id": "inv_dcdef6de2b6b053017253200bebbc3de",
+      "intervention": {
+        "category": "COMMUNICATION",
+        "description": "Use a picture card to show what comes next",
+        "reversible": true,
+        "max_duration_days": 7,
+        "burden": "LOW"
+      },
+      "comparison": "pickups in the week before the heads-up",
+      "outcome_measure": "parent-reported calm pickup (yes/no)",
+      "contexts": [
+        "daycare_pickup",
+        "weekday_evening"
+      ],
+      "safety_class": "GREEN",
+      "classification_reasons": [
+        "LOW_RISK_REVERSIBLE"
+      ],
+      "phase": "PARKED_UNRESOLVED",
+      "proposed_at": "2026-09-01T08:48:00Z",
+      "started_at": null,
+      "outcome_due_at": null,
+      "ended_at": null,
+      "blocked_reasons": [],
+      "abandoned_reasons": [],
+      "outcome_timed_out": false,
+      "approval": {
+        "approval_request_id": "apr_e6d2727081521899b23eae2746e8218f",
+        "state": "PARKED_UNRESOLVED",
+        "safety_class": "GREEN",
+        "intervention_digest": "79fdbce6e436d9038cad4adcba7bee2f9ad543a654eb53ee44673991400d9f28",
+        "requested_at": "2026-09-01T08:48:00Z",
+        "expires_at": "2026-09-03T08:48:00Z",
+        "nudges": 0,
+        "decided_at": "2026-09-03T09:48:00Z",
+        "decided_via": null,
+        "decision_open": false
+      },
+      "outcomes": [],
+      "promotion": null
+    },
+    {
+      "experiment_id": "exp_53a30d3fa6a46466095d704bb094ca51",
+      "hypothesis_id": "hyp_cd342317f37ae74601aadc0d96c5e55a",
+      "hypothesis_statement": "abrupt transitions drive distress",
+      "investigation_id": "inv_a2ac3ff67ed7e6c0a753a73bd99d9037",
+      "intervention": {
+        "category": "PLAY_ACTIVITY",
+        "description": "Bring a small toy to hand over at pickup",
+        "reversible": true,
+        "max_duration_days": 7,
+        "burden": "LOW"
+      },
+      "comparison": "pickups in the week before the heads-up",
+      "outcome_measure": "parent-reported calm pickup (yes/no)",
+      "contexts": [
+        "daycare_pickup",
+        "weekday_evening"
+      ],
+      "safety_class": "GREEN",
+      "classification_reasons": [
+        "LOW_RISK_REVERSIBLE"
+      ],
+      "phase": "ABANDONED",
+      "proposed_at": "2026-09-01T08:38:00Z",
+      "started_at": null,
+      "outcome_due_at": null,
+      "ended_at": "2026-09-01T08:38:00Z",
+      "blocked_reasons": [],
+      "abandoned_reasons": [],
+      "outcome_timed_out": false,
+      "approval": {
+        "approval_request_id": "apr_9a22812c960cde8ad00335a042a951d4",
+        "state": "REJECTED",
+        "safety_class": "GREEN",
+        "intervention_digest": "535fbaeedca9f758f9338c4c57f4f6c8985802b0980c5066b59b74b428ca90fd",
+        "requested_at": "2026-09-01T08:38:00Z",
+        "expires_at": "2026-09-03T08:38:00Z",
+        "nudges": 0,
+        "decided_at": "2026-09-01T08:38:00Z",
+        "decided_via": "WEB_APP",
+        "decision_open": false
+      },
+      "outcomes": [],
+      "promotion": null
+    },
+    {
+      "experiment_id": "exp_8a68734556f3431d1de0e9766dfbd2cc",
+      "hypothesis_id": "hyp_3a36596498919afbf5f6b41270e3f7a0",
+      "hypothesis_statement": "abrupt transitions drive distress",
+      "investigation_id": "inv_e7489d56212e786eafa6eb28d46d83a0",
+      "intervention": {
+        "category": "ENVIRONMENT",
+        "description": "Dim the hallway lights before leaving",
+        "reversible": true,
+        "max_duration_days": 7,
+        "burden": "LOW"
+      },
+      "comparison": "pickups in the week before the heads-up",
+      "outcome_measure": "parent-reported calm pickup (yes/no)",
+      "contexts": [
+        "daycare_pickup",
+        "weekday_evening"
+      ],
+      "safety_class": "GREEN",
+      "classification_reasons": [
+        "LOW_RISK_REVERSIBLE"
+      ],
+      "phase": "COMPLETED",
+      "proposed_at": "2026-09-01T08:24:00Z",
+      "started_at": "2026-09-01T08:25:00Z",
+      "outcome_due_at": "2026-09-11T08:25:00Z",
+      "ended_at": "2026-09-01T08:28:00Z",
+      "blocked_reasons": [],
+      "abandoned_reasons": [],
+      "outcome_timed_out": false,
+      "approval": {
+        "approval_request_id": "apr_893abf90d84f07cbd5044ebde87df069",
+        "state": "GRANTED",
+        "safety_class": "GREEN",
+        "intervention_digest": "ffe0eb6892451f1ba64b23ea6aa71edd923c196dd1bfcd56c4f1785eb15364f2",
+        "requested_at": "2026-09-01T08:24:00Z",
+        "expires_at": "2026-09-03T08:24:00Z",
+        "nudges": 0,
+        "decided_at": "2026-09-01T08:24:00Z",
+        "decided_via": "WEB_APP",
+        "decision_open": false
+      },
+      "outcomes": [
+        {
+          "outcome_id": "out_c34d79f298af850e80137f39ad2f07ab",
+          "result": "CONTRADICTS",
+          "summary": "pickups were calm on most heads-up days",
+          "reported_at": "2026-09-01T08:27:00Z",
+          "reported_by": "PARENT"
+        }
+      ],
+      "promotion": {
+        "granted": false,
+        "from_level": 3,
+        "to_level": 4,
+        "reason_codes": [
+          "NO_SUPPORTING_OUTCOME",
+          "CONTRADICTING_OUTCOME"
+        ],
+        "recorded_at": "2026-09-01T08:28:00Z"
+      }
+    },
+    {
+      "experiment_id": "exp_2f3c70579a1cb950e2719ef2f445f3d0",
+      "hypothesis_id": "hyp_73fd0dc7d4a7e8c520b0a547c91e59f1",
+      "hypothesis_statement": "abrupt transitions drive distress",
+      "investigation_id": "inv_d53ea8e2fc5fc0f73daa4de328118c68",
+      "intervention": {
+        "category": "TRANSITION_SUPPORT",
+        "description": "Give a five-minute heads-up before leaving daycare",
+        "reversible": true,
+        "max_duration_days": 7,
+        "burden": "LOW"
+      },
+      "comparison": "pickups in the week before the heads-up",
+      "outcome_measure": "parent-reported calm pickup (yes/no)",
+      "contexts": [
+        "daycare_pickup",
+        "weekday_evening"
+      ],
+      "safety_class": "GREEN",
+      "classification_reasons": [
+        "LOW_RISK_REVERSIBLE"
+      ],
+      "phase": "COMPLETED",
+      "proposed_at": "2026-09-01T08:10:00Z",
+      "started_at": "2026-09-01T08:11:00Z",
+      "outcome_due_at": "2026-09-11T08:11:00Z",
+      "ended_at": "2026-09-01T08:14:00Z",
+      "blocked_reasons": [],
+      "abandoned_reasons": [],
+      "outcome_timed_out": false,
+      "approval": {
+        "approval_request_id": "apr_f106d21712d423800f28431b0e8ab644",
+        "state": "GRANTED",
+        "safety_class": "GREEN",
+        "intervention_digest": "0460ae3ada0d26d1684763c7be30c15f8160e8d4b29ec4df75a70bc11232c899",
+        "requested_at": "2026-09-01T08:10:00Z",
+        "expires_at": "2026-09-03T08:10:00Z",
+        "nudges": 0,
+        "decided_at": "2026-09-01T08:10:00Z",
+        "decided_via": "WEB_APP",
+        "decision_open": false
+      },
+      "outcomes": [
+        {
+          "outcome_id": "out_53732e81c31b3bc78c6825200e558ca2",
+          "result": "SUPPORTS",
+          "summary": "pickups were calm on most heads-up days",
+          "reported_at": "2026-09-01T08:13:00Z",
+          "reported_by": "PARENT"
+        }
+      ],
+      "promotion": {
+        "granted": true,
+        "from_level": 3,
+        "to_level": 4,
+        "reason_codes": [
+          "ALLOWED"
+        ],
+        "recorded_at": "2026-09-01T08:14:00Z"
+      }
+    }
+  ]
+}

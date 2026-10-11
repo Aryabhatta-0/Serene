@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
-import { EmptyState } from "@/components/layout/EmptyState";
+import { ExperimentsView } from "@/components/experiments/ExperimentsView";
 import { Page } from "@/components/layout/Page";
+import { UNCONNECTED } from "@/lib/experiments/source";
 
 export const metadata: Metadata = { title: "Experiments" };
+
+// The experiments view is not connected yet (Issue #33), and no transport
+// carries a parent's decision to the kernel yet, so the surface draws the
+// honest unconnected state and offers no decision.
+const source = UNCONNECTED;
 
 export default function ExperimentsPage() {
   return (
@@ -10,13 +16,7 @@ export default function ExperimentsPage() {
       title="Experiments"
       lead="Small, reversible changes you might try at home to tell one explanation from another."
     >
-      <EmptyState title="No experiments proposed">
-        <p>
-          Nothing starts without your approval. Each proposal will state the
-          change, how risky it is, how to undo it, and what the result would
-          mean. Anything judged unsafe cannot be approved.
-        </p>
-      </EmptyState>
+      <ExperimentsView source={source} decide={null} />
     </Page>
   );
 }

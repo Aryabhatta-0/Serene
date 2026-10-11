@@ -29,7 +29,7 @@ npm run test:e2e
 The e2e build is made with `SERENE_FIXTURE_ROUTES=1`, which also routes the
 test-only `page.fixture.tsx` pages (`/fixtures/causal-twin` draws the
 synthetic Causal Twin, `/fixtures/memory` the synthetic memory and Dream
-runs). A normal `npm run build` has no such route and bundles no fixture
+runs, `/fixtures/experiments` the synthetic experiments). A normal `npm run build` has no such route and bundles no fixture
 data. To look at the fixture map by hand:
 
 ```sh
@@ -100,6 +100,24 @@ these commands.
   raw evidence, each Dream run with its steps and its kept, refused and
   waiting changes (`PatchCard`). It is read-only: nothing on it can edit,
   commit or approve memory.
+- `lib/experiments/`: experiments and their approvals as the kernel serializes
+  them (`model.ts`, a mirror of `serene/experiments/view.py`; its parser
+  rejects any RED experiment that arrives open for a decision), the decision
+  command (`approval.ts`: the exact `WebApprovalCommand` the kernel's
+  `serene/adapters/web` channel accepts; it refuses to build an approval for
+  RED and reads the kernel's answer strictly), wording (`present.ts`) and the
+  source (`source.ts`).
+- `components/experiments/`: `ExperimentsView` (Issue #37) groups experiments
+  by what needs the parent, with intervention, risk, reversibility, approval,
+  stage, outcomes and promotion result for each. `DecisionPanel` asks for
+  confirmation, sends the command through an injected transport and shows
+  only the kernel's answer; the stage changes only when the projection does.
+  The shipped page passes no transport, so it offers no decision.
+- `fixtures/synthetic-experiments.json` and `approval-command.example.json`:
+  kernel output (`uv run python -m tests.experiments_view_fixture`), pinned by
+  `tests/test_experiments_view.py` and `tests/test_web_approvals.py`. Drawn
+  only by the test-build route `/fixtures/experiments`, whose scripted
+  transport (`?answer=`) never reaches Serene.
 - `fixtures/synthetic-memory-dream.json`: produced by running the kernel on a
   synthetic family (`uv run python -m tests.memory_view_fixture`);
   `tests/test_memory_view.py` fails if it drifts from what the kernel
