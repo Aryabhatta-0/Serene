@@ -6,7 +6,7 @@
 }
 
 .line {
-  color: var(--rule-strong);
+  color: var(--accent);
 }
 
 .body {

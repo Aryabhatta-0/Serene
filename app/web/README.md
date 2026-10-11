@@ -1,8 +1,8 @@
 # Serene web shell
 
-The Next.js application shell for Serene (Issue #34): five primary surfaces
-(Today, Memory, Investigations, Experiments, Causal Twin), responsive
-navigation, and shared layout primitives. It has no backend connection yet
+The Next.js application shell for Serene (Issue #34): a landing page with the
+bloom, five primary surfaces (Today, Memory, Investigations, Experiments,
+Causal Twin), responsive navigation, and shared layout primitives. It has no backend connection yet
 and renders no family data; every surface shows an honest empty state until
 projection state is streamed in (Issue #33).
 
@@ -13,8 +13,8 @@ npm run typecheck
 npm run build
 ```
 
-End-to-end checks (navigation across all five surfaces, no fabricated data,
-skip link) run against a production build in Chromium:
+End-to-end checks (entering from the landing page, navigation across all
+five surfaces, no fabricated data, skip link) run against a production build in Chromium:
 
 ```sh
 npx playwright install chromium   # once per machine
@@ -27,11 +27,42 @@ these commands.
 ## Layout
 
 - `lib/surfaces.ts`: the five surfaces; the single source of navigation.
-- `components/shell/`: rail (desktop, at least 64rem), inline top bar
-  (45 to 64rem) and menu sheet (phones).
-- `components/layout/`: `Page`, `EmptyState`, `SurfaceLoading`.
+- `components/landing/`: `Landing`, the page at `/` and the only place the
+  bloom grows. Entering clears the plate and flies the bloom's main flower
+  into the logo's tile; the top bar, held empty on `/`, then fills in and
+  Today opens.
+- `components/shell/`: top bar with inline links (at least 60rem) and a menu
+  sheet below that.
+- `components/layout/`: `Page` (the plate every surface opens on),
+  `EmptyState`, `SurfaceLoading`.
+- `components/brand/`: `Hellebore` (one flower: five copies of the
+  photographic petal, each pivoting at its base), the bloom (`BloomArt`: two
+  hellebores, the bud, stems and frosted glass), the logo (`BloomMark`: the
+  hellebore on a deep-olive tile) and `BloomDirector`, which plays the bloom
+  on each fresh load of the landing page and ends it on any press, key or
+  scroll.
 - `components/notation/`: `LineMark` and `LineKey`, the certainty line
   notation (dotted = possibility, dashed = observed, solid = tested,
   struck = refuted).
-- `app/globals.css`: colour, type, space and motion tokens, light and dark.
-  Motion respects `prefers-reduced-motion`.
+- `app/globals.css`: colour, type, space and motion tokens (light only),
+  and the ruled grid. Palette: Warm Paper `#E0DFD8`, Sage Green `#A9B887`,
+  Deep Olive `#2E3D28`. Motion respects `prefers-reduced-motion`. The full
+  system is recorded in the repository's `DESIGN.md`.
+
+## Brand assets
+
+The bloom is built from two photographic cutouts in `public/brand/bloom/`:
+`petal.webp` and `bud.webp`, trimmed and converted from 1024px transparent PNG
+masters (the prompts that generated them are in `PROMPTS.md`). Every flower,
+the logo included, is the same petal.
+
+The favicon and icons are exported from the running app, so they always match
+the logo:
+
+```sh
+npm run build && npm run start      # in one shell
+npm run brand:export                # in another
+```
+
+This writes `app/icon.png`, `app/apple-icon.png`, `app/favicon.ico` (16px and
+32px), `public/brand/serene-mark.png` and `public/brand/serene-bloom.jpg`.

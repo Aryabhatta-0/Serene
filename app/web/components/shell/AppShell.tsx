@@ -1,33 +1,28 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { MobileMenu } from "./MobileMenu";
-import { RecordStatus } from "./RecordStatus";
 import { SurfaceNav } from "./SurfaceNav";
 import { Wordmark } from "./Wordmark";
 import styles from "./AppShell.module.css";
 
-// Navigation adapts structurally rather than shrinking: a sidebar rail on
-// desktop, an inline top bar on tablets, and a menu sheet on phones. Exactly
-// one of the three is rendered visible at any width.
+// One top bar at every width, as on the reference sheet: the wordmark, then
+// the five surfaces in tracked capitals. Below 60rem the links move into a
+// menu sheet behind a single button. Exactly one of the two is visible.
+//
+// On the landing page the bar is held empty: entering Serene flies the
+// bloom's flower into the logo's place, then the bar fills in.
 export function AppShell({ children }: { children: ReactNode }) {
+  const landing = usePathname() === "/";
+
   return (
     <div className={styles.shell}>
       <a href="#content" className={styles.skip}>
         Skip to content
       </a>
 
-      <header className={styles.rail}>
-        <Wordmark />
-        <SurfaceNav variant="rail" />
-        <div className={styles.railFooter}>
-          <RecordStatus />
-          <p className={styles.tagline}>
-            What happened, what Serene remembers and what it believes are kept
-            apart.
-          </p>
-        </div>
-      </header>
-
-      <header className={styles.topbar}>
+      <header className={styles.topbar} data-shell-bar="" data-landing={landing || undefined}>
         <Wordmark />
         <div className={styles.barNav}>
           <SurfaceNav variant="bar" />
@@ -38,9 +33,6 @@ export function AppShell({ children }: { children: ReactNode }) {
       </header>
 
       <main id="content" tabIndex={-1} className={styles.main}>
-        <div className={styles.status}>
-          <RecordStatus />
-        </div>
         {children}
       </main>
     </div>

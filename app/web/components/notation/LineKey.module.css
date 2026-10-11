@@ -7,9 +7,12 @@
   border-top: 1px solid var(--rule);
 }
 
+/* Set like the legend of a survey sheet. */
 .title {
-  font-size: var(--text-md);
-  font-weight: 700;
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
 }
 
 .list {

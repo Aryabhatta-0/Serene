@@ -1,6 +1,9 @@
-import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+import { Landing } from "@/components/landing/Landing";
 
-// Today is the front door; the shell has no separate home surface.
+export const metadata: Metadata = { title: { absolute: "Serene" } };
+
+// The front door: the bloom, and the way into the five surfaces.
 export default function Home() {
-  redirect("/today");
+  return <Landing />;
 }

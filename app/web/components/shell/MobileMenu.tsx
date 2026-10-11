@@ -31,7 +31,7 @@ export function MobileMenu() {
       <button
         ref={triggerRef}
         type="button"
-        className={`button ${styles.trigger}`}
+        className={styles.trigger}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls="surface-menu"
@@ -40,12 +40,12 @@ export function MobileMenu() {
           setOpen(true);
         }}
       >
-        <svg viewBox="0 0 20 14" aria-hidden="true" focusable="false">
-          <line x1="1" y1="2" x2="19" y2="2" />
-          <line x1="1" y1="7" x2="19" y2="7" />
-          <line x1="1" y1="12" x2="19" y2="12" />
+        <svg viewBox="0 0 24 14" aria-hidden="true" focusable="false">
+          <line x1="1" y1="1" x2="23" y2="1" />
+          <line x1="1" y1="7" x2="23" y2="7" />
+          <line x1="1" y1="13" x2="23" y2="13" />
         </svg>
-        Surfaces
+        <span className="visually-hidden">Surfaces</span>
       </button>
 
       <dialog
@@ -67,7 +67,7 @@ export function MobileMenu() {
         <div className={styles.panel}>
           <div className={styles.header}>
             <Wordmark onNavigate={close} />
-            <button type="button" className={styles.close} onClick={close}>
+            <button type="button" className={`button ${styles.close}`} onClick={close}>
               Close
             </button>
           </div>

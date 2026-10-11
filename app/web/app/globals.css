@@ -1,8 +1,9 @@
 /*
  * Serene design tokens.
  *
- * One idea carries the visual language: certainty is drawn as line style,
- * the way survey maps distinguish observed from inferred boundaries.
+ * The canvas is a survey sheet: soft-white paper ruled into cells, with a dot
+ * at every intersection, the same dotted mark Serene uses for "not yet
+ * known". A sage bloom grows out of it. Certainty is drawn as line style:
  *   dotted  = not yet known / hypothesis
  *   dashed  = observed, not tested
  *   solid   = tested in this family's context
@@ -10,23 +11,33 @@
  */
 
 :root {
-  color-scheme: light dark;
+  /* Always the light sheet, whatever the system scheme. */
+  color-scheme: light;
 
-  /* Colour: sage-mineral neutrals, spruce ink, one amber accent. */
-  --ground: #eef2ee;
-  --ground-raised: #f7f9f6;
-  --ground-sunken: #e3e9e4;
-  --ink: #142c2a;
-  --ink-muted: #4a5f5b;
-  --ink-faint: #566965;
-  --rule: #c2cec9;
-  --rule-strong: #8fa29d;
-  --accent: #a2620a;
-  --selection: #f2d9a8;
+  /* Colour: warm paper #E0DFD8, Sage Green #A9B887, Deep Olive #2E3D28. */
+  --ground: #e0dfd8;
+  --ground-raised: #eae9e3;
+  --ground-sunken: #d5d4cc;
+  /* Ink is Deep Olive taken nearly to black, for the reference's contrast. */
+  --ink: #1d2718;
+  --ink-muted: #3b4734;
+  --ink-faint: #4d5945;
+  --rule: #c7c7bc;
+  --rule-strong: #9da58c;
+  --sage: #a9b887;
+  /* Sage deepened to 3.9:1 on the ground, for marks that must be seen. */
+  --accent: #66784a;
+  --leaf-deep: #7c8e58;
+  --selection: #cbd5ae;
+  --grid-line: rgb(46 61 40 / 0.05);
+  --grid-dot: rgb(29 39 24 / 0.22);
 
-  /* Type: one hyperlegible family; a fixed scale at a 1.2 ratio. */
+  /* Type: a wide geometric display face; a hyperlegible reading face. */
   --font-sans: var(--font-atkinson), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", sans-serif;
+  --font-display: var(--font-montserrat), var(--font-sans);
+  --tracking-caps: 0.22em;
+  --text-2xs: 0.6875rem;
   --text-xs: 0.8125rem;
   --text-sm: 0.875rem;
   --text-md: 1rem;
@@ -48,37 +59,39 @@
   --space-7: 3rem;
   --space-8: 4rem;
 
+  /* The sheet: page gutter and grid cell, aligned so rules meet the margin. */
+  --gutter: var(--space-4);
+  --cell: 4rem;
+
   --measure: 64ch;
   --radius: 6px;
   --tap-target: 2.75rem;
   --mark-size: 10px;
-  --rail-width: 16rem;
-  --topbar-height: 3.5rem;
+  --topbar-height: 4.5rem;
 
   /* Motion: short, decelerating; exits faster than entrances. */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Slow in and slow out, for petals unfolding. */
+  --ease-bloom: cubic-bezier(0.77, 0, 0.175, 1);
   --dur-fast: 140ms;
   --dur-base: 220ms;
   --dur-settle: 360ms;
   --dur-overlay: 300ms;
   --rise: 6px;
 
-  --shadow-sheet: 0 12px 32px -12px rgb(20 44 42 / 0.28);
+  --shadow-sheet: 0 12px 32px -12px rgb(46 61 40 / 0.3);
 }
 
-@media (prefers-color-scheme: dark) {
+@media (min-width: 45rem) {
   :root {
-    --ground: #111a19;
-    --ground-raised: #172220;
-    --ground-sunken: #0c1312;
-    --ink: #e2ebe7;
-    --ink-muted: #a3b4af;
-    --ink-faint: #82948f;
-    --rule: #2c3b38;
-    --rule-strong: #4f625e;
-    --accent: #e3a540;
-    --selection: #5a4413;
-    --shadow-sheet: 0 12px 32px -12px rgb(0 0 0 / 0.6);
+    --gutter: var(--space-6);
+    --cell: 6rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --gutter: var(--space-8);
   }
 }
 
@@ -99,12 +112,12 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scrollbar-color: var(--rule-strong) transparent;
+  background: var(--ground);
 }
 
 body {
   margin: 0;
   min-height: 100dvh;
-  background: var(--ground);
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: var(--text-md);
@@ -112,7 +125,50 @@ body {
   font-optical-sizing: auto;
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
-  caret-color: var(--accent);
+  caret-color: var(--ink);
+}
+
+/* The ruled sheet, fixed under the page like paper on a drafting table. The
+ * dot layer is shifted half a cell so each dot sits on an intersection. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, var(--grid-dot) 1.3px, transparent 1.8px),
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: var(--cell) var(--cell);
+  background-position:
+    calc(var(--gutter) - var(--cell) / 2) calc(var(--topbar-height) - var(--cell) / 2),
+    var(--gutter) var(--topbar-height),
+    var(--gutter) var(--topbar-height);
+}
+
+/* First load of a session: the sheet is ruled before the bloom grows. */
+html[data-bloom="play"] body::before {
+  animation: rule-in 900ms var(--ease-out) backwards;
+}
+
+@keyframes rule-in {
+  from {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-bloom="play"] body::before {
+    animation-name: fade-in;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
 }
 
 h1,
@@ -125,10 +181,11 @@ p {
 h1,
 h2,
 h3 {
+  font-family: var(--font-display);
   line-height: var(--leading-tight);
   text-wrap: balance;
-  font-weight: 650;
-  letter-spacing: -0.012em;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 p {
@@ -153,34 +210,42 @@ ol {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--ink);
   outline-offset: 2px;
   border-radius: 2px;
 }
 
-/* The one bordered button; components add only their own differences. */
+/* The one bordered button: a hairline pill with tracked capitals, filled in
+ * ink on hover. Components add only their own differences. */
 .button {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-2);
   min-height: var(--tap-target);
-  padding-inline: var(--space-4);
-  border: 1px solid var(--rule-strong);
-  border-radius: var(--radius);
-  background: var(--ground-raised);
+  padding-inline: var(--space-5);
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: transparent;
   color: var(--ink);
-  font: inherit;
+  font-family: var(--font-display);
+  font-size: var(--text-2xs);
   font-weight: 600;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
   cursor: pointer;
-  transition: border-color var(--dur-fast) ease, background-color var(--dur-fast) ease;
+  transition: background-color var(--dur-fast) ease, color var(--dur-fast) ease;
 }
 
-.button:hover {
-  border-color: var(--ink-muted);
+@media (hover: hover) {
+  .button:hover {
+    background: var(--ink);
+    color: var(--ground);
+  }
 }
 
 .button:active {
-  background: var(--ground-sunken);
+  background: var(--ink-muted);
 }
 
 .visually-hidden {

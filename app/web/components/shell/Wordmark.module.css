@@ -1,34 +1,27 @@
 .wordmark {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   min-height: var(--tap-target);
   text-decoration: none;
 }
 
-.mark {
-  width: 1.375rem;
-  height: 1rem;
-  flex: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-}
-
-.dotted {
-  stroke-dasharray: 0.1 4.5;
-}
-
-.dashed {
-  stroke-dasharray: 5 3;
-}
-
-.solid {
-  stroke: var(--accent);
-}
-
 .name {
-  font-size: var(--text-lg);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+/* Entering from the landing page: the name draws out of the logo. */
+:global(html[data-enter]) .name {
+  animation: name-in 500ms var(--ease-out) 120ms backwards;
+}
+
+@keyframes name-in {
+  from {
+    opacity: 0;
+    translate: calc(var(--rise) * -2) 0;
+  }
 }
