@@ -44,15 +44,10 @@ def drive_serene():  # type: ignore[no-untyped-def]
 @scorer(metrics=[accuracy()])
 def runtime_scorers():  # type: ignore[no-untyped-def]
     async def score(state: TaskState, target: Target) -> Score:
-        from eval.scorers.runtime_scorers import EvidenceUse, Trajectory
+        from eval.scorers.runtime_scorers import Trajectory
 
-        data = json.loads(state.metadata["trajectory"])
-        data["evidence"] = tuple(EvidenceUse(**e) for e in data["evidence"])
-        for key in ("questions",):
-            data[key] = tuple(tuple(q) for q in data[key])
-        for key in ("hypotheses_retained", "failures_recorded"):
-            data[key] = tuple(data[key])
-        row = report_row(Trajectory(**data), SCENARIOS[state.sample_id].oracle)  # type: ignore[index]
+        trajectory = Trajectory.from_json(state.metadata["trajectory"])
+        row = report_row(trajectory, SCENARIOS[state.sample_id].oracle)  # type: ignore[index]
         passed = all(not s["critical"] for s in row["scores"].values()) and all(
             s["value"] >= float(target.text) for s in row["scores"].values()
         )

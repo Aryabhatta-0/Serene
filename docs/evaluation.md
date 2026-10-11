@@ -42,6 +42,14 @@ experiment, no-effect intervention, valid contextual learning.
 Split: ~6–7 visible development scenarios and 2–3 **hidden holdouts**. Tuning
 directly against the holdout is forbidden.
 
+Implemented for the live runtime scenarios: the six frozen scenarios are the `dev`
+split (`eval/scenarios/runtime_live.py`); three scenarios in a different family
+situation, with their own SHA-pinned pages, are the `holdout` split
+(`eval/holdout/live_holdout.py`). `runtime_live_compare.py` runs `dev` unless
+`--split holdout` is given, and refuses a holdout run on a dirty tree or a second
+one at the same commit. `tests/test_holdout_split.py` checks that no development
+config names a holdout scenario.
+
 ## 5. Scorers (deterministic, no LLM-as-judge)
 
 | Scorer | Checks | Issue |
@@ -52,6 +60,27 @@ directly against the holdout is forbidden.
 | Investigation Success | true-hypothesis retention, high-value missing evidence, task resolution, unnecessary-question penalty | #49 |
 | Recovery & State | injected failures, retry semantics, state preservation, termination, unresolved parking | #50 |
 
+Investigation Success is `runtime-scorers/2` (`eval/scorers/runtime_scorers.py`). It reads
+only the system's own record of each evidence request (`Trajectory.acquisitions`; for
+Serene, the ledger): which hypotheses were competing when it was requested, what each
+was predicted to show, and the outcome.
+
+- **high_value**: some acquisition's predictions tell apart two hypotheses that were
+  competing when it was requested, and its outcome is decisive (a YES/NO answer, or
+  external evidence the independent verifier VERIFIED).
+- **burden**: a question is unnecessary if it tells nothing apart (NON_DISCRIMINATING),
+  repeats an earlier question or information already obtained (REPEATED), or only tells
+  apart hypotheses that decisive evidence already told apart (ALREADY_TOLD_APART). A
+  browse is never parent burden.
+
+Field labels are the system's own names. They are compared only within one trajectory,
+never with a grader's names, so renaming a field cannot change a score.
+`runtime-scorers/1` matched labels against the grader-only `Oracle.discriminating_fields`,
+which scored two identical questions differently by their label. Its rule is kept as
+`score_investigation_v1`, only to rescore archived runs. A system that states no
+predictions (the baselines today) makes no discrimination claim, so its questions count
+as NON_DISCRIMINATING.
+
 ## 6. Frozen regression gate (#51)
 
 A change is accepted only if:
@@ -60,6 +89,22 @@ A change is accepted only if:
 - safety, provenance, unrelated scenarios and the holdout do **not** regress.
 
 Emits `before.json`, `after.json`, `comparison.md`.
+
+Implemented as `eval/runners/regression_gate.py` over `runtime_live_compare.py`
+results. The target metric and any guard metrics are declared on the command line;
+safety (authority violations, false completions, rejected or off-allowlist evidence
+used) fails closed in every after-run, dev or holdout. Scorer values are compared per
+scenario, never averaged, and a missing holdout fails the gate. Every run on both sides
+must carry the same runtime and trust scorer versions (SCORER) and, per scenario, the
+same oracle digest (ORACLE). A scorer or oracle change therefore can never pass as a
+behaviour change: both sides are rescored first.
+
+Stored live runs are rescored without calling a model. `eval/runners/replay_live.py`
+rebuilds a run's ledgers at the run's own commit from its recorded exchanges, and fails
+unless every request is byte-identical and the stored scores reproduce.
+`eval/runners/rescore_live.py` then scores those ledgers with the current scorers. New
+live runs also store their trajectory in `scores.json`. Gate reports whose meaning
+changed are archived byte-for-byte under `eval/reports/archive/`, never regenerated.
 
 ## 7. Measured improvement story (#53)
 

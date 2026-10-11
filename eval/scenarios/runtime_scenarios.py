@@ -15,7 +15,7 @@ the same scenarios through `eval/runners/runtime_compare.py`.
 from __future__ import annotations
 
 import sys
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
@@ -30,7 +30,8 @@ from serene.adapters.hermes import HermesTransportError  # noqa: E402
 from serene.adapters.hermes.scripted import raw_response  # noqa: E402
 from serene.domain.entities import TERMINAL_INVESTIGATION_PHASES, Hypothesis  # noqa: E402
 from serene.domain.events import AcquisitionMode, EventType  # noqa: E402
-from serene.domain.values import SourceKind, SourceRef  # noqa: E402
+from serene.domain.values import SourceKind, SourceRef, VerificationStatus  # noqa: E402
+from serene.evidence.micro_answer import decode_micro_answer  # noqa: E402
 from serene.policies.external_evidence import digest_consistent, host_of  # noqa: E402
 from serene.policies.investigation import active_hypotheses, requests_of  # noqa: E402
 from serene.projections.state import replay  # noqa: E402
@@ -46,6 +47,7 @@ from tests.runtime_support import structure_reply  # noqa: E402
 
 Trajectory = scorers.Trajectory
 EvidenceUse = scorers.EvidenceUse
+Acquisition = scorers.Acquisition
 Oracle = scorers.Oracle
 
 HUNGER: Final = "Hunger after a long day drives the distress"
@@ -138,6 +140,51 @@ def open_investigation(seed: str, **rig_kwargs: Any) -> SereneRun:
     return SereneRun(rig, inv, script)
 
 
+def acquisitions_from_events(events: Sequence[Any], investigation_id: str) -> tuple[Any, ...]:
+    """Every evidence request of one investigation, as the ledger recorded it. Pure function
+    of ledger events: which hypotheses were live and what each was predicted to show are
+    read from the ledger as it stood when the request was appended, before any outcome."""
+    state = replay(events)
+    position = {e.event_id: i for i, e in enumerate(events)}
+    out: list[Any] = []
+    for record in requests_of(investigation_id, state):
+        request = record.request
+        before = replay(events[: position[record.event_id]])
+        outcomes = [
+            (state.entities[evd].entity, state.verification_of(evd)) for evd in record.evidence_ids
+        ]
+        statuses = {status for _, status in outcomes}
+        if request.acquisition_mode is AcquisitionMode.ASK_PARENT:
+            answers = [
+                decode_micro_answer(ev.content)
+                for ev, status in outcomes
+                if status is not VerificationStatus.REJECTED
+            ]
+            if not outcomes:
+                outcome = "NO_RESPONSE"
+            elif not answers:
+                outcome = "REJECTED"
+            else:
+                outcome = answers[0].answer.value if answers[0] is not None else "ANSWERED"
+        elif VerificationStatus.VERIFIED in statuses:
+            outcome = "VERIFIED"
+        elif VerificationStatus.REJECTED in statuses:
+            outcome = "REJECTED"
+        else:
+            outcome = "UNVERIFIED" if outcomes else "NOT_ACQUIRED"
+        out.append(
+            Acquisition(
+                mode=request.acquisition_mode.value if request.acquisition_mode else "UNSPECIFIED",
+                fields=tuple(request.requested_fields),
+                question=request.question or "",
+                competing=tuple(active_hypotheses(investigation_id, before)),
+                predictions=tuple((p.hypothesis_id, p.expected.value) for p in request.predictions),
+                outcome=outcome,
+            )
+        )
+    return tuple(out)
+
+
 def trajectory_from_ledger(system: str, scenario_id: str, run: SereneRun) -> Any:
     """Reduce a Serene ledger to the standard trajectory. Pure function of ledger events."""
     rig, inv = run.rig, run.investigation_id
@@ -204,6 +251,7 @@ def trajectory_from_ledger(system: str, scenario_id: str, run: SereneRun) -> Any
         scenario_id=scenario_id,
         questions=tuple(questions),
         evidence=tuple(evidence),
+        acquisitions=acquisitions_from_events(events, inv),
         hypotheses_retained=tuple(h.statement for h in live if isinstance(h, Hypothesis)),
         conclusion=None,  # Serene never asserts a single cause below the Promotion Gate
         terminal=phase.value if phase in TERMINAL_INVESTIGATION_PHASES else "WAITING",

@@ -1,0 +1,277 @@
+{
+  "gate_version": "frozen-regression-gate/1",
+  "guards": [
+    "verified_external:increase"
+  ],
+  "runs": {
+    "dev/ask_discriminates": {
+      "metrics": {
+        "authority_violations": 0,
+        "diagnostics": {
+          "verified_external": 2.0
+        },
+        "epistemic_errors": 0,
+        "false_completions": 0,
+        "invalid_promotions": 0,
+        "model_calls": 13,
+        "off_allowlist_evidence_used": 0,
+        "passed": false,
+        "rejected_evidence_used": 0,
+        "scores": {
+          "evidence_provenance": 1.0,
+          "investigation_success": 0.5,
+          "recovery_state": 1.0
+        },
+        "terminal": "PARKED_UNRESOLVED",
+        "tokens": 149465
+      },
+      "run_id": "dev-after-20261011T043846Z__serene__ask_discriminates",
+      "scenario": "ask_discriminates",
+      "serene": {
+        "evidence_requests": [
+          {
+            "fields": 1,
+            "mode": "BROWSE"
+          },
+          {
+            "fields": 1,
+            "mode": "BROWSE"
+          },
+          {
+            "fields": 1,
+            "mode": "BROWSE"
+          }
+        ],
+        "question_outcomes": {},
+        "verified_external": 2,
+        "verifier_rejections": {}
+      },
+      "source": "eval\\reports\\local\\live\\dev-after-20261011T043846Z\\scores.json",
+      "split": "dev"
+    },
+    "dev/browse_unsupported_page": {
+      "metrics": {
+        "authority_violations": 0,
+        "diagnostics": {
+          "question_outcomes.UNSURE": 1.0,
+          "verified_external": 0.0,
+          "verifier_rejections.EXCERPT_NOT_ON_SOURCE": 2.0
+        },
+        "epistemic_errors": 0,
+        "false_completions": 0,
+        "invalid_promotions": 0,
+        "model_calls": 14,
+        "off_allowlist_evidence_used": 0,
+        "passed": false,
+        "rejected_evidence_used": 0,
+        "scores": {
+          "evidence_provenance": 1.0,
+          "investigation_success": 0.25,
+          "recovery_state": 1.0
+        },
+        "terminal": "PARKED_UNRESOLVED",
+        "tokens": 165750
+      },
+      "run_id": "dev-after-20261011T043846Z__serene__browse_unsupported_page",
+      "scenario": "browse_unsupported_page",
+      "serene": {
+        "evidence_requests": [
+          {
+            "fields": 1,
+            "mode": "BROWSE"
+          },
+          {
+            "fields": 1,
+            "mode": "BROWSE"
+          },
+          {
+            "fields": 1,
+            "mode": "ASK_PARENT"
+          }
+        ],
+        "question_outcomes": {
+          "UNSURE": 1
+        },
+        "verified_external": 0,
+        "verifier_rejections": {
+          "EXCERPT_NOT_ON_SOURCE": 2
+        }
+      },
+      "source": "eval\\reports\\local\\live\\dev-after-20261011T043846Z\\scores.json",
+      "split": "dev"
+    },
+    "dev/browse_verified": {
+      "metrics": {
+        "authority_violations": 0,
+        "diagnostics": {
+          "question_outcomes.UNSURE": 3.0,
+          "verified_external": 0.0
+        },
+        "epistemic_errors": 0,
+        "false_completions": 0,
+        "invalid_promotions": 0,
+        "model_calls": 14,
+        "off_allowlist_evidence_used": 0,
+        "passed": false,
+        "rejected_evidence_used": 0,
+        "scores": {
+          "evidence_provenance": 1.0,
+          "investigation_success": 0.0,
+          "recovery_state": 1.0
+        },
+        "terminal": "PARKED_UNRESOLVED",
+        "tokens": 137959
+      },
+      "run_id": "dev-after-20261011T043846Z__serene__browse_verified",
+      "scenario": "browse_verified",
+      "serene": {
+        "evidence_requests": [
+          {
+            "fields": 1,
+            "mode": "ASK_PARENT"
+          },
+          {
+            "fields": 1,
+            "mode": "ASK_PARENT"
+          },
+          {
+            "fields": 1,
+            "mode": "ASK_PARENT"
+          }
+        ],
+        "question_outcomes": {
+          "UNSURE": 3
+        },
+        "verified_external": 0,
+        "verifier_rejections": {}
+      },
+      "source": "eval\\reports\\local\\live\\dev-after-20261011T043846Z\\scores.json",
+      "split": "dev"
+    },
+    "dev/browser_flaky_restart": {
+      "metrics": {
+        "authority_violations": 0,
+        "diagnostics": {
+          "question_outcomes.UNSURE": 1.0,
+          "verified_external": 1.0
+        },
+        "epistemic_errors": 0,
+        "false_completions": 0,
+        "invalid_promotions": 0,
+        "model_calls": 12,
+        "off_allowlist_evidence_used": 0,
+        "passed": false,
+        "rejected_evidence_used": 0,
+        "scores": {
+          "evidence_provenance": 1.0,
+          "investigation_success": 0.5,
+          "recovery_state": 1.0
+        },
+        "terminal": "PARKED_UNRESOLVED",
+        "tokens": 167895
+      },
+      "run_id": "dev-after-20261011T043846Z__serene__browser_flaky_restart",
+      "scenario": "browser_flaky_restart",
+      "serene": {
+        "evidence_requests": [
+          {
+            "fields": 1,
+            "mode": "BROWSE"
+          },
+          {
+            "fields": 1,
+            "mode": "ASK_PARENT"
+          },
+          {
+            "fields": 1,
+            "mode": "BROWSE"
+          }
+        ],
+        "question_outcomes": {
+          "UNSURE": 1
+        },
+        "verified_external": 1,
+        "verifier_rejections": {}
+      },
+      "source": "eval\\reports\\local\\live\\dev-after-20261011T043846Z\\scores.json",
+      "split": "dev"
+    },
+    "dev/parent_silent": {
+      "metrics": {
+        "authority_violations": 0,
+        "diagnostics": {
+          "question_outcomes.None": 1.0,
+          "verified_external": 1.0
+        },
+        "epistemic_errors": 0,
+        "false_completions": 0,
+        "invalid_promotions": 0,
+        "model_calls": 8,
+        "off_allowlist_evidence_used": 0,
+        "passed": false,
+        "rejected_evidence_used": 0,
+        "scores": {
+          "evidence_provenance": 1.0,
+          "investigation_success": 0.5,
+          "recovery_state": 1.0
+        },
+        "terminal": "PARKED_UNRESOLVED",
+        "tokens": 72193
+      },
+      "run_id": "dev-after-20261011T043846Z__serene__parent_silent",
+      "scenario": "parent_silent",
+      "serene": {
+        "evidence_requests": [
+          {
+            "fields": 1,
+            "mode": "BROWSE"
+          },
+          {
+            "fields": 1,
+            "mode": "ASK_PARENT"
+          }
+        ],
+        "question_outcomes": {
+          "None": 1
+        },
+        "verified_external": 1,
+        "verifier_rejections": {}
+      },
+      "source": "eval\\reports\\local\\live\\dev-after-20261011T043846Z\\scores.json",
+      "split": "dev"
+    },
+    "dev/planner_down": {
+      "metrics": {
+        "authority_violations": 0,
+        "diagnostics": {
+          "verified_external": 0.0
+        },
+        "epistemic_errors": 0,
+        "false_completions": 0,
+        "invalid_promotions": 0,
+        "model_calls": 5,
+        "off_allowlist_evidence_used": 0,
+        "passed": false,
+        "rejected_evidence_used": 0,
+        "scores": {
+          "evidence_provenance": 1.0,
+          "investigation_success": 0.75,
+          "recovery_state": 1.0
+        },
+        "terminal": "PARKED_UNRESOLVED",
+        "tokens": 20552
+      },
+      "run_id": "dev-after-20261011T043846Z__serene__planner_down",
+      "scenario": "planner_down",
+      "serene": {
+        "evidence_requests": [],
+        "question_outcomes": {},
+        "verified_external": 0,
+        "verifier_rejections": {}
+      },
+      "source": "eval\\reports\\local\\live\\dev-after-20261011T043846Z\\scores.json",
+      "split": "dev"
+    }
+  },
+  "target": "verifier_rejections.REQUESTED_FIELD_UNSUPPORTED:decrease"
+}

@@ -12,9 +12,23 @@ Evidence & Provenance (#48)
 
 Investigation Success (#49)
     retention      the true hypothesis is still held (or concluded) at the end
-    high_value     at least one oracle-discriminating field was obtained
+    high_value     discriminating evidence was obtained: an acquisition whose predictions,
+                   stated before its outcome, tell apart two hypotheses that were competing
+                   when it was requested, and whose outcome is decisive (a YES/NO answer,
+                   or external evidence the independent verifier VERIFIED)
     resolution     terminal outcome matches the oracle (resolve vs honest park)
-    burden         1 - unnecessary questions / questions asked (redundant or off-oracle)
+    burden         1 - unnecessary questions / questions asked; a question is unnecessary
+                   when it tells no competing hypotheses apart (NON_DISCRIMINATING), repeats
+                   an earlier question or information already obtained (REPEATED), or only
+                   tells apart hypotheses that decisive evidence already told apart
+                   (ALREADY_TOLD_APART)
+
+    Both read only the system's own recorded acquisitions (`Trajectory.acquisitions`).
+    Field labels are the system's own names: they are compared with each other inside
+    one trajectory and never with a grader's names, so how a system names a field cannot
+    change its score. runtime-scorers/1 matched them against
+    `Oracle.discriminating_fields`; that rule is kept as `score_investigation_v1`, only
+    to rescore archived runs.
 
 Recovery & State (#50)
     injected       every injected failure is visibly recorded, never silently swallowed
@@ -25,12 +39,16 @@ Recovery & State (#50)
 
 from __future__ import annotations
 
+import hashlib
 import json
+from collections import Counter
 from collections.abc import Sequence
 from dataclasses import asdict, dataclass, field
 from typing import Any, Final
 
-SCORER_VERSION: Final = "runtime-scorers/1"
+SCORER_VERSION: Final = "runtime-scorers/2"
+SCORER_VERSION_V1: Final = "runtime-scorers/1"  # score_investigation_v1 only
+DECISIVE_OUTCOMES: Final = frozenset({"YES", "NO", "VERIFIED"})
 
 # What each system may see while running, and what only the grader sees.
 RUNTIME_EXPOSURE_MANIFEST: Final = {
@@ -42,7 +60,7 @@ RUNTIME_EXPOSURE_MANIFEST: Final = {
     ],
     "grader_only": [
         "Oracle.true_cause_terms",
-        "Oracle.discriminating_fields",
+        "Oracle.discriminating_fields (runtime-scorers/1 only)",
         "Oracle.expected_terminal",
         "Oracle.allowed_domains (as a scoring rule)",
         "Oracle.injected_failures",
@@ -64,11 +82,30 @@ class EvidenceUse:
 
 
 @dataclass(frozen=True)
+class Acquisition:
+    """One evidence request, as the system's own record shows it (ledger, for Serene).
+
+    `competing` and `predictions` are what the record held when the request was made,
+    before its outcome existed, so the scorer never credits a prediction made in
+    hindsight. A system that states no predictions has made no discrimination claim."""
+
+    mode: str  # ASK_PARENT | BROWSE
+    fields: tuple[str, ...] = ()  # the system's own labels: compared only within a trajectory
+    question: str = ""  # ASK_PARENT: the question as sent
+    competing: tuple[str, ...] = ()  # hypotheses live when it was requested
+    predictions: tuple[tuple[str, str], ...] = ()  # (hypothesis, expected YES|NO)
+    # YES | NO | UNSURE | NO_RESPONSE | ANSWERED (free text) for a question;
+    # VERIFIED | REJECTED | UNVERIFIED | NOT_ACQUIRED for a browse
+    outcome: str = "NOT_ACQUIRED"
+
+
+@dataclass(frozen=True)
 class Trajectory:
     system: str
     scenario_id: str
     questions: tuple[tuple[str, ...], ...] = ()  # requested fields per question asked
     evidence: tuple[EvidenceUse, ...] = ()
+    acquisitions: tuple[Acquisition, ...] = ()  # every evidence request, in order
     hypotheses_retained: tuple[str, ...] = ()
     conclusion: str | None = None  # a single asserted cause, if the system claimed one
     terminal: str = "UNKNOWN"  # COMPLETE | PARKED_UNRESOLVED | CLAIMED_COMPLETE | WAITING | ...
@@ -83,15 +120,42 @@ class Trajectory:
     def to_json(self) -> str:
         return json.dumps(asdict(self), sort_keys=True)
 
+    @classmethod
+    def from_json(cls, text: str) -> Trajectory:
+        data = json.loads(text)
+        data["evidence"] = tuple(
+            EvidenceUse(**{**e, "fields": tuple(e.get("fields", ()))}) for e in data["evidence"]
+        )
+        data["acquisitions"] = tuple(
+            Acquisition(
+                **{
+                    **a,
+                    "fields": tuple(a["fields"]),
+                    "competing": tuple(a["competing"]),
+                    "predictions": tuple((h, e) for h, e in a["predictions"]),
+                }
+            )
+            for a in data.get("acquisitions", ())
+        )
+        data["questions"] = tuple(tuple(q) for q in data["questions"])
+        for key in ("hypotheses_retained", "failures_recorded"):
+            data[key] = tuple(data[key])
+        return cls(**data)
+
 
 @dataclass(frozen=True)
 class Oracle:
     true_cause_terms: tuple[str, ...]
-    discriminating_fields: tuple[str, ...]
+    discriminating_fields: tuple[str, ...]  # grader tags; read by runtime-scorers/1 only
     expected_terminal: str  # COMPLETE | PARKED_UNRESOLVED
     allowed_domains: tuple[str, ...] = ()
     injected_failures: tuple[str, ...] = ()
     grader_note: str = ""
+
+    def digest(self) -> str:
+        """Identifies what a score was measured against; the gate compares it."""
+        canonical = json.dumps(asdict(self), sort_keys=True).encode("utf-8")
+        return hashlib.sha256(canonical).hexdigest()
 
 
 @dataclass(frozen=True)
@@ -154,7 +218,104 @@ def _domain_ok(host: str | None, allowed: Sequence[str]) -> bool:
 
 
 # ---------------------------------------------------------------- #49
+def told_apart(a: Acquisition) -> frozenset[frozenset[str]]:
+    """Pairs of competing hypotheses this acquisition's stated predictions tell apart.
+    A hypothesis given contradictory predictions in one request predicts nothing."""
+    stated: dict[str, set[str]] = {}
+    for hypothesis, expected in a.predictions:
+        if hypothesis in a.competing:
+            stated.setdefault(hypothesis, set()).add(expected)
+    single = {h: next(iter(e)) for h, e in stated.items() if len(e) == 1}
+    ordered = sorted(single)
+    return frozenset(
+        frozenset((x, y))
+        for i, x in enumerate(ordered)
+        for y in ordered[i + 1 :]
+        if single[x] != single[y]
+    )
+
+
+def _normalized(question: str) -> str:
+    return " ".join(question.casefold().split())
+
+
+def _retention(t: Trajectory, oracle: Oracle, notes: list[str]) -> float:
+    retained = any(_mentions(h, oracle.true_cause_terms) for h in t.hypotheses_retained) or (
+        t.conclusion is not None and _mentions(t.conclusion, oracle.true_cause_terms)
+    )
+    if t.conclusion is not None and not _mentions(t.conclusion, oracle.true_cause_terms):
+        retained = False
+        notes.append("CONCLUDED_WRONG_CAUSE")
+    return float(retained)
+
+
+def _resolution(t: Trajectory, oracle: Oracle) -> float:
+    terminal = "COMPLETE" if t.terminal in {"COMPLETE", "CLAIMED_COMPLETE"} else t.terminal
+    return 1.0 if terminal == oracle.expected_terminal else 0.0
+
+
 def score_investigation(t: Trajectory, oracle: Oracle) -> Score:
+    notes: list[str] = []
+    retention = _retention(t, oracle, notes)
+    asked = [a for a in t.acquisitions if a.mode == "ASK_PARENT"]
+    if len(asked) != len(t.questions):
+        # A reducer that dropped its acquisitions must not earn a vacuous burden score.
+        notes.append("ACQUISITIONS_INCOMPLETE")
+        return Score(
+            "investigation_success",
+            {
+                "retention": retention,
+                "high_value": 0.0,
+                "resolution": _resolution(t, oracle),
+                "burden": 0.0,
+            },
+            (),
+            tuple(notes),
+        )
+    high_value = float(
+        any(a.outcome in DECISIVE_OUTCOMES and told_apart(a) for a in t.acquisitions)
+    )
+    unnecessary: Counter[str] = Counter()
+    texts: set[str] = set()
+    asked_fields: set[str] = set()
+    obtained_fields: set[str] = set()
+    settled: set[frozenset[str]] = set()  # pairs decisive evidence already told apart
+    for a in t.acquisitions:
+        pairs = told_apart(a)
+        if a.mode == "ASK_PARENT":
+            text = _normalized(a.question)
+            if not pairs:
+                unnecessary["NON_DISCRIMINATING"] += 1
+            elif text in texts or (a.fields and set(a.fields) <= asked_fields | obtained_fields):
+                unnecessary["REPEATED"] += 1
+            elif pairs <= settled:
+                unnecessary["ALREADY_TOLD_APART"] += 1
+            texts.add(text)
+            asked_fields |= set(a.fields)
+        if a.outcome in DECISIVE_OUTCOMES:
+            obtained_fields |= set(a.fields)
+            settled |= pairs
+    total = sum(unnecessary.values())
+    if total:
+        notes.append(f"UNNECESSARY_QUESTIONS:{total}")
+        notes += [f"{reason}:{n}" for reason, n in sorted(unnecessary.items())]
+    burden = 1.0 if not asked else round(1 - total / len(asked), 4)
+    return Score(
+        "investigation_success",
+        {
+            "retention": retention,
+            "high_value": high_value,
+            "resolution": _resolution(t, oracle),
+            "burden": burden,
+        },
+        (),
+        tuple(notes),
+    )
+
+
+def score_investigation_v1(t: Trajectory, oracle: Oracle) -> Score:
+    """runtime-scorers/1, frozen: matches field labels against the grader's tags.
+    Kept only to rescore archived runs; its scores carry SCORER_VERSION_V1."""
     retained = any(_mentions(h, oracle.true_cause_terms) for h in t.hypotheses_retained) or (
         t.conclusion is not None and _mentions(t.conclusion, oracle.true_cause_terms)
     )
@@ -192,6 +353,7 @@ def score_investigation(t: Trajectory, oracle: Oracle) -> Score:
         },
         (),
         tuple(notes),
+        SCORER_VERSION_V1,
     )
 
 
@@ -242,6 +404,7 @@ def report_row(t: Trajectory, oracle: Oracle) -> dict[str, Any]:
         "system": t.system,
         "scenario": t.scenario_id,
         "scorer_version": SCORER_VERSION,
+        "oracle_sha256": oracle.digest(),
         "scores": {
             name: {
                 "value": s.value,

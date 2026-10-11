@@ -126,3 +126,39 @@ def test_live_metrics_name_exactly_what_they_count() -> None:
     assert "authority violations |" not in md.split("\n")[0].replace("#46 authority", "")
     assert "n/a (no ledger)" in md and "n/a (none used)" in md  # never a vacuous 1.00
     assert md.count("|") == (len(TABLE_COLUMNS) + 1) * 4
+
+
+def test_serene_diagnostics_read_request_sizes_and_verdicts_from_the_ledger() -> None:
+    from types import SimpleNamespace
+
+    from eval.runners.runtime_live_compare import serene_diagnostics
+    from serene.domain.events import EventType as E
+
+    def ev(kind: E, **payload: object) -> SimpleNamespace:
+        return SimpleNamespace(event_type=kind, payload=payload)
+
+    events = [
+        ev(E.EVIDENCE_REQUESTED, request_id="r1", acquisition_mode="BROWSE",
+           requested_fields=["a", "b", "c"]),
+        ev(E.EVIDENCE_ACQUIRED, request_id="r1", evidence={"evidence_id": "e1"}),
+        ev(E.EVIDENCE_REJECTED, evidence_id="e1",
+           reason_codes=["REQUESTED_FIELD_UNSUPPORTED:b", "REQUESTED_FIELD_UNSUPPORTED:c"]),
+        ev(E.EVIDENCE_REQUESTED, request_id="r2", acquisition_mode="BROWSE",
+           requested_fields=["a"]),
+        ev(E.EVIDENCE_ACQUIRED, request_id="r2", evidence={"evidence_id": "e2"}),
+        ev(E.EVIDENCE_VERIFIED, evidence_id="e2"),
+        ev(E.EVIDENCE_REQUESTED, request_id="r3", acquisition_mode="ASK_PARENT",
+           requested_fields=["d"]),
+        ev(E.EVIDENCE_VERIFIED, evidence_id="answer"),
+    ]  # fmt: skip
+    diag = serene_diagnostics(events, ["report:x", "asked->UNSURE", "tap:ok", "asked->NO"])
+    assert diag == {
+        "evidence_requests": [
+            {"mode": "BROWSE", "fields": 3},
+            {"mode": "BROWSE", "fields": 1},
+            {"mode": "ASK_PARENT", "fields": 1},
+        ],
+        "verifier_rejections": {"REQUESTED_FIELD_UNSUPPORTED": 2},
+        "verified_external": 1,  # the micro-answer's verdict is not external evidence
+        "question_outcomes": {"NO": 1, "UNSURE": 1},
+    }

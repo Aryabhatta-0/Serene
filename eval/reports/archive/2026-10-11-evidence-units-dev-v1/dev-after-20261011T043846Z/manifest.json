@@ -1,0 +1,106 @@
+{
+  "label": "dev-after",
+  "split": "dev",
+  "started_at": "2026-10-11T04:38:46.999977+00:00",
+  "finished_at": "2026-10-11T05:09:30.025518+00:00",
+  "git": {
+    "head": "b3b4f5cb598773c2466664bfeb368964a78f0040",
+    "dirty": false
+  },
+  "hermes": {
+    "base_url": "http://127.0.0.1:8642/v1",
+    "health": {
+      "status": "ok",
+      "platform": "hermes-agent",
+      "version": "0.21.6"
+    },
+    "served_models": [
+      "hermes-agent"
+    ]
+  },
+  "versions": {
+    "scorer": "runtime-scorers/1",
+    "trust_scorer": "trust-scorers/1",
+    "runtime_prompt": "serene-hermes/2",
+    "browser_prompt": "serene-browse/2",
+    "baseline_prompt": "serene-baseline/1"
+  },
+  "matched_budget": {
+    "max_model_calls": 18,
+    "max_questions": 3,
+    "max_browse_actions": 36,
+    "max_cost_micro_usd": 5000000
+  },
+  "faults": {
+    "ask_discriminates": {
+      "browse_transient_calls": 0,
+      "planner_down": false,
+      "restart_after_first_browse_failure": false,
+      "page_changed_before_verification": false
+    },
+    "browse_verified": {
+      "browse_transient_calls": 0,
+      "planner_down": false,
+      "restart_after_first_browse_failure": false,
+      "page_changed_before_verification": false
+    },
+    "browse_unsupported_page": {
+      "browse_transient_calls": 0,
+      "planner_down": false,
+      "restart_after_first_browse_failure": false,
+      "page_changed_before_verification": true
+    },
+    "browser_flaky_restart": {
+      "browse_transient_calls": 2,
+      "planner_down": false,
+      "restart_after_first_browse_failure": true,
+      "page_changed_before_verification": false
+    },
+    "parent_silent": {
+      "browse_transient_calls": 0,
+      "planner_down": false,
+      "restart_after_first_browse_failure": false,
+      "page_changed_before_verification": false
+    },
+    "planner_down": {
+      "browse_transient_calls": 0,
+      "planner_down": true,
+      "restart_after_first_browse_failure": false,
+      "page_changed_before_verification": false
+    }
+  },
+  "parent_facts": {
+    "ask_discriminates": [
+      [
+        [
+          "snack"
+        ],
+        "NO"
+      ]
+    ],
+    "browse_verified": [],
+    "browse_unsupported_page": [],
+    "browser_flaky_restart": [],
+    "parent_silent": [
+      [
+        [],
+        null
+      ]
+    ],
+    "planner_down": [
+      [
+        [
+          "snack"
+        ],
+        "NO"
+      ]
+    ]
+  },
+  "evidence_sources": [
+    "https://raw.githubusercontent.com/Sathvikar01/morrow/156030d11d2cb8a482239621c372bebae68f77c3/eval/fixtures/pages/daycare-pickup-policy.html"
+  ],
+  "browse_allowlist": [
+    "raw.githubusercontent.com"
+  ],
+  "sampling": "Hermes server defaults (not pinned by the client)"
+}

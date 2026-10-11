@@ -11,6 +11,11 @@ under eval/reports/local/live/<label>-<utc>/:
     raw/<system>__<scenario>.jsonl     every model exchange, verbatim
     traces/serene__<scenario>.jsonl    SafeTelemetry records (already redacted)
 
+`--split dev` (the default) runs the visible development scenarios. `--split holdout`
+runs the hidden holdout (#45) and is refused on a dirty tree or when a holdout run
+already exists for the same commit: the holdout is read once per change, by the
+frozen regression gate (`eval/runners/regression_gate.py`), never tuned against.
+
 When NEATLOGS_API_KEY is set the same redacted records are also sent to
 neatlogs through the committed `serene.adapters.neatlogs_sink.NeatlogsSink`, which
 packs them into traces under the ingest body limit that share one session id: the
@@ -36,19 +41,16 @@ if str(ROOT) not in sys.path:
 
 from eval.baselines.runtime_baselines import BASELINE_PROMPT_VERSION, MatchedBudget  # noqa: E402
 from eval.scenarios.runtime_live import (  # noqa: E402
-    FAULTS,
-    LIVE_ALLOWED,
-    LIVE_SOURCES,
-    PARENT_FACTS,
+    DEV,
     SYSTEMS,
     LiveResult,
-    live_oracle,
+    LiveScenario,
 )
-from eval.scenarios.runtime_scenarios import SCENARIOS  # noqa: E402
 from eval.scorers.runtime_scorers import SCORER_VERSION, Oracle, report_row  # noqa: E402
 from serene.adapters.browser.hermes_browser import BROWSER_PROMPT_VERSION  # noqa: E402
 from serene.adapters.hermes import transport_from_env  # noqa: E402
 from serene.adapters.hermes.runtime import PROMPT_VERSION  # noqa: E402
+from serene.domain.events import EventType  # noqa: E402
 from serene.policies.scorers import SCORER_VERSION as TRUST_SCORER_VERSION  # noqa: E402
 from serene.policies.scorers import (  # noqa: E402
     EpistemicClaim,
@@ -132,6 +134,37 @@ def _trust_scores(result: LiveResult, oracle: Oracle) -> dict[str, Any]:
     }
 
 
+def serene_diagnostics(events: list[Any], notes: list[str]) -> dict[str, Any]:
+    """What Serene's own ledger says about its evidence requests, read back exactly:
+    each request's mode and field count, every verifier rejection reason, the
+    external evidence that verified, and how the simulated parent answered."""
+    mode_of: dict[str, str] = {}
+    requests: list[dict[str, Any]] = []
+    browse_evidence: set[str] = set()
+    rejections: Counter[str] = Counter()
+    verified_external = 0
+    for event in events:
+        payload = event.payload
+        if event.event_type is EventType.EVIDENCE_REQUESTED:
+            mode = str(payload.get("acquisition_mode"))
+            mode_of[payload["request_id"]] = mode
+            requests.append({"mode": mode, "fields": len(payload["requested_fields"])})
+        elif event.event_type is EventType.EVIDENCE_ACQUIRED:
+            if mode_of.get(payload.get("request_id") or "") == "BROWSE":
+                browse_evidence.add(payload["evidence"]["evidence_id"])
+        elif event.event_type is EventType.EVIDENCE_REJECTED:
+            rejections.update(code.split(":", 1)[0] for code in payload["reason_codes"])
+        elif event.event_type is EventType.EVIDENCE_VERIFIED:
+            verified_external += payload["evidence_id"] in browse_evidence
+    answers = Counter(n.split("->", 1)[1] for n in notes if n.startswith("asked->"))
+    return {
+        "evidence_requests": requests,
+        "verifier_rejections": dict(sorted(rejections.items())),
+        "verified_external": verified_external,
+        "question_outcomes": dict(sorted(answers.items())),
+    }
+
+
 def _findings(row: dict[str, Any]) -> dict[str, int]:
     """Exact runtime-scorer findings, by the name each scorer gives them."""
     scores = row["scores"]
@@ -181,6 +214,19 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
                 else {k: sum(a[k] for a in authority) for k in authority[0]}
             ),
             "terminal": dict(Counter(r["terminal"] for r in items)),
+            "evidence_request_fields": _merge(
+                Counter(str(q["fields"]) for q in r.get("serene", {}).get("evidence_requests", ()))
+                for r in items
+            ),
+            "verifier_rejections": _merge(
+                Counter(r.get("serene", {}).get("verifier_rejections", {})) for r in items
+            ),
+            "verified_external": sum(
+                r.get("serene", {}).get("verified_external", 0) for r in items
+            ),
+            "question_outcomes": _merge(
+                Counter(r.get("serene", {}).get("question_outcomes", {})) for r in items
+            ),
             "model_calls": sum(r["budget"]["model_calls"] for r in items),
             "browse_actions": sum(r["budget"]["browse_actions"] for r in items),
             "input_tokens": sum(r["live"]["input_tokens"] for r in items),
@@ -189,6 +235,13 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "wall_ms": sum(r["live"]["wall_ms"] for r in items),
         }
     return out
+
+
+def _merge(counters: Any) -> dict[str, int]:
+    total: Counter[str] = Counter()
+    for c in counters:
+        total.update(c)
+    return dict(sorted(total.items()))
 
 
 TABLE_COLUMNS: Final = (
@@ -242,27 +295,68 @@ def table(summary: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+LIVE_REPORTS: Final = ROOT / "eval" / "reports" / "local" / "live"
+
+
+def scenarios_for(split: str) -> dict[str, LiveScenario]:
+    """The development set by default; the hidden holdout only when asked by name."""
+    if split == "dev":
+        return dict(DEV)
+    if split == "holdout":
+        from eval.holdout.live_holdout import HOLDOUT
+
+        return dict(HOLDOUT)
+    raise ValueError(f"unknown split {split!r}")
+
+
+def holdout_refusal(git: dict[str, Any], reports: Path = LIVE_REPORTS) -> str | None:
+    """Why a holdout run must not start now, or None. Once per commit, clean tree only."""
+    if git.get("dirty") or not git.get("head"):
+        return "the holdout runs only from a clean, committed tree"
+    for manifest in sorted(reports.glob("*/manifest.json")):
+        try:
+            seen = json.loads(manifest.read_text("utf-8"))
+        except (OSError, ValueError):
+            continue
+        if seen.get("split") == "holdout" and seen.get("git", {}).get("head") == git["head"]:
+            return f"a holdout run already exists for {git['head'][:12]}: {manifest.parent.name}"
+    return None
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--label", required=True)
     parser.add_argument("--systems", default=",".join(SYSTEMS))
-    parser.add_argument("--scenarios", default=",".join(SCENARIOS))
+    parser.add_argument("--split", choices=("dev", "holdout"), default="dev")
+    parser.add_argument("--scenarios", default="", help="subset of the split (default: all)")
     args = parser.parse_args(argv)
+    specs = scenarios_for(args.split)
+    chosen = args.scenarios.split(",") if args.scenarios else list(specs)
+    unknown = [sid for sid in chosen if sid not in specs]
+    if unknown:
+        print(f"UNKNOWN in split {args.split}: {','.join(unknown)}")
+        return 2
+    git = _git()
+    if args.split == "holdout" and (refusal := holdout_refusal(git)):
+        print(f"REFUSED: {refusal}")
+        return 2
     live = transport_from_env()
     if live is None:
         print("UNAVAILABLE: HERMES_API_SERVER_KEY is not set; no live run, no numbers.")
         return 2
     started = datetime.now(UTC)
-    out = ROOT / "eval" / "reports" / "local" / "live" / f"{args.label}-{started:%Y%m%dT%H%M%SZ}"
+    out = LIVE_REPORTS / f"{args.label}-{started:%Y%m%dT%H%M%SZ}"
     (out / "raw").mkdir(parents=True)
     (out / "traces").mkdir()
     rows: list[dict[str, Any]] = []
     models: set[str] = set()
-    for sid in args.scenarios.split(","):
+    for sid in chosen:
+        spec = specs[sid]
         for system in args.systems.split(","):
             run_id = f"{out.name}__{system}__{sid}"
-            result = SYSTEMS[system](sid, live)
-            row = report_row(result.trajectory, live_oracle(sid))
+            result = SYSTEMS[system](sid, live, spec=spec)
+            row = report_row(result.trajectory, spec.oracle)
+            row["split"] = spec.split
             ok = [e["response"] for e in result.exchanges if "response" in e]
             models |= {str(r["model"]) for r in ok if r["model"]}
             row["mode"] = "live-model"
@@ -283,7 +377,12 @@ def main(argv: list[str] | None = None) -> int:
                     1 for e in result.trajectory.evidence if e.used and e.verification == "VERIFIED"
                 ),
             }
-            row["trust_scorers"] = _trust_scores(result, live_oracle(sid))
+            row["trust_scorers"] = _trust_scores(result, spec.oracle)
+            # The scored record itself, so a later scorer version can rescore this run
+            # without calling a model again.
+            row["trajectory"] = json.loads(result.trajectory.to_json())
+            if result.ledger_events:
+                row["serene"] = serene_diagnostics(result.ledger_events, result.notes)
             row["neatlogs"] = _neatlogs(run_id, result)
             rows.append(row)
             stem = f"{system}__{sid}"
@@ -302,9 +401,10 @@ def main(argv: list[str] | None = None) -> int:
             )
     manifest = {
         "label": args.label,
+        "split": args.split,
         "started_at": started.isoformat(),
         "finished_at": datetime.now(UTC).isoformat(),
-        "git": _git(),
+        "git": git,
         "hermes": {
             "base_url": os.environ.get("HERMES_API_BASE_URL"),
             "health": _health(),
@@ -318,10 +418,10 @@ def main(argv: list[str] | None = None) -> int:
             "baseline_prompt": BASELINE_PROMPT_VERSION,
         },
         "matched_budget": MatchedBudget.from_serene().__dict__,
-        "faults": {sid: FAULTS[sid].__dict__ for sid in args.scenarios.split(",")},
-        "parent_facts": {sid: PARENT_FACTS[sid] for sid in args.scenarios.split(",")},
-        "evidence_sources": list(LIVE_SOURCES),
-        "browse_allowlist": list(LIVE_ALLOWED),
+        "faults": {sid: specs[sid].faults.__dict__ for sid in chosen},
+        "parent_facts": {sid: specs[sid].parent_facts for sid in chosen},
+        "evidence_sources": sorted({u for sid in chosen for u in specs[sid].sources}),
+        "browse_allowlist": sorted({d for sid in chosen for d in specs[sid].allowed}),
         "sampling": "Hermes server defaults (not pinned by the client)",
     }
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2, default=str), "utf-8")

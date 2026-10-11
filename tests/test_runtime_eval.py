@@ -12,12 +12,14 @@ from eval.baselines.runtime_baselines import MatchedBudget, baseline_a, baseline
 from eval.scenarios.runtime_scenarios import QUESTION, REPORTS, SCENARIOS
 from eval.scorers.runtime_scorers import (
     RUNTIME_EXPOSURE_MANIFEST,
+    Acquisition,
     EvidenceUse,
     Oracle,
     Trajectory,
     report_row,
     score_evidence,
     score_investigation,
+    score_investigation_v1,
     score_recovery,
 )
 from serene.adapters.hermes import ScriptedHermesTransport
@@ -49,9 +51,11 @@ EXPECTED_SERENE: dict[str, dict[str, float]] = {
         "investigation_success": 1.0,
         "recovery_state": 1.0,
     },
+    # runtime-scorers/2: the question was the right one but was never answered, so no
+    # discriminating evidence was obtained (runtime-scorers/1 credited asking the tag: 1.0).
     "parent_silent": {
         "evidence_provenance": 1.0,
-        "investigation_success": 1.0,
+        "investigation_success": 0.75,
         "recovery_state": 1.0,
     },
     "planner_down": {
@@ -60,11 +64,34 @@ EXPECTED_SERENE: dict[str, dict[str, float]] = {
         "recovery_state": 1.0,
     },
 }
+# The same runs under the frozen runtime-scorers/1 investigation rule (archived meaning).
+EXPECTED_SERENE_V1_INVESTIGATION: dict[str, float] = {
+    "ask_discriminates": 1.0,
+    "browse_verified": 1.0,
+    "browse_unsupported_page": 0.75,
+    "browser_flaky_restart": 1.0,
+    "parent_silent": 1.0,
+    "planner_down": 0.75,
+}
 
 
 @pytest.fixture(scope="module")
-def serene_rows() -> dict[str, dict[str, Any]]:
-    return {sid: report_row(sc.run_serene(), sc.oracle) for sid, sc in SCENARIOS.items()}
+def serene_trajectories() -> dict[str, Trajectory]:
+    return {sid: sc.run_serene() for sid, sc in SCENARIOS.items()}
+
+
+@pytest.fixture(scope="module")
+def serene_rows(serene_trajectories: dict[str, Trajectory]) -> dict[str, dict[str, Any]]:
+    return {sid: report_row(t, SCENARIOS[sid].oracle) for sid, t in serene_trajectories.items()}
+
+
+def test_v1_meaning_is_preserved_for_archived_runs(
+    serene_trajectories: dict[str, Trajectory],
+) -> None:
+    for sid, t in serene_trajectories.items():
+        old = score_investigation_v1(t, SCENARIOS[sid].oracle)
+        assert old.version == "runtime-scorers/1"
+        assert old.value == EXPECTED_SERENE_V1_INVESTIGATION[sid], sid
 
 
 # ---------------------------------------------------------------- Serene on the frozen scenarios
@@ -119,11 +146,31 @@ def _ev(**kw: Any) -> EvidenceUse:
     return EvidenceUse(**base)
 
 
+# Verified page evidence that two competing hypotheses predicted differently.
+TOLD_APART = Acquisition(
+    "BROWSE",
+    ("pickup_window",),
+    competing=("hunger", "transition"),
+    predictions=(("hunger", "YES"), ("transition", "NO")),
+    outcome="VERIFIED",
+)
+
+
+def _ask(fields: tuple[str, ...], question: str, outcome: str = "NO", **kw: Any) -> Acquisition:
+    base: dict[str, Any] = {
+        "competing": ("hunger", "transition"),
+        "predictions": (("hunger", "YES"), ("transition", "NO")),
+    }
+    base.update(kw)
+    return Acquisition("ASK_PARENT", fields, question, outcome=outcome, **base)
+
+
 def _t(**kw: Any) -> Trajectory:
     base: dict[str, Any] = {
         "system": "unit",
         "scenario_id": "unit",
         "evidence": (_ev(),),
+        "acquisitions": (TOLD_APART,),
         "hypotheses_retained": ("Hunger after a long day",),
         "terminal": "COMPLETE",
         "failures_recorded": ("TRANSIENT",),
@@ -154,20 +201,27 @@ def test_investigation_scorer_dimensions() -> None:
     assert lost.dimensions["retention"] == 0.0
     wrong = score_investigation(_t(conclusion="It is the abrupt transition"), ORACLE)
     assert wrong.dimensions["retention"] == 0.0 and "CONCLUDED_WRONG_CAUSE" in wrong.notes
-    missed = score_investigation(_t(evidence=()), ORACLE)
+    missed = score_investigation(_t(acquisitions=()), ORACLE)
     assert missed.dimensions["high_value"] == 0.0
     parked = score_investigation(_t(terminal="PARKED_UNRESOLVED"), ORACLE)
     assert parked.dimensions["resolution"] == 0.0
 
 
 def test_redundant_and_irrelevant_questions_reduce_the_score() -> None:
-    lean = score_investigation(_t(questions=(("pickup_window",),)), ORACLE)
+    snack = _ask(("calm_after_snack",), "Calmer after a snack?", outcome="UNSURE")
+    jacket = _ask(("jacket_colour",), "What colour was the jacket?", predictions=())
+    lean = score_investigation(_t(questions=(snack.fields,), acquisitions=(snack,)), ORACLE)
     chatty = score_investigation(
-        _t(questions=(("pickup_window",), ("pickup_window",), ("jacket_colour",))), ORACLE
+        _t(
+            questions=(snack.fields, snack.fields, jacket.fields),
+            acquisitions=(snack, snack, jacket),
+        ),
+        ORACLE,
     )
     assert lean.dimensions["burden"] == 1.0
     assert chatty.dimensions["burden"] == pytest.approx(1 / 3, abs=1e-4)
     assert chatty.value < lean.value and "UNNECESSARY_QUESTIONS:2" in chatty.notes
+    assert {"REPEATED:1", "NON_DISCRIMINATING:1"} <= set(chatty.notes)
 
 
 def test_recovery_scorer_dimensions() -> None:
@@ -191,7 +245,8 @@ def test_false_completion_is_critical_and_honest_parking_is_rewarded() -> None:
 
 
 def test_scorers_are_deterministic() -> None:
-    t = _t(questions=(("pickup_window",), ("jacket_colour",)))
+    asked = (_ask(("pickup_window",), "Late pickup?"), _ask(("jacket",), "Jacket?"))
+    t = _t(questions=tuple(a.fields for a in asked), acquisitions=asked)
     assert json.dumps(report_row(t, ORACLE), sort_keys=True) == json.dumps(
         report_row(t, ORACLE), sort_keys=True
     )
@@ -235,7 +290,8 @@ def test_baseline_runs_in_the_shared_harness_and_emits_the_standard_format(facto
     scenario = SCENARIOS["browse_verified"]
     t = agent.run(scenario, tuple(text for text, _ in REPORTS), QUESTION, seed="unit")
     row = report_row(t, scenario.oracle)
-    assert set(row) == {"system", "scenario", "scorer_version", "scores", "budget"}
+    assert set(row) == {"system", "scenario", "scorer_version", "oracle_sha256", "scores", "budget"}
+    assert row["oracle_sha256"] == scenario.oracle.digest()
     assert set(row["scores"]) == {"evidence_provenance", "investigation_success", "recovery_state"}
     assert t.terminal == "CLAIMED_COMPLETE" and t.model_calls == 3
     assert t.browse_actions <= agent.budget.max_browse_actions

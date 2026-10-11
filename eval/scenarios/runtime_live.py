@@ -40,6 +40,7 @@ from eval.scenarios.runtime_scenarios import (
     SereneRun,
     trajectory_from_ledger,
 )
+from eval.scorers.runtime_scorers import Oracle
 from serene.adapters.browser import SafeHttpsFetcher
 from serene.adapters.browser.fetch import FetchedPage
 from serene.adapters.hermes.transport import (
@@ -103,9 +104,30 @@ FAULTS: Final[dict[str, Faults]] = {
 }
 
 
+ParentFacts = tuple[tuple[tuple[str, ...], str | None], ...]
+
+
+@dataclass(frozen=True)
+class LiveScenario:
+    """Everything one live scenario gives the systems, plus its grader-only oracle.
+
+    `split` is "dev" (the visible development set below) or "holdout" (the hidden
+    holdout in `eval/holdout/`, never run by default and never tuned against)."""
+
+    scenario_id: str
+    split: str
+    reports: tuple[tuple[str, str], ...]
+    question: str
+    sources: tuple[str, ...]
+    allowed: tuple[str, ...]
+    parent_facts: ParentFacts
+    faults: Faults
+    oracle: Oracle  # grader-only: never reaches a prompt, store or memory
+
+
 class ParentSim:
-    def __init__(self, scenario_id: str) -> None:
-        self._facts = PARENT_FACTS[scenario_id]
+    def __init__(self, scenario_id: str, facts: ParentFacts | None = None) -> None:
+        self._facts = PARENT_FACTS[scenario_id] if facts is None else facts
         self.asked: list[str] = []
         self.approvals_seen: list[str] = []
 
@@ -193,11 +215,12 @@ def _url(arguments: str) -> str:
 class _PinnedFetcher:
     """The verifier's independent https re-fetch, limited to the pinned pages."""
 
-    def __init__(self) -> None:
+    def __init__(self, sources: tuple[str, ...] = LIVE_SOURCES) -> None:
         self._inner = SafeHttpsFetcher()
+        self._sources = sources
 
     def fetch(self, url: str, allowed_domains: tuple[str, ...]) -> FetchedPage | None:
-        if url.split("#", 1)[0] not in LIVE_SOURCES:
+        if url.split("#", 1)[0] not in self._sources:
             return None
         return self._inner.fetch(url, allowed_domains)
 
@@ -210,12 +233,28 @@ def live_oracle(scenario_id: str) -> Any:
     return dataclasses.replace(oracle, allowed_domains=LIVE_ALLOWED)
 
 
-def _rig(scenario_id: str, transport: Any, fetcher: Any, **kwargs: Any) -> Any:
+DEV: Final[dict[str, LiveScenario]] = {
+    sid: LiveScenario(
+        scenario_id=sid,
+        split="dev",
+        reports=REPORTS,
+        question=QUESTION,
+        sources=LIVE_SOURCES,
+        allowed=LIVE_ALLOWED,
+        parent_facts=PARENT_FACTS[sid],
+        faults=FAULTS[sid],
+        oracle=live_oracle(sid),
+    )
+    for sid in SCENARIOS
+}
+
+
+def _rig(spec: LiveScenario, transport: Any, fetcher: Any, **kwargs: Any) -> Any:
     return make_investigation_rig(
-        f"live-{scenario_id}",
-        evidence=evidence_factory(fetcher, pinned_sources=LIVE_SOURCES),
-        browse_allowlist=LIVE_ALLOWED,
-        browse_sources=LIVE_SOURCES,
+        f"live-{spec.scenario_id}",
+        evidence=evidence_factory(fetcher, pinned_sources=spec.sources),
+        browse_allowlist=spec.allowed,
+        browse_sources=spec.sources,
         transport=transport,
         **kwargs,
     )
@@ -242,20 +281,27 @@ class LiveResult:
 
 
 # ---------------------------------------------------------------------- Serene
-def run_serene_live(scenario_id: str, live: HermesTransport) -> LiveResult:
-    faults = FAULTS[scenario_id]
-    parent = ParentSim(scenario_id)
+def run_serene_live(
+    scenario_id: str, live: HermesTransport, spec: LiveScenario | None = None
+) -> LiveResult:
+    spec = spec or DEV[scenario_id]
+    faults = spec.faults
+    parent = ParentSim(scenario_id, spec.parent_facts)
     transport = RecordingTransport(live, faults, system="serene")
-    fetcher = _MovedPageFetcher() if faults.page_changed_before_verification else _PinnedFetcher()
+    fetcher = (
+        _MovedPageFetcher()
+        if faults.page_changed_before_verification
+        else _PinnedFetcher(spec.sources)
+    )
     started = time.monotonic()
     notes: list[str] = []
-    rig = _rig(scenario_id, transport, fetcher)
+    rig = _rig(spec, transport, fetcher)
     script = TelegramScript(rig)
-    for text, _ in REPORTS:
+    for text, _ in spec.reports:
         notes.append(f"report:{script.say(text).outcome}")
     inv = rig.stack.investigations.open(
         rig.family.child_id,
-        QUESTION,
+        spec.question,
         opened_by=rig.family.parent,
         source=SourceRef(kind=SourceKind.TELEGRAM, source_id=rig.family.new_id("src")),
     )
@@ -275,7 +321,7 @@ def run_serene_live(scenario_id: str, live: HermesTransport) -> LiveResult:
         ):
             restarted = True
             notes.append("restart")
-            run = _restart(run, scenario_id, transport, fetcher)
+            run = _restart(run, spec, transport, fetcher)
             continue
         if phase == "ASKING_HUMAN" and len(run.rig.outbox.sent) > answered:
             _chat, question, _buttons = run.rig.outbox.sent[-1]
@@ -317,14 +363,14 @@ def run_serene_live(scenario_id: str, live: HermesTransport) -> LiveResult:
 
 def _restart(
     run: SereneRun,
-    scenario_id: str,
+    spec: LiveScenario,
     transport: RecordingTransport,
     fetcher: Any,
 ) -> SereneRun:
     """A fresh process over the same ledger store: nothing carried over but the ledger."""
     old = run.rig
     rig = _rig(
-        scenario_id,
+        spec,
         transport,
         fetcher,
         store=old.family.store,
@@ -339,19 +385,24 @@ def _restart(
 
 # ---------------------------------------------------------------------- baselines
 def run_baseline_live(
-    which: str, scenario_id: str, live: HermesTransport, budget: MatchedBudget | None = None
+    which: str,
+    scenario_id: str,
+    live: HermesTransport,
+    budget: MatchedBudget | None = None,
+    spec: LiveScenario | None = None,
 ) -> LiveResult:
-    faults = FAULTS[scenario_id]
+    spec = spec or DEV[scenario_id]
+    faults = spec.faults
     transport = RecordingTransport(live, faults, system=which)
     agent = (baseline_a if which == "baseline_a" else baseline_b)(
-        transport, budget, allowed_domains=LIVE_ALLOWED, pinned_sources=LIVE_SOURCES
+        transport, budget, allowed_domains=spec.allowed, pinned_sources=spec.sources
     )
-    parent = ParentSim(scenario_id)
+    parent = ParentSim(scenario_id, spec.parent_facts)
     started = time.monotonic()
     trajectory = agent.run(
-        SCENARIOS[scenario_id],
-        tuple(text for text, _ in REPORTS),
-        QUESTION,
+        SCENARIOS.get(scenario_id) or _Named(scenario_id),
+        tuple(text for text, _ in spec.reports),
+        spec.question,
         seed=f"live-{scenario_id}",
         parent=parent.answer,
     )
@@ -371,8 +422,20 @@ def run_baseline_live(
     )
 
 
+@dataclass(frozen=True)
+class _Named:
+    """A holdout scenario as a baseline sees it: its id, and no scripted answers."""
+
+    scenario_id: str
+    parent_answers: dict[str, str | None] = field(default_factory=dict)
+
+
 SYSTEMS: Final[dict[str, Callable[..., LiveResult]]] = {
     "serene": run_serene_live,
-    "baseline_a": lambda sid, live: run_baseline_live("baseline_a", sid, live),
-    "baseline_b": lambda sid, live: run_baseline_live("baseline_b", sid, live),
+    "baseline_a": lambda sid, live, spec=None: run_baseline_live(
+        "baseline_a", sid, live, spec=spec
+    ),
+    "baseline_b": lambda sid, live, spec=None: run_baseline_live(
+        "baseline_b", sid, live, spec=spec
+    ),
 }

@@ -25,7 +25,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, Final
 
-from eval.scorers.runtime_scorers import EvidenceUse, Trajectory
+from eval.scorers.runtime_scorers import Acquisition, EvidenceUse, Trajectory
 from serene.adapters.browser import HermesBrowser
 from serene.adapters.hermes.transport import HermesRequest, HermesTransport, HermesTransportError
 from serene.evidence.capture import parse_capture
@@ -128,6 +128,9 @@ class BaselineAgent:
         transcript: list[str] = [f"PARENT REPORT: {r}" for r in reports]
         questions: list[tuple[str, ...]] = []
         evidence: list[Any] = []
+        # A baseline keeps no hypothesis set and states no predictions while it acts,
+        # and never verifies a capture, so it records no discrimination claim.
+        acquisitions: list[Any] = []
         calls = actions = 0
         terminal, conclusion, hypotheses = "BUDGET_EXHAUSTED", None, ()
         while calls < self.budget.max_model_calls:
@@ -163,11 +166,15 @@ class BaselineAgent:
             fields = tuple(str(f) for f in action.get("fields") or ())[:4] or ("unspecified",)
             if kind == "ask" and len(questions) < self.budget.max_questions:
                 questions.append(fields)
+                asked = str(action.get("question") or "")
                 if parent is not None:
-                    said = parent(str(action.get("question") or ""), fields)
+                    said = parent(asked, fields)
                 else:
                     answers = [scenario.parent_answers.get(f) for f in fields]
                     said = ", ".join(a for a in answers if a) or None
+                acquisitions.append(
+                    Acquisition("ASK_PARENT", fields, asked, outcome=_answer_outcome(said))
+                )
                 transcript.append(f"PARENT ANSWER: {said or '(no reply)'}")
                 if said:
                     memory.add(f"answer-{len(questions)}", "ANSWER", said)
@@ -197,6 +204,13 @@ class BaselineAgent:
                     )
                 )
                 actions += result.actions_used
+                acquisitions.append(
+                    Acquisition(
+                        "BROWSE",
+                        fields,
+                        outcome="UNVERIFIED" if result.evidence else "NOT_ACQUIRED",
+                    )
+                )
                 for ev in result.evidence:
                     text = parse_capture(ev.content).excerpt
                     transcript.append(f"WEB PAGE {ev.source.uri}: {text}")
@@ -219,6 +233,7 @@ class BaselineAgent:
             scenario_id=scenario.scenario_id,
             questions=tuple(questions),
             evidence=tuple(_dedupe(evidence)),
+            acquisitions=tuple(acquisitions),
             hypotheses_retained=hypotheses,
             conclusion=conclusion,
             terminal=terminal,
@@ -227,6 +242,13 @@ class BaselineAgent:
             model_calls=calls,
             browse_actions=actions,
         )
+
+
+def _answer_outcome(said: str | None) -> str:
+    if not said:
+        return "NO_RESPONSE"
+    value = said.strip().upper()
+    return value if value in {"YES", "NO", "UNSURE"} else "ANSWERED"
 
 
 def _dedupe(items: list[Any]) -> list[Any]:
