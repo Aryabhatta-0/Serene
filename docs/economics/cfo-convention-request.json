@@ -1,0 +1,32 @@
+{
+  "tool": "edit_table_blocks",
+  "arguments": {
+    "scenario": "Serene economics #55 - assumed operating case",
+    "update": {
+      "target": "Serene55 unit economics and sensitivity",
+      "structure": {
+        "insert": [
+          {
+            "side": "rows",
+            "node": {
+              "variable": "Serene55 days_per_month",
+              "new": true,
+              "formula": "30",
+              "format": {
+                "numberFormat": "INTEGER"
+              }
+            }
+          }
+        ]
+      },
+      "row_updates": [
+        {
+          "rows": [
+            "Serene55 runway_days"
+          ],
+          "formula": "floor(`Serene55 cash` * `Serene55 days_per_month` / `Serene55 burn_month`, 1)"
+        }
+      ]
+    }
+  }
+}

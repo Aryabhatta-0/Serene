@@ -19,8 +19,10 @@ predicts); every ranking input is then computed here, deterministically:
         6. cost              CostModel micro-USD; unknown sorts after known
         7. candidate_id      stable tie-break
 
-Cost is consulted only between candidates equal on 1-5, so it can never outrank
-safety, need or value. No numeric information gain is computed or emitted.
+Cost is consulted only between candidates equal on 1-5 AND the complete evidence
+request (fields, mode, question, subject, bounds and predictions). Equal ordinal
+value alone does not establish equal uncertainty reduction or evidence quality.
+No numeric information gain is computed or emitted.
 Candidates re-asking fields already requested in this investigation are
 excluded, so the policy never asks the same thing twice.
 """
@@ -48,7 +50,7 @@ from serene.policies.external_evidence import domain_allowed
 from serene.policies.safety import classify_intervention
 from serene.ports.cost import CostModel
 
-POLICY_VERSION: Final = "minimum-sufficient-data/1"
+POLICY_VERSION: Final = "minimum-sufficient-data/1-cost-equivalence"
 CandidateId = Annotated[str, StringConstraints(pattern=r"^[a-z0-9_\-]{1,64}$")]
 
 _VALUE_RANK: Final = {InformationValue.HIGH: 0, InformationValue.MEDIUM: 1, InformationValue.LOW: 2}
@@ -170,8 +172,12 @@ class MinimumDataPolicy:
     def _cost_of(self, candidate: EvidenceCandidate) -> int | None:
         """Candidate-specific estimate if the cost table has one, else the mode's."""
         mode = f"acquire:{candidate.acquisition_mode.value}"
-        specific = self._cost.estimate_cost_micro_usd(f"{mode}:{candidate.candidate_id}")
-        return specific if specific is not None else self._cost.estimate_cost_micro_usd(mode)
+        try:
+            specific = self._cost.estimate_cost_micro_usd(f"{mode}:{candidate.candidate_id}")
+            cost = specific if specific is not None else self._cost.estimate_cost_micro_usd(mode)
+        except Exception:  # advisory cost failures cannot affect evidence policy
+            return None
+        return cost if type(cost) is int and cost >= 0 else None
 
     # ------------------------------------------------------------------ selection
     def select(
@@ -195,7 +201,18 @@ class MinimumDataPolicy:
                 excluded.append((candidate.candidate_id, "LOW_VALUE"))
             else:
                 eligible.append(scored)
-        ranked = tuple(sorted(eligible, key=ScoredCandidate.key))
+        # First choose the higher-order class without any price information.
+        ordered = sorted(eligible, key=lambda s: (*s.key()[:5], s.candidate.candidate_id))
+        top = [s for s in ordered if s.key()[:5] == ordered[0].key()[:5]] if ordered else []
+        if len(top) > 1:
+            request = top[0].candidate.model_dump(exclude={"candidate_id", "rationale"})
+            if all(
+                s.candidate.model_dump(exclude={"candidate_id", "rationale"}) == request
+                for s in top
+            ):
+                top.sort(key=ScoredCandidate.key)
+                ordered[: len(top)] = top
+        ranked = tuple(ordered)
         return Selection(
             chosen=ranked[0] if ranked else None, ranked=ranked, excluded=tuple(excluded)
         )

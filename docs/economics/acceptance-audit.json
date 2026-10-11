@@ -1,0 +1,157 @@
+{
+  "issue": "https://github.com/Sathvikar01/morrow/issues/55",
+  "base_commit": "69c45b6fd81981d878ac189e2dcd5c6c2b1be49a",
+  "criteria": [
+    {
+      "id": "AC1",
+      "requirement": "The cost model covers the listed dimensions.",
+      "tests": [
+        "tests/test_economics.py::test_fixture_arithmetic_monthly_margin_burn_and_runway"
+      ],
+      "artifacts": [
+        "serene/economics.py",
+        "docs/economics/inputs.json"
+      ]
+    },
+    {
+      "id": "AC2",
+      "requirement": "One documented decision uses it where safety/quality are equal.",
+      "tests": [
+        "tests/test_economics.py::test_one_model_driven_decision_and_required_parent_guard",
+        "tests/test_acquisition_costs.py::test_cost_decides_only_between_equivalent_options"
+      ],
+      "artifacts": [
+        "docs/economics.md",
+        "docs/economics/local-report.json"
+      ]
+    },
+    {
+      "id": "AC3",
+      "requirement": "A test asserts cost cannot override a safety constraint.",
+      "tests": [
+        "tests/test_acquisition_costs.py::test_cost_cannot_override_safety",
+        "tests/test_investigation.py::test_cost_cannot_outrank_safety"
+      ],
+      "artifacts": [
+        "serene/policies/acquisition.py"
+      ]
+    },
+    {
+      "id": "DETERMINISM",
+      "requirement": "Exact fixture arithmetic, monthly cost/family and gross margin are reproducible.",
+      "tests": [
+        "tests/test_economics.py::test_fixture_arithmetic_monthly_margin_burn_and_runway",
+        "tests/test_economics.py::test_calculations_and_reviewed_report_are_reproducible"
+      ],
+      "artifacts": [
+        "scripts/economics_report.py"
+      ]
+    },
+    {
+      "id": "PROVENANCE",
+      "requirement": "Every input has name, unit, source, value and measured/assumed basis.",
+      "tests": [
+        "tests/test_economics.py::test_all_inputs_have_explicit_provenance_and_are_assumptions"
+      ],
+      "artifacts": [
+        "docs/economics/inputs.json",
+        "docs/economics.md"
+      ]
+    },
+    {
+      "id": "CFO",
+      "requirement": "One authenticated cfo.ai Scenario populated and inspected; retain only synthetic evidence.",
+      "tests": [
+        "tests/test_economics.py::test_cfo_synthetic_readback_matches_offline_calculations",
+        "tests/test_economics.py::test_cfo_request_populates_each_assumption_and_preserves_provenance_hash"
+      ],
+      "artifacts": [
+        "docs/economics/cfo-evidence.json",
+        "docs/economics/cfo-model-request.json",
+        "docs/economics/cfo-convention-request.json",
+        "docs/economics/cfo-readback.json"
+      ]
+    },
+    {
+      "id": "SENSITIVITY",
+      "requirement": "Inspect margin sensitivity, major drivers and an assumed operating case.",
+      "tests": [
+        "tests/test_economics.py::test_sensitivity_is_reproducible_and_llm_is_major_driver",
+        "tests/test_economics.py::test_cfo_synthetic_readback_matches_offline_calculations"
+      ],
+      "artifacts": [
+        "docs/economics/cfo-readback.json"
+      ]
+    },
+    {
+      "id": "QUALITY",
+      "requirement": "Cost never beats higher evidence quality.",
+      "tests": [
+        "tests/test_acquisition_costs.py::test_cost_cannot_override_quality"
+      ],
+      "artifacts": [
+        "serene/policies/acquisition.py"
+      ]
+    },
+    {
+      "id": "UNCERTAINTY",
+      "requirement": "Cost never beats greater expected uncertainty reduction; equal ordinal values alone do not certify equivalence.",
+      "tests": [
+        "tests/test_acquisition_costs.py::test_cost_cannot_override_greater_uncertainty_reduction",
+        "tests/test_acquisition_costs.py::test_equal_ordinals_without_certified_equivalence_ignore_cost",
+        "tests/test_investigation.py::test_equal_ordinal_value_does_not_certify_equal_evidence_for_cost"
+      ],
+      "artifacts": [
+        "serene/investigation/minimum_data.py"
+      ]
+    },
+    {
+      "id": "ELIGIBILITY",
+      "requirement": "Policy denial and required parent questions dominate cost; authorization and verification remain outside economics.",
+      "tests": [
+        "tests/test_acquisition_costs.py::test_policy_denial_and_required_parent_question_dominate_cost",
+        "tests/test_economics.py::test_one_model_driven_decision_and_required_parent_guard",
+        "tests/test_investigation.py::test_cost_cannot_outrank_safety"
+      ],
+      "artifacts": [
+        "serene/adapters/cfoai.py",
+        "docs/economics.md"
+      ]
+    },
+    {
+      "id": "UNKNOWN",
+      "requirement": "Unknown cost is never zero; equal prices are not cost decisive; advisory failures stay unknown.",
+      "tests": [
+        "tests/test_acquisition_costs.py::test_unsafe_options_are_never_ranked_and_unknown_cost_sorts_last",
+        "tests/test_acquisition_costs.py::test_equal_or_unknown_prices_are_not_reported_as_cost_decisive",
+        "tests/test_acquisition_costs.py::test_estimates_are_snapshotted_once_and_failures_are_unknown"
+      ],
+      "artifacts": [
+        "serene/ports/cost.py"
+      ]
+    },
+    {
+      "id": "TRACE",
+      "requirement": "Safe structured candidate, tie, cost/unknown, selection and reason evidence; no PII; logging cannot change decisions.",
+      "tests": [
+        "tests/test_acquisition_costs.py::test_trace_has_tie_cost_status_selection_and_reason_without_pii",
+        "tests/test_acquisition_costs.py::test_telemetry_failure_does_not_change_selection"
+      ],
+      "artifacts": [
+        "docs/economics/local-report.json"
+      ]
+    },
+    {
+      "id": "ARCHITECTURE",
+      "requirement": "Reuse policy and ports; do not introduce a planner or feature imports into the policy layer.",
+      "tests": [
+        "tests/test_architecture_boundaries.py::test_policy_layer_imports_no_feature_adapter_runtime_or_model_modules",
+        "tests/test_architecture_boundaries.py::test_importing_every_policy_loads_only_kernel_modules"
+      ],
+      "artifacts": [
+        "serene/policies/acquisition.py"
+      ]
+    }
+  ],
+  "scope_check": "economics_audit.py rejects changes to eval/**, app/web/** and Hermes internals; parallel checkouts remain untouched"
+}

@@ -1,0 +1,273 @@
+{
+  "origin": "local deterministic calculation; NOT a cfo.ai response",
+  "operating_scenario": "400 assumed families; optional pickup confirmation",
+  "baseline": {
+    "version": "serene-economics/2-assumed",
+    "driver_costs_micro_usd": [
+      [
+        "llm",
+        2508000
+      ],
+      [
+        "browser",
+        120000
+      ],
+      [
+        "database_write",
+        6096
+      ],
+      [
+        "database_read",
+        60360
+      ],
+      [
+        "storage",
+        20000
+      ],
+      [
+        "memory_write",
+        3000
+      ],
+      [
+        "memory_read",
+        600
+      ],
+      [
+        "verification",
+        1200
+      ],
+      [
+        "telemetry",
+        6000
+      ]
+    ],
+    "acquisition_cost_micro_usd": 9038,
+    "monthly_cost_per_family_micro_usd": 2725256,
+    "subscription_per_family_month_micro_usd": 12000000,
+    "gross_margin_bps": 7728,
+    "monthly_variable_cost_micro_usd": 1090102400,
+    "monthly_revenue_micro_usd": 4800000000,
+    "monthly_burn_micro_usd": 14290102400,
+    "runway_days": 524
+  },
+  "sensitivity": [
+    {
+      "assumed_revenue_micro_usd": 8000000,
+      "assumed_llm_usage_bps": 10000,
+      "result": {
+        "version": "serene-economics/2-assumed",
+        "driver_costs_micro_usd": [
+          [
+            "llm",
+            2508000
+          ],
+          [
+            "browser",
+            120000
+          ],
+          [
+            "database_write",
+            6096
+          ],
+          [
+            "database_read",
+            60360
+          ],
+          [
+            "storage",
+            20000
+          ],
+          [
+            "memory_write",
+            3000
+          ],
+          [
+            "memory_read",
+            600
+          ],
+          [
+            "verification",
+            1200
+          ],
+          [
+            "telemetry",
+            6000
+          ]
+        ],
+        "acquisition_cost_micro_usd": 9038,
+        "monthly_cost_per_family_micro_usd": 2725256,
+        "subscription_per_family_month_micro_usd": 8000000,
+        "gross_margin_bps": 6593,
+        "monthly_variable_cost_micro_usd": 1090102400,
+        "monthly_revenue_micro_usd": 3200000000,
+        "monthly_burn_micro_usd": 15890102400,
+        "runway_days": 471
+      }
+    },
+    {
+      "assumed_revenue_micro_usd": 12000000,
+      "assumed_llm_usage_bps": 20000,
+      "result": {
+        "version": "serene-economics/2-assumed",
+        "driver_costs_micro_usd": [
+          [
+            "llm",
+            5016000
+          ],
+          [
+            "browser",
+            120000
+          ],
+          [
+            "database_write",
+            6096
+          ],
+          [
+            "database_read",
+            60360
+          ],
+          [
+            "storage",
+            20000
+          ],
+          [
+            "memory_write",
+            3000
+          ],
+          [
+            "memory_read",
+            600
+          ],
+          [
+            "verification",
+            1200
+          ],
+          [
+            "telemetry",
+            6000
+          ]
+        ],
+        "acquisition_cost_micro_usd": 18038,
+        "monthly_cost_per_family_micro_usd": 5233256,
+        "subscription_per_family_month_micro_usd": 12000000,
+        "gross_margin_bps": 5638,
+        "monthly_variable_cost_micro_usd": 2093302400,
+        "monthly_revenue_micro_usd": 4800000000,
+        "monthly_burn_micro_usd": 15293302400,
+        "runway_days": 490
+      }
+    },
+    {
+      "assumed_revenue_micro_usd": 16000000,
+      "assumed_llm_usage_bps": 10000,
+      "result": {
+        "version": "serene-economics/2-assumed",
+        "driver_costs_micro_usd": [
+          [
+            "llm",
+            2508000
+          ],
+          [
+            "browser",
+            120000
+          ],
+          [
+            "database_write",
+            6096
+          ],
+          [
+            "database_read",
+            60360
+          ],
+          [
+            "storage",
+            20000
+          ],
+          [
+            "memory_write",
+            3000
+          ],
+          [
+            "memory_read",
+            600
+          ],
+          [
+            "verification",
+            1200
+          ],
+          [
+            "telemetry",
+            6000
+          ]
+        ],
+        "acquisition_cost_micro_usd": 9038,
+        "monthly_cost_per_family_micro_usd": 2725256,
+        "subscription_per_family_month_micro_usd": 16000000,
+        "gross_margin_bps": 8296,
+        "monthly_variable_cost_micro_usd": 1090102400,
+        "monthly_revenue_micro_usd": 6400000000,
+        "monthly_burn_micro_usd": 12690102400,
+        "runway_days": 591
+      }
+    }
+  ],
+  "decision": {
+    "chosen": "ask_parent_telegram",
+    "ranking": [
+      "ask_parent_telegram",
+      "ask_caregiver_telegram"
+    ],
+    "excluded_unsafe": [],
+    "equivalence_class": [
+      "ask_parent_telegram",
+      "ask_caregiver_telegram"
+    ],
+    "cost_decisive": true,
+    "costs_micro_usd": [
+      [
+        "ask_caregiver_telegram",
+        14452
+      ],
+      [
+        "ask_parent_telegram",
+        9038
+      ]
+    ],
+    "higher_order_tied": true,
+    "reason_code": "LOWER_EXPECTED_COST"
+  },
+  "safe_trace": [
+    {
+      "name": "policy.acquisition_cost",
+      "attributes": {
+        "task_id": "candidate_3adf14c05b3e5ae71ecaea9d",
+        "decision": "candidate_00264706266506a50decd8db",
+        "checks_passed": "SAFETY_ELIGIBILITY_QUALITY_UNCERTAINTY_TIED",
+        "admitted": true,
+        "safety_class": "SAFE",
+        "source_kind": "FIRST_HAND",
+        "information_value": "HIGH",
+        "cost_known": true,
+        "cost_micro_usd": 14452,
+        "status": "NOT_SELECTED",
+        "reason_codes": "LOWER_EXPECTED_COST"
+      }
+    },
+    {
+      "name": "policy.acquisition_cost",
+      "attributes": {
+        "task_id": "candidate_00264706266506a50decd8db",
+        "decision": "candidate_00264706266506a50decd8db",
+        "checks_passed": "SAFETY_ELIGIBILITY_QUALITY_UNCERTAINTY_TIED",
+        "admitted": true,
+        "safety_class": "SAFE",
+        "source_kind": "FIRST_HAND",
+        "information_value": "HIGH",
+        "cost_known": true,
+        "cost_micro_usd": 9038,
+        "status": "SELECTED",
+        "reason_codes": "LOWER_EXPECTED_COST"
+      }
+    }
+  ]
+}

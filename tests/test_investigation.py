@@ -723,6 +723,7 @@ def test_priority_is_safety_then_need_then_value_then_burden_then_cost() -> None
     # Cost only breaks a genuine tie (ids chosen so an id tie-break would pick "aa-dear").
     cheap = _browse("zz-cheap", {h1: "YES", h2: "NO"})
     dear = _browse("aa-dear", {h1: "YES", h2: "NO"})
+    cheap = cheap.model_copy(update={"requested_fields": dear.requested_fields})
     tie = _policy({"acquire:BROWSE:zz-cheap": 1, "acquire:BROWSE:aa-dear": 9})
     assert tie.select([dear, cheap], ctx).chosen.candidate.candidate_id == "zz-cheap"  # type: ignore[union-attr]
     # ...and an unknown cost sorts after a known one instead of counting as free.
@@ -743,6 +744,27 @@ def test_selection_is_deterministic_and_order_independent() -> None:
         s.candidate.candidate_id for s in second.ranked
     ]
     assert first.chosen is not None and first.chosen.candidate.candidate_id == "a"
+
+
+def test_equal_ordinal_value_does_not_certify_equal_evidence_for_cost() -> None:
+    ctx, (h1, h2) = _ctx_with_two_hypotheses()
+    expensive = _browse("aa_dear", {h1: "YES", h2: "NO"})
+    cheap = _browse("zz_cheap", {h1: "YES", h2: "NO"})
+    costs = _policy({"acquire:BROWSE:aa_dear": 10**15, "acquire:BROWSE:zz_cheap": 0})
+    # Different observations, despite identical ordinal ranks: ignore price.
+    assert costs.select([cheap, expensive], ctx).chosen.candidate.candidate_id == "aa_dear"  # type: ignore[union-attr]
+    same_field = cheap.model_copy(update={"requested_fields": expensive.requested_fields})
+    assert costs.select([same_field, expensive], ctx).chosen.candidate.candidate_id == "zz_cheap"  # type: ignore[union-attr]
+    # Same field and HIGH ordinal, but swapped hypothesis predictions also fail equivalence.
+    swapped = same_field.model_copy(
+        update={
+            "predictions": tuple(
+                HypothesisPrediction(hypothesis_id=h, expected=PredictedAnswer(v))
+                for h, v in {h1: "NO", h2: "YES"}.items()
+            )
+        }
+    )
+    assert costs.select([swapped, expensive], ctx).chosen.candidate.candidate_id == "aa_dear"  # type: ignore[union-attr]
 
 
 def test_redundant_questions_are_never_asked_twice() -> None:
