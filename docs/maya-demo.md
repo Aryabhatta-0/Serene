@@ -7,6 +7,24 @@ uv sync --locked --all-extras --group dev
 uv run python scripts/maya_demo.py
 ```
 
+To restore the exact pre-run state with one command:
+
+```sh
+uv run python scripts/demo_reset.py
+```
+
+Reset writes the canonical synthetic seed/empty-ledger baseline to
+`.demo/maya/seed.json` and removes only the generated `report.json` and
+`report.html`. Run the demo command again afterward. Both reset and run are
+independent of the working directory, environment credentials and production
+databases. There is no database URL, production mode or arbitrary reset target.
+Linked workspaces/artifacts (including Windows junctions) are refused; unknown
+files such as recordings are preserved. Repeated resets produce identical
+baseline bytes. Every run creates a fresh in-memory ledger and throwaway Git
+memory repository from this exact seed, so resetting requires no DB edits.
+`tests/test_demo_reset.py` proves reset → snapshot → reset → identical snapshot
+→ successful full demo, and restores the same baseline again after a run.
+
 Open `.demo/maya/report.html` for the visible sequence and Causal Twin; retain
 `.demo/maya/report.json` for exact events, provenance, hashes, prompts, memory
 content and the deterministic Git memory receipt. The command prints all 18
