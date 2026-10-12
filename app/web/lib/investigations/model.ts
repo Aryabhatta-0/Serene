@@ -135,10 +135,19 @@ export type Investigation = {
   phase: Phase;
   opened_at: string;
   phase_reason_codes: readonly string[];
+  /** Absent on older published projections; never reconstruct a history in the browser. */
+  phase_history?: readonly PhaseRecord[];
   hypotheses: readonly Hypothesis[];
   evidence_requests: readonly EvidenceRequest[];
   uncertainty: readonly Uncertainty[];
   next_action: NextAction;
+};
+
+export type PhaseRecord = {
+  sequence: number;
+  phase: Phase;
+  recorded_at: string;
+  reason_codes: readonly string[];
 };
 
 export class InvestigationValidationError extends Error {
@@ -186,6 +195,16 @@ function parseInvestigation(id: string, value: unknown, path: string): Investiga
     phase: r.oneOf(v.phase, PHASES, `${path}.phase`),
     opened_at: r.timestamp(v.opened_at, `${path}.opened_at`),
     phase_reason_codes: r.reasons(v.phase_reason_codes, `${path}.phase_reason_codes`, 64),
+    phase_history: v.phase_history === undefined ? undefined : r.array(v.phase_history, `${path}.phase_history`, 10000).map((item, i) => {
+      const p = `${path}.phase_history[${i}]`;
+      const step = r.object(item, p);
+      return {
+        sequence: r.integer(step.sequence, `${p}.sequence`, 1, Number.MAX_SAFE_INTEGER),
+        phase: r.oneOf(step.phase, PHASES, `${p}.phase`),
+        recorded_at: r.timestamp(step.recorded_at, `${p}.recorded_at`),
+        reason_codes: r.reasons(step.reason_codes, `${p}.reason_codes`, 64),
+      };
+    }),
     hypotheses: r.array(v.hypotheses, `${path}.hypotheses`, 64).map((h, i) => {
       const p = `${path}.hypotheses[${i}]`;
       const o = r.object(h, p);
@@ -244,6 +263,14 @@ function parseInvestigation(id: string, value: unknown, path: string): Investiga
   };
   // The kernel's own invariants for what is drawn.
   if (investigation.next_action.phase !== investigation.phase) fail(path, "the next action is for another phase");
+  const history = investigation.phase_history;
+  if (history?.length) {
+    if (history[0].phase !== "UNDERSTANDING") fail(path, "history must start with the opening phase");
+    for (let i = 1; i < history.length; i++) {
+      if (history[i].sequence <= history[i - 1].sequence) fail(path, "history must be in recorded order");
+    }
+    if (history[history.length - 1].phase !== investigation.phase) fail(path, "history must end at the current phase");
+  }
   const live = investigation.hypotheses.filter((h) => h.status === "ACTIVE").length;
   if (live >= 2 && !investigation.uncertainty.includes("COMPETING_EXPLANATIONS")) {
     fail(path, "competing explanations must be stated as uncertainty");

@@ -66,7 +66,7 @@
   background: radial-gradient(circle, var(--ink) 1px, transparent 1.4px) 0 50% / 6px 2px repeat-x;
 }
 
-.step[data-state="upcoming"] .marker {
+.step:is([data-state="upcoming"], [data-state="unrecorded"]) .marker {
   border: 1.5px dotted var(--ink-faint);
 }
 

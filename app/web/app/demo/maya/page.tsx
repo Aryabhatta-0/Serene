@@ -4,11 +4,17 @@ import { Page } from "@/components/layout/Page";
 import { MayaDemoView } from "./MayaDemoView";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Maya demo", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Maya’s pickup story", robots: { index: false, follow: false } };
 
 export default function MayaDemoPage() {
   if (process.env.SERENE_DEMO_MODE !== "1") notFound();
-  return <Page title="Today" lead="DEMO MODE — synthetic Maya scenario" width="wide">
+  return <Page
+    title="Maya’s pickup story"
+    question="Why might daycare pickup be hard for Maya?"
+    lead="Follow one made-up family story, from the first reports to a parent-approved trial and the lesson Serene keeps."
+    width="wide"
+    status={null}
+  >
     <MayaDemoView />
   </Page>;
 }

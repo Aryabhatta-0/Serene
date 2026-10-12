@@ -4,6 +4,7 @@ import { Icon, type IconName } from "@/components/system/Icon";
 import { LevelLadder } from "@/components/system/LevelLadder";
 import { Onward, Pair, Pairs, Reasons, Time } from "@/components/system/Record";
 import { StageTrack } from "@/components/system/StageTrack";
+import { InvestigationWorkflow } from "./InvestigationWorkflow";
 import type { EvidenceItem, Hypothesis, Investigation, NextActionKind } from "@/lib/investigations/model";
 import {
   CHANNEL_LABELS,
@@ -89,14 +90,16 @@ export function InvestigationDetail({ investigation: inv, headingLevel: Heading 
           </span>
         </p>
         <Heading id={headingId} className={styles.question}>
-          {inv.question}
+          {brief ? inv.question.replace(/synthetic Maya/gi, "Maya") : inv.question}
         </Heading>
         <StageTrack
           label="Where this investigation stands"
           steps={investigationStages(inv)}
-                    className={styles.track}
+          className={styles.track}
         />
       </header>
+
+      <InvestigationWorkflow investigation={inv} headingLevel={Heading === "h2" ? "h3" : "h4"} />
 
       <div className={styles.workspace}>
         <div className={styles.rail}>

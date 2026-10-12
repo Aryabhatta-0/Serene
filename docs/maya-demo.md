@@ -1,5 +1,41 @@
 # Canonical Maya demo (#56)
 
+## The story in four steps
+
+This is Maya’s fictional family story. Her parent reports that daycare pickup
+has been difficult. Serene helps the family look at the question without
+pretending one explanation is already proven.
+
+1. **Follow the clues.** Tiredness, hunger and transition difficulty remain
+   possible. Serene asks for a useful observation and checks outside information
+   with a separate verifier. A source can be checked without proving what Maya
+   experienced.
+2. **Try one small change.** Serene proposes a reversible five-minute warning
+   before leaving daycare. It is classified GREEN in this synthetic example;
+   the parent’s explicit approval is recorded before the trial starts.
+3. **Keep a useful lesson.** Maya’s parent reports calmer pickups on most days
+   with the warning. Serene keeps a narrow lesson about this family and this
+   setting. It sets aside the broader claim that the same idea works for every
+   child.
+4. **Compare the explanations.** The trial adds support to transition difficulty
+   as one possible factor. Tiredness and hunger remain open because this example
+   did not test them. A recorded workflow shows what Serene did, in order, and
+   why; repeated steps and waiting are kept visible.
+
+The page is organized as **Follow the clues → Try one small change → Keep a
+useful lesson → Compare the explanations**. Readers can choose an earlier
+recorded moment to see what was available then.
+
+![The story page summarizes what was reported, tried and learned, with its four chapters below.](images/maya-story.png)
+
+![The recorded workflow shows the saved order, timestamps and reasons for the investigation steps.](images/maya-recorded-workflow.png)
+
+![The trial record shows the parent-approved change, its safeguards and the reported outcome.](images/maya-trial.png)
+
+This example demonstrates domain integration, not a live family service,
+clinical advice or a general result. The [architecture guide](architecture.md)
+shows which parts suggest, which parts decide, and what the UI reads.
+
 Run from the repository root with Python 3.11–3.13, Git and uv:
 
 ```sh
@@ -111,11 +147,12 @@ $env:SERENE_DEMO_MODE = "1"
 npm run start -- --hostname 127.0.0.1 --port 3200
 ```
 
-Open **http://127.0.0.1:3200/demo/maya**. The page explicitly displays
-`DEMO MODE — synthetic Maya scenario`. This is a local, read-only demo adapter,
+Open **http://127.0.0.1:3200/demo/maya**. The page identifies the story as a
+made-up example with no real family data. It is a local, read-only demo adapter,
 not the production Supabase/Auth path. Without `SERENE_DEMO_MODE=1` on the
-server, the page shows Not Found and its state endpoint returns 404. Keep this recording
-server on localhost. The server needs uv and the repository's Python environment.
+server, the page shows Not Found and its state endpoint returns 404. Keep this
+recording server on localhost. The server needs uv and the repository's Python
+environment.
 
 The page reuses `InvestigationDetail`, `ExperimentsView`, `MemoryView` and
 `CausalTwinSurface`. `/demo/maya/state` invokes `scripts/maya_web_state.py`, which
@@ -125,9 +162,12 @@ and view builders. No extra result fixture, database connection, kernel drive,
 model call, or memory write is involved. Browser responses contain validated
 views, not the raw report's evidence/actor data. No kernel or demo behaviour changes.
 
-Today shows the final investigation status, the competing explanations,
-remaining uncertainty and the policy's next action. Choose an earlier **Recorded
-investigation checkpoint** to show missing evidence and its selected source;
+The investigation shows the final status, the competing explanations,
+remaining uncertainty and the policy's next action. Its **Recorded workflow** is
+expanded by default, with every saved phase visit in ledger order, its timestamp
+and recorded reasons. Evidence-gathering loops, rejected sources and waiting for
+the parent remain visible. Choose an earlier **Choose a moment in the story**
+checkpoint to show only the workflow recorded by that moment, missing evidence and its selected source;
 these are actual ledger prefixes. The final view retains rejected and verified
 evidence with checks and reasons. Experiment shows GREEN classification, the
 recorded Telegram parent approval, outcome and both adjacent Gate promotions.
@@ -143,11 +183,10 @@ uv run python scripts/demo_reset.py
 uv run python scripts/maya_demo.py
 ```
 
-Click **Reload generated report** (or refresh the page). The artifact modification
-receipt changes; the domain SHA-256 remains identical because the canonical
-scenario is deterministic. Reload after reset alone shows an unavailable report
-and clears previous domain results. Missing, malformed or invalid reports fail
-closed. The endpoint and browser fetch both disable caching.
+Refresh the page to read a regenerated report. Reset alone shows a short
+unavailable message. Missing, malformed or invalid reports fail closed. The
+endpoint and browser fetch both disable caching. Technical report receipts are
+kept out of the family-facing UI.
 
 Without authentication, production `/today`, `/investigations`, `/experiments`,
 `/memory` and `/causal-twin` retain their honest unconnected state. This demo makes

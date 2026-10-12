@@ -7,7 +7,7 @@ import styles from "./StageTrack.module.css";
 // only draws the state it is given (a phase from the kernel's projection); it
 // never moves ahead of Serene's record.
 
-export type StepState = "done" | "current" | "upcoming" | "stopped";
+export type StepState = "done" | "current" | "upcoming" | "unrecorded" | "stopped";
 
 export type Step = {
   key: string;
@@ -21,6 +21,7 @@ const SPOKEN: Record<StepState, string> = {
   done: "passed",
   current: "now",
   upcoming: "not reached",
+  unrecorded: "not recorded",
   stopped: "stopped here",
 };
 

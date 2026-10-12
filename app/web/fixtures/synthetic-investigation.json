@@ -838,6 +838,47 @@
           },
           "opened_at": "2026-09-04T08:00:00.000000Z",
           "phase": "ASKING_HUMAN",
+          "phase_history": [
+            {
+              "phase": "UNDERSTANDING",
+              "reason_codes": [],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 7
+            },
+            {
+              "phase": "RETRIEVING_CONTEXT",
+              "reason_codes": [
+                "QUESTION_UNDERSTOOD"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 8
+            },
+            {
+              "phase": "FORMING_HYPOTHESES",
+              "reason_codes": [
+                "CONTEXT_RETRIEVED",
+                "CONTEXT_DIGEST:c17d46fc27afce356cbda4fe2daf16591411cff30356b1988d1e60ca189fb868"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 9
+            },
+            {
+              "phase": "NEEDS_EVIDENCE",
+              "reason_codes": [
+                "HYPOTHESES_FORMED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 13
+            },
+            {
+              "phase": "ASKING_HUMAN",
+              "reason_codes": [
+                "QUESTION_SELECTED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 15
+            }
+          ],
           "phase_reason_codes": [
             "QUESTION_SELECTED"
           ],
@@ -1704,6 +1745,55 @@
           },
           "opened_at": "2026-09-04T08:00:00.000000Z",
           "phase": "VERIFYING",
+          "phase_history": [
+            {
+              "phase": "UNDERSTANDING",
+              "reason_codes": [],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 7
+            },
+            {
+              "phase": "RETRIEVING_CONTEXT",
+              "reason_codes": [
+                "QUESTION_UNDERSTOOD"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 8
+            },
+            {
+              "phase": "FORMING_HYPOTHESES",
+              "reason_codes": [
+                "CONTEXT_RETRIEVED",
+                "CONTEXT_DIGEST:c17d46fc27afce356cbda4fe2daf16591411cff30356b1988d1e60ca189fb868"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 9
+            },
+            {
+              "phase": "NEEDS_EVIDENCE",
+              "reason_codes": [
+                "HYPOTHESES_FORMED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 13
+            },
+            {
+              "phase": "ASKING_HUMAN",
+              "reason_codes": [
+                "QUESTION_SELECTED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 15
+            },
+            {
+              "phase": "VERIFYING",
+              "reason_codes": [
+                "ANSWER_RECEIVED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 17
+            }
+          ],
           "phase_reason_codes": [
             "ANSWER_RECEIVED"
           ],
@@ -2570,6 +2660,63 @@
           },
           "opened_at": "2026-09-04T08:00:00.000000Z",
           "phase": "EVALUATING",
+          "phase_history": [
+            {
+              "phase": "UNDERSTANDING",
+              "reason_codes": [],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 7
+            },
+            {
+              "phase": "RETRIEVING_CONTEXT",
+              "reason_codes": [
+                "QUESTION_UNDERSTOOD"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 8
+            },
+            {
+              "phase": "FORMING_HYPOTHESES",
+              "reason_codes": [
+                "CONTEXT_RETRIEVED",
+                "CONTEXT_DIGEST:c17d46fc27afce356cbda4fe2daf16591411cff30356b1988d1e60ca189fb868"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 9
+            },
+            {
+              "phase": "NEEDS_EVIDENCE",
+              "reason_codes": [
+                "HYPOTHESES_FORMED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 13
+            },
+            {
+              "phase": "ASKING_HUMAN",
+              "reason_codes": [
+                "QUESTION_SELECTED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 15
+            },
+            {
+              "phase": "VERIFYING",
+              "reason_codes": [
+                "ANSWER_RECEIVED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 17
+            },
+            {
+              "phase": "EVALUATING",
+              "reason_codes": [
+                "EVIDENCE_DECIDED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 18
+            }
+          ],
           "phase_reason_codes": [
             "EVIDENCE_DECIDED"
           ],
@@ -3430,6 +3577,72 @@
           },
           "opened_at": "2026-09-04T08:00:00.000000Z",
           "phase": "COMPLETE",
+          "phase_history": [
+            {
+              "phase": "UNDERSTANDING",
+              "reason_codes": [],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 7
+            },
+            {
+              "phase": "RETRIEVING_CONTEXT",
+              "reason_codes": [
+                "QUESTION_UNDERSTOOD"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 8
+            },
+            {
+              "phase": "FORMING_HYPOTHESES",
+              "reason_codes": [
+                "CONTEXT_RETRIEVED",
+                "CONTEXT_DIGEST:c17d46fc27afce356cbda4fe2daf16591411cff30356b1988d1e60ca189fb868"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 9
+            },
+            {
+              "phase": "NEEDS_EVIDENCE",
+              "reason_codes": [
+                "HYPOTHESES_FORMED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 13
+            },
+            {
+              "phase": "ASKING_HUMAN",
+              "reason_codes": [
+                "QUESTION_SELECTED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 15
+            },
+            {
+              "phase": "VERIFYING",
+              "reason_codes": [
+                "ANSWER_RECEIVED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 17
+            },
+            {
+              "phase": "EVALUATING",
+              "reason_codes": [
+                "EVIDENCE_DECIDED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 18
+            },
+            {
+              "phase": "COMPLETE",
+              "reason_codes": [
+                "EVIDENCE_SUFFICIENT",
+                "COMPETING_HYPOTHESES_RETAINED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 19
+            }
+          ],
           "phase_reason_codes": [
             "EVIDENCE_SUFFICIENT",
             "COMPETING_HYPOTHESES_RETAINED"
@@ -4320,6 +4533,47 @@
           },
           "opened_at": "2026-09-04T08:00:00.000000Z",
           "phase": "ASKING_HUMAN",
+          "phase_history": [
+            {
+              "phase": "UNDERSTANDING",
+              "reason_codes": [],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 7
+            },
+            {
+              "phase": "RETRIEVING_CONTEXT",
+              "reason_codes": [
+                "QUESTION_UNDERSTOOD"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 8
+            },
+            {
+              "phase": "FORMING_HYPOTHESES",
+              "reason_codes": [
+                "CONTEXT_RETRIEVED",
+                "CONTEXT_DIGEST:c17d46fc27afce356cbda4fe2daf16591411cff30356b1988d1e60ca189fb868"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 9
+            },
+            {
+              "phase": "NEEDS_EVIDENCE",
+              "reason_codes": [
+                "HYPOTHESES_FORMED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 13
+            },
+            {
+              "phase": "ASKING_HUMAN",
+              "reason_codes": [
+                "QUESTION_SELECTED"
+              ],
+              "recorded_at": "2026-09-04T08:00:00.000000Z",
+              "sequence": 15
+            }
+          ],
           "phase_reason_codes": [
             "QUESTION_SELECTED"
           ],

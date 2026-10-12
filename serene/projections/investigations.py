@@ -147,6 +147,15 @@ def _investigation(inv: str, state: KernelState) -> dict[str, Any]:
         "phase": state.investigation_phases[inv].value,
         "opened_at": investigation.opened_at,
         "phase_reason_codes": list(state.investigation_phase_reasons.get(inv, ())),
+        "phase_history": [
+            {
+                "sequence": step.sequence,
+                "phase": step.phase.value,
+                "recorded_at": step.recorded_at,
+                "reason_codes": list(step.reason_codes),
+            }
+            for step in state.investigation_phase_history.get(inv, ())
+        ],
         "hypotheses": hypotheses,
         "evidence_requests": requests,
         "uncertainty": _uncertainty(inv, state, live),

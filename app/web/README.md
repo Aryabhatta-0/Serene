@@ -8,7 +8,16 @@ implemented, and Today, Investigations and Experiments subscribe to it once a pa
 in and chooses a child, as do Memory (#99) and the Causal Twin, which reads the
 privacy-safe `causal_twin` projection with the complete provenance of every link (#75).
 Without `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` every
-page renders no family data; fixture routes are synthetic previews.
+page renders no family data by default. Set `SERENE_DEMO_MODE=1` to fill the
+five primary surfaces with fictional, read-only examples from the validated
+synthetic fixtures. A notice labels demo data on each page; experiment approval
+actions remain disabled. The setting only affects the local app process.
+
+For a guided, fictional family example, open the [Maya pickup story](../../docs/maya-demo.md).
+It starts with a plain-language summary, then shows the recorded investigation
+workflow, a parent-approved trial, the scoped lesson and the remaining uncertainty.
+The workflow is read from saved projection history; if an older projection has
+no history, the UI says so instead of filling in steps.
 
 ```sh
 npm ci
@@ -17,6 +26,17 @@ npm run typecheck
 npm test            # unit and component tests (Vitest, jsdom)
 npm run build
 ```
+
+To browse the populated app locally (PowerShell):
+
+```powershell
+$env:SERENE_DEMO_MODE = "1"
+npm run dev
+```
+
+Open Today, Investigations, Experiments, Memory and Causal Twin from the main
+navigation. These are independently generated fictional examples for exploring
+each screen; they do not describe one real family record.
 
 End-to-end checks run against a production build in Chromium at desktop
 (1440px), tablet (768px) and phone (390px) sizes. They cover entering from the
@@ -34,8 +54,8 @@ The e2e build is made with `SERENE_FIXTURE_ROUTES=1`, which also routes the
 test-only `page.fixture.tsx` pages (`/fixtures/causal-twin` draws the
 synthetic Causal Twin, `/fixtures/memory` the synthetic memory and Dream
 runs, `/fixtures/experiments` the synthetic experiments, `/fixtures/today` and
-`/fixtures/investigations` a kernel-recorded investigation). A normal
-`npm run build` has no such route and bundles no fixture data. To look at the
+`/fixtures/investigations` a kernel-recorded investigation). Normal app routes
+show fixture data only when `SERENE_DEMO_MODE=1`. To look at the
 fixture map by hand:
 
 ```sh
@@ -129,6 +149,12 @@ these commands.
   `/fixtures/investigations` (test builds only) replay kernel-recorded
   projection rows, with controls to deliver the next change, drop the
   connection and reconnect.
+  Each investigation also shows its recorded workflow by default: the opening
+  and every phase change, in ledger sequence order, with saved times and reasons.
+  Repeated steps and pauses stay visible. The overview marks only recorded
+  stages as passed. Older projections without `phase_history` show the current
+  stage and explain that earlier steps are unavailable; the browser never
+  reconstructs a history or reads the ledger.
 - `lib/memory/`: consolidated memory and Dream runs as the kernel serializes
   them (`model.ts`, a mirror of `serene/memory/view.py` with a parser that
   re-checks its invariants and fails closed: a refused change can never be
@@ -210,4 +236,5 @@ and Maya scripts. See [the recording commands](../../docs/maya-demo.md#web-recor
 It is labelled DEMO MODE, read-only, and disabled unless the server has
 `SERENE_DEMO_MODE=1`. This demo does not exercise production authentication or
 approval transport; see [the separate browser proof](../../docs/web-e2e-proof.md).
-Ordinary pages without authentication stay unconnected.
+Outside demo mode, pages without authentication stay unconnected. Demo mode is
+read-only and uses only fictional local fixtures.
