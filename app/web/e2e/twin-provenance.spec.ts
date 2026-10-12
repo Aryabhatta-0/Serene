@@ -12,6 +12,17 @@ async function horizontalOverflow(page: Page) {
   return page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 }
 
+// Named in the failure message, so an overflow says which element caused it.
+async function overflowingElements(page: Page) {
+  return page.evaluate(() => {
+    const width = document.documentElement.clientWidth;
+    return [...document.querySelectorAll("body *")]
+      .filter((e) => e.getBoundingClientRect().right > width + 1)
+      .slice(0, 5)
+      .map((e) => `${e.tagName.toLowerCase()}.${String(e.className)} (right ${Math.round(e.getBoundingClientRect().right)}px)`);
+  });
+}
+
 test("every link answers “why does Serene believe this?” down to raw evidence", async ({ page }, testInfo) => {
   const errors: string[] = [];
   page.on("console", (m) => {
@@ -63,7 +74,7 @@ test("every link answers “why does Serene believe this?” down to raw evidenc
   await expect(page).toHaveURL(new RegExp(`${target}$`));
   await expect(page.locator(`[id="${target.slice(1)}"]`)).toBeInViewport();
 
-  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+  expect(await horizontalOverflow(page), (await overflowingElements(page)).join("; ")).toBeLessThanOrEqual(0);
   await panel(page).screenshot({ path: testInfo.outputPath(`twin-provenance-${testInfo.project.name}.png`) });
   expect(errors).toEqual([]);
 });
