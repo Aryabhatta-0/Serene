@@ -100,7 +100,7 @@ source. N-of-1 support is not a causal-effect estimate or treatment recommendati
 
 **Known limit:** current investigation COMPLETE can follow an empty/fully
 excluded planner candidate list. Admission does not prove pairwise evidence
-sufficiency. Draft [PR #69](https://github.com/Sathvikar01/morrow/pull/69) is
+sufficiency. Draft [PR #69](https://github.com/Sathvikar01/Serene/pull/69) is
 unmerged; do not claim this gap is fixed. The controller does have explicit
 PARKED_UNRESOLVED paths for missing services, exhausted budgets and timeouts.
 See [architecture's completion disclosure](architecture.md#telegram-hermes-and-investigation).
@@ -132,7 +132,7 @@ See [economics.md](economics.md), [readback](economics/cfo-readback.json),
 [SafeTelemetry](../serene/observability/telemetry.py) isolates sink failures and
 redacts metadata; [NeatLogs](../serene/adapters/neatlogs_sink.py) redacts again.
 Diagnostics cannot approve, verify, promote or write memory. #59 is merged via
-[PR #80](https://github.com/Sathvikar01/morrow/pull/80); its scans and error-boundary
+[PR #80](https://github.com/Sathvikar01/Serene/pull/80); its scans and error-boundary
 checks do not establish production readiness or third-party privacy certification.
 
 ## Non-goals and evidence of assurance

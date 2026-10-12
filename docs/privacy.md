@@ -1,8 +1,8 @@
 # Serene Privacy
 
 > **Status:** audited against merged `main` at `6b82073` on 2026-10-12.
-> [#59](https://github.com/Sathvikar01/morrow/issues/59) is closed by merged
-> [PR #80](https://github.com/Sathvikar01/morrow/pull/80). Telemetry redaction,
+> [#59](https://github.com/Sathvikar01/Serene/issues/59) is closed by merged
+> [PR #80](https://github.com/Sathvikar01/Serene/pull/80). Telemetry redaction,
 > synthetic-data provenance, secret/env scans and scoped RLS are implemented;
 > this is a repository audit, not production readiness or compliance certification.
 
@@ -196,7 +196,7 @@ synthetic assumed operating model only, not family records or measured bills.
 - Entire is configured with `push_sessions: false` because this repository is
   public: agent session transcripts are not pushed unless a human opts in.
 
-Checks and receipts are in [PR #80](https://github.com/Sathvikar01/morrow/pull/80);
+Checks and receipts are in [PR #80](https://github.com/Sathvikar01/Serene/pull/80);
 the reviewed inventory is [synthetic-data-manifest.json](synthetic-data-manifest.json).
 Executable evidence: [secret scan](../scripts/secret_scan.py),
 [environment audit](../scripts/env_audit.py), [synthetic audit](../scripts/synthetic_audit.py),
