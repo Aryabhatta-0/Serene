@@ -1,0 +1,12 @@
+.demo { display: grid; gap: 2rem; min-width: 0; }
+.banner { border: 2px solid currentColor; padding: 1.25rem; background: var(--ground); }
+.banner p { max-width: 80ch; margin: 1rem 0; }
+.receipt { border-bottom: 1px solid currentColor; padding-bottom: 1.25rem; }
+.receipt code { overflow-wrap: anywhere; }
+.receipt p { margin-top: .75rem; }
+.nav { display: flex; flex-wrap: wrap; gap: 1rem 2rem; }
+.section { border-top: 1px solid currentColor; padding-top: 2rem; scroll-margin-top: 6rem; min-width: 0; }
+.section > h2 { margin-bottom: 1.5rem; }
+.section > p, .section > h3 { margin: 1rem 0; }
+.section select { display: block; max-width: 100%; padding: .5rem; margin-top: .5rem; font: inherit; }
+.demo pre { white-space: pre-wrap; overflow-wrap: anywhere; }

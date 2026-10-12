@@ -8,6 +8,7 @@
     "fixtures": "Pinned daycare/holdout pages are fictional public-evidence stand-ins. Provider auth/error fixtures retain sanitized technical responses and synthetic model proposals, not credentials or family input.",
     "names": "Names including Maya in test examples and historical narratives are fictional scenario labels. A name alone is neither evidence of real PII nor proof of synthetic origin; provenance is the generator and reviewed bytes.",
     "maya_demo": "Merged #56/#57 canonical Maya demo: fixed fictional seed maya-daycare-pickup-v1, SyntheticFamily, scripted model/browser I/O, synthetic report marker and temporary memory repository. Reset accepts only the canonical seed. Offline webhook stand-in is fingerprint-allowlisted, never used as a live credential. Implementation unchanged by #59.",
+    "maya_web_demo": "docs/maya-demo.md adds local recording and verification instructions for the opt-in canonical report adapter. No scenario facts, generators, kernel behaviour or reviewed fixture bytes change. The web route reads only the existing synthetic report; it creates no additional result fixture. Production sign-in and web approval transport remain open.",
     "controlled_dev_1": "eval/fixtures/controlled-dev-1.json and eval/reports/archive/2026-10-12-controlled-dev-1/ hold protocol parameters, tape digests, scorer/trust-scorer metrics, reason codes, token counts and NeatLogs receipt ids from the synthetic DEV scenarios; no model prose, parent text or family records (reviewed 2026-10-12)."
   },
   "sha256": {
@@ -16,7 +17,7 @@
     "app/web/fixtures/synthetic-experiments.json": "99aefbde0ef9a98da9ad136c1e65f9ac9ab4240cdc77c11a525183254ae3fdd4",
     "app/web/fixtures/synthetic-investigation.json": "28e99b8935141a1d9fca369af0142fd261fbb4a1f222d935cb4afacd20226a84",
     "app/web/fixtures/synthetic-memory-dream.json": "40010dc7ddf3e861d497ba08e72be70148068b361f65f96d83ac1556161d54c3",
-    "docs/maya-demo.md": "79f61a3545f4b15a70daadd894d115d1941556ab64437a3561faf5296f5f9acb",
+    "docs/maya-demo.md": "3712e900295971a2d6898e4ed455de9685f324c41f298cca09d2c56516b3a2dc",
     "eval/fixtures/cfoai_acquisition_decision.json": "22ce43a5f4308d28dff69da4981f30704053ade74877cdfb3995ecbec22bdc6a",
     "eval/fixtures/controlled-dev-1.json": "31e343b5f31dea0a7e3b0f7d870731cfa29e5d8ae10952441affeb822c2562f0",
     "eval/fixtures/hermes-v4-config.json": "7f139ac000f9e99bf44cd5db05bf90c86ce7210711175acd04531010f26198e8",
