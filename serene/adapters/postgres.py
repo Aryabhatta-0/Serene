@@ -17,6 +17,7 @@ import psycopg
 from psycopg import errors
 from psycopg.types.json import Jsonb
 
+from serene.adapters.memory_projection import configured_snapshot, publishable_projections
 from serene.domain.canonical import canonical_json, format_timestamp, to_canonical_data
 from serene.domain.events import GENESIS_HASH, DomainEvent
 from serene.ledger.service import AfterAppend, EventLedger
@@ -24,7 +25,7 @@ from serene.lineage.chain import LedgerIntegrityError
 from serene.observability.telemetry import SafeTelemetry
 from serene.ports.clock import Clock
 from serene.ports.event_store import ConcurrencyConflict
-from serene.projections.memory import MemorySnapshot, configured_snapshot, publishable_projections
+from serene.projections.memory import MemorySnapshot
 from serene.projections.state import KernelState
 
 _COLUMNS = (

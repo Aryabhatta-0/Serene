@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from serene.adapters.git_memory import BRANCH, GitError, GitMemoryRepository
+from serene.adapters.memory_projection import publishable_projections
 from serene.domain.canonical import canonical_json
 from serene.ledger.service import EventLedger
 from serene.observability.telemetry import RecordingSink, SafeTelemetry
@@ -15,7 +16,6 @@ from serene.projections.memory import (
     memory_dream,
     memory_review,
     privacy_checked,
-    publishable_projections,
 )
 from serene.projections.state import replay
 from serene.testing import build_full_ladder

@@ -7,20 +7,24 @@ An unavailable commit refuses the entire publish; existing rows stay intact.
 
 from __future__ import annotations
 
-import os
 import re
 from collections.abc import Callable, Sequence
-from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
-from serene.adapters.git_memory import GitError, GitMemoryRepository
 from serene.domain.canonical import canonical_json
-from serene.memory.store import MemoryReadView
-from serene.memory.view import build_memory_dream_view
 from serene.ports.memory import MemoryDocument
 from serene.projections.state import KernelState
 
-MemorySnapshot = Callable[[str, str], MemoryReadView]
+
+class SnapshotRead(Protocol):
+    def head(self) -> str: ...
+
+    def read(self, path: str) -> MemoryDocument | None: ...
+
+    def list_paths(self, prefix: str) -> Sequence[str]: ...
+
+
+MemorySnapshot = Callable[[str, str], SnapshotRead]
 EMPTY_REVISION = "0" * 40
 
 
@@ -68,23 +72,16 @@ def memory_review(state: KernelState) -> dict[str, Any]:
     """Ledger-only view. No Git reads, including on historical replay."""
     if not state.memory_patches and not state.dream_stages:
         return {}
+    from serene.memory.view import build_memory_dream_view
+
     view = build_memory_dream_view(state, EmptyMemory()).model_dump(mode="json")
     view["memory_head"] = memory_revision(state) or EMPTY_REVISION
     return privacy_checked(view)
 
 
-def configured_snapshot(child_id: str, revision: str) -> MemoryReadView:
-    """Backend-only repo root, one repository per child; never shared HEAD."""
-    root = os.environ.get("SERENE_MEMORY_REPO_PATH")
-    if not root or not re.fullmatch(r"chd_[0-9a-f]{32}", child_id):
-        raise MemoryPublicationError("MEMORY_REPOSITORY_UNAVAILABLE")
-    try:
-        return GitMemoryRepository(Path(root) / child_id).at_revision(revision)
-    except GitError as exc:
-        raise MemoryPublicationError("MEMORY_REVISION_UNAVAILABLE") from exc
-
-
 def memory_dream(state: KernelState, snapshot: MemorySnapshot) -> dict[str, Any]:
+    from serene.memory.view import build_memory_dream_view
+
     review = memory_review(state)
     if not review:
         return {}
@@ -105,15 +102,3 @@ def memory_dream(state: KernelState, snapshot: MemorySnapshot) -> dict[str, Any]
         if learning is not None and state.last_recorded_at is not None:
             item["status"] = effective_learning_status(learning, state.last_recorded_at).value
     return privacy_checked(view)
-
-
-def publishable_projections(
-    state: KernelState, snapshot: MemorySnapshot = configured_snapshot
-) -> dict[str, dict[str, Any]]:
-    from serene.projections.views import project
-
-    projections = project(state)
-    # A missing row before any memory activity is a genuinely empty surface.
-    if state.memory_patches or state.dream_stages:
-        projections["memory_dream"] = memory_dream(state, snapshot)
-    return projections
