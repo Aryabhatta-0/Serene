@@ -150,7 +150,8 @@ npm run start -- --hostname 127.0.0.1 --port 3200
 Open **http://127.0.0.1:3200/demo/maya**. The page identifies the story as a
 made-up example with no real family data. It is a local, read-only demo adapter,
 not the production Supabase/Auth path. Without `SERENE_DEMO_MODE=1` on the
-server, the page shows Not Found and its state endpoint returns 404. Keep this
+server (or `SERENE_FIXTURE_ROUTES=1` in a fixture test build), the page shows
+Not Found and its state endpoint returns 404. Keep this
 recording server on localhost. The server needs uv and the repository's Python
 environment.
 

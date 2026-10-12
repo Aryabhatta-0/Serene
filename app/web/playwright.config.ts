@@ -39,7 +39,9 @@ export default defineConfig({
   ],
   webServer: {
     command: `npm run build && npm run start -- --port ${PORT}`,
-    env: { SERENE_FIXTURE_ROUTES: "1", SERENE_DEMO_MODE: "1" },
+    // Fixture builds expose the canonical Maya story, but the primary routes
+    // remain in their normal signed-out state for the shell acceptance suite.
+    env: { SERENE_FIXTURE_ROUTES: "1" },
     url: `http://127.0.0.1:${PORT}/today`,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,

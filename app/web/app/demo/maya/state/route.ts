@@ -1,11 +1,11 @@
-import { readDemoState } from "@/lib/demo/server";
+import { mayaDemoEnabled, readDemoState } from "@/lib/demo/server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET() {
   const headers = { "Cache-Control": "no-store" };
-  if (process.env.SERENE_DEMO_MODE !== "1") return new Response(null, { status: 404, headers });
+  if (!mayaDemoEnabled()) return new Response(null, { status: 404, headers });
   try {
     return Response.json(await readDemoState(), { headers });
   } catch {
