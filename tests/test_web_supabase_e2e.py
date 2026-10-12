@@ -50,6 +50,7 @@ def test_real_proof_preparer_and_append_touch_only_synthetic_records(
         ]
         before = conn.execute("select count(*) from serene.domain_events").fetchone()[0]
     runner.append("Synthetic: runner append proof")
+    runner.check()
     with psycopg.connect(pg_dsn) as conn:
         assert conn.execute("select count(*) from serene.domain_events").fetchone()[0] == before + 1
     # An unknown child is not an explicitly synthetic child either.

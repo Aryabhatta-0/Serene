@@ -42,6 +42,7 @@ INTERNAL = {
     "INSPECT_LOGS": "CI-owned Inspect report output directory",
     "POSTGRES_PASSWORD": "throwaway CI PostgreSQL service password, never a deployment credential",
     "SERENE_FIXTURE_ROUTES": "test-only web build flag; omit in production",
+    "PLAYWRIGHT_NO_COPY_PROMPT": "real-stack runner disables snapshots of credential forms",
 }
 
 
