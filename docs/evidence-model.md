@@ -3,7 +3,7 @@
 Evidence, not eloquence, constrains belief. Serene keeps what was reported,
 what it remembers and what it currently believes separate. This implements the
 [architecture thesis](architecture.md#thesis-and-state-ownership): **LLM proposes;
-deterministic code decides.** Source: merged `main` at `b8b102d` (2026-10-12).
+deterministic code decides.** Source: merged `main` at `f2423be` (2026-10-12).
 
 ## Reports, captures and verification
 

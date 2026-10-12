@@ -1,6 +1,6 @@
 # Serene architecture
 
-Audited against merged `main` at `b8b102d4ef1ced045146ae50fa57837f5d0d9df4`
+Audited against merged `main` at `f2423bed751ffa8017aec1da085d5164947357f3`
 on 2026-10-12 for [#60](https://github.com/Sathvikar01/morrow/issues/60).
 Implementation, synthetic integration, live evaluation and production readiness
 are different claims. The [Maya demo](maya-demo.md) exercises real services with
@@ -124,6 +124,13 @@ transaction across Git and Postgres. Refuted/stale knowledge is retained and
 deprecated, never silently deleted. Tests: [Dream](../tests/test_dream.py),
 [Memory Committer](../tests/test_memory_committer.py) (#28–#32).
 
+The merged [Memory/Dream read view](../serene/memory/view.py) and
+[review surface](../app/web/components/memory/MemoryView.tsx) (#36,
+[PR #83](https://github.com/Sathvikar01/morrow/pull/83)) expose kept memory,
+lineage, Dream stages, pending patches and explained refusals. They carry no
+edit, commit or approval authority. Memory text and diffs remain private data;
+the build-gated fixture is synthetic, not a live family connection.
+
 ## Causal Twin, Supabase and projections
 
 [build_causal_twin](../serene/causal/model.py) derives one edge per hypothesis
@@ -143,18 +150,36 @@ is not an external notarization against wholesale history replacement. See
 
 [Five pure read projections](../serene/projections/views.py) rebuild from replay.
 Projection rows can be replaced/deleted; they cannot authorize a ledger append.
-The non-PostgREST-exposed `serene` schema has parent/caregiver-scoped read policies,
+The `serene` schema has parent/caregiver-scoped read policies,
 synthetic-only eval access and backend-only ledger writes
 ([RLS migration](../supabase/migrations/20261011120000_serene_rls_access.sql),
-[RLS tests](../tests/test_rls.py), #6, #8). See [privacy.md](privacy.md).
+[RLS tests](../tests/test_rls.py), #6, #8). The current
+[Supabase API config](../supabase/config.toml) exposes this schema through
+PostgREST for projection snapshots; schema exposure does not bypass RLS.
+See [privacy.md](privacy.md).
+
+Merged #33 ([PR #86](https://github.com/Sathvikar01/morrow/pull/86)) adds an
+optional `EventLedger(after_append=...)` projection publisher. Its monotonic
+upsert advances read rows after durable append; hook failure leaves the ledger
+committed and read state lagging until a later publish/rebuild. The
+[Realtime migration](../supabase/migrations/20261012150000_projection_realtime.sql)
+publishes only `serene.projection_state`, never the ledger. The
+[web feed](../app/web/lib/projections/supabase.ts) reads a child-filtered
+PostgREST snapshot and subscribes under the signed-in user's RLS. Its
+[sync controller](../app/web/lib/projections/sync.ts) retains highest sequences,
+resnapshots on reconnect and labels connection state explicitly
+([publisher tests](../tests/test_projection_realtime.py)). The hook is opt-in;
+the default application assembly does not wire it into a deployed service.
 
 The web has React Flow rendering and an inspectable provenance panel (#34, #38,
 #39; [PR #74](https://github.com/Sathvikar01/morrow/pull/74)), but its
-[live source is UNCONNECTED](../app/web/lib/causal-twin/source.ts). The build-gated
-[fixture](../app/web/fixtures/synthetic-causal-twin.json) is synthetic. Supabase
-Realtime wiring (#33) and complete backend provenance projection (#75) remain
-open; the UI and offline Maya HTML/JSON reports do not establish a deployed
-family database connection.
+[live source is UNCONNECTED](../app/web/lib/causal-twin/source.ts), as is the
+[Memory source](../app/web/lib/memory/source.ts). The build-gated
+[fixture](../app/web/fixtures/synthetic-causal-twin.json) is synthetic.
+The feed implementation exists, but [no page creates it](../app/web/lib/projections/client.ts)
+or connects a signed-in child. Complete backend Causal Twin provenance projection
+(#75) remains open. These UI surfaces and offline Maya HTML/JSON reports do not
+establish a deployed family database connection.
 
 ## Observability, economics and development provenance
 

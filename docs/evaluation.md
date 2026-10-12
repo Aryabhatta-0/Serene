@@ -1,7 +1,7 @@
 # Serene Evaluation
 
 > **Status:** Inspect tasks, deterministic scorers, replay/rescore tooling and
-> regression-gate code are implemented. Audited `main`: `b8b102d` (2026-10-12).
+> regression-gate code are implemented. Audited `main`: `f2423be` (2026-10-12).
 > Historical measurements do not establish a controlled win. **controlled-dev/1 —
 > final result pending.** No final controlled result is merged into this `main`.
 > #53 remains open; #44's ten-scenario coverage is not claimed complete.

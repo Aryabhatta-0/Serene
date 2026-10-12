@@ -1,6 +1,6 @@
 # Serene Privacy
 
-> **Status:** audited against merged `main` at `b8b102d` on 2026-10-12.
+> **Status:** audited against merged `main` at `f2423be` on 2026-10-12.
 > [#59](https://github.com/Sathvikar01/morrow/issues/59) is closed by merged
 > [PR #80](https://github.com/Sathvikar01/morrow/pull/80). Telemetry redaction,
 > synthetic-data provenance, secret/env scans and scoped RLS are implemented;
@@ -19,8 +19,9 @@ A child's data belongs to the **parent**. Access is explicit and scoped.
 
 ## 2. Database boundary (implemented)
 
-- The ledger and projections live in a dedicated `serene` schema that is not
-  exposed through PostgREST.
+- The ledger and projections live in a dedicated `serene` schema. Merged #33's
+  [API configuration](../supabase/config.toml) exposes that schema through
+  PostgREST for projection snapshots; RLS and grants still govern access.
 - The foundation migration enables RLS and revokes end-user privileges.
   The later [#8 migration](../supabase/migrations/20261011120000_serene_rls_access.sql)
   adds explicit scoped SELECT policies/privileges for `authenticated` and
@@ -46,9 +47,17 @@ and must remain private; RLS does not replace backend identity verification.
 [PostgresProjectionStore](../serene/adapters/postgres.py) can replace projection
 rows, while ledger writes remain backend-only and append-only. The five
 [read views](../serene/projections/views.py) are disposable outputs of replay,
-never authorization inputs. The [web source](../app/web/lib/causal-twin/source.ts)
-is currently UNCONNECTED; #33 Realtime and #75 complete provenance projection
-remain open. No deployed family-data service is established by these tests.
+never authorization inputs. Merged #33's
+[Realtime migration](../supabase/migrations/20261012150000_projection_realtime.sql)
+publishes only `serene.projection_state`, not the ledger. The
+[web feed](../app/web/lib/projections/supabase.ts) uses a child-filtered snapshot
+and subscription under the signed-in user's RLS, not a browser service key.
+Its optional backend publisher cannot undo a durable ledger append on failure;
+read state can lag and be rebuilt. No page creates the feed yet;
+[Causal Twin](../app/web/lib/causal-twin/source.ts) and
+[Memory](../app/web/lib/memory/source.ts) sources remain UNCONNECTED.
+#75 complete Causal Twin provenance projection remains open. No deployed
+family-data service is established by these tests.
 
 ## 3. Privacy-safe observability (#52, audited by #59)
 
@@ -105,6 +114,10 @@ real family data. This audit does not certify third-party logging behavior.
   The five presentation projections omit raw content, but in-process
   `KernelState` retains entities for policy decisions. Replaying or serializing
   internal state is not a privacy-safe export.
+- The merged #36 [Memory/Dream view](../serene/memory/view.py) omits child/actor
+  identifiers and evidence content, but includes memory text, patch rationale
+  and diffs. It is private review data, not safe telemetry or a public export;
+  a read-only UI does not remove its confidentiality requirements.
 - Model provenance stores provider/model/prompt-version identifiers, not full
   prompts or private reasoning. This does not mean runtime tasks contain no
   private content: [context retrieval](../serene/investigation/context.py) and
@@ -164,8 +177,9 @@ provenance before updating the manifest. Never regenerate frozen eval results
 to pass this check. Historical names such as **Maya** are fictional scenario
 labels; the evidence is their synthetic source, not the spelling of a name.
 Technical provider error fixtures contain sanitized runtime responses, not real
-child input. The web shell connects no family record; its build-gated causal-twin
-fixture has synthetic model provenance. The merged #56/#57 Maya demo uses a fixed
+child input. The web shell connects no family record; its build-gated Causal Twin
+and kernel-generated Memory/Dream fixtures have reviewed synthetic provenance.
+The merged #56/#57 Maya demo uses a fixed
 fictional seed, scripted model/browser I/O and a temporary synthetic memory repo;
 its report is explicitly marked synthetic and its reset accepts only the canonical
 seed. Their implementations are unchanged by this audit. Hashes attest reviewed

@@ -1,8 +1,8 @@
 # Core documentation review (#60)
 
 Audit date: 2026-10-12. Source baseline:
-`b8b102d4ef1ced045146ae50fa57837f5d0d9df4` (merged #59 privacy, #55 economics
-and #58 required-CI work). The five canonical documents are
+`f2423bed751ffa8017aec1da085d5164947357f3` (merged #59 privacy, #55 economics,
+#58 required-CI, #33 projection feed and #36 Memory/Dream review work). The five canonical documents are
 [architecture](architecture.md), [evidence](evidence-model.md), [safety](safety.md),
 [privacy](privacy.md) and [evaluation](evaluation.md).
 
@@ -15,7 +15,7 @@ and #58 required-CI work). The five canonical documents are
 | Investigation completion | Current empty-plan sufficiency limitation explicitly disclosed in architecture/evidence/safety; #67/#69 unmerged behavior not claimed implemented |
 | Provenance / epistemic ladder | First-hand VERIFIED means authenticated report; external captures require verifier checks; no rung skips; N-of-1 is scoped support, not an estimated causal effect |
 | Dream / memory / Causal Twin | Six stages propose; deterministic Critic and one committer govern writes; refuted/superseded edges and counterevidence remain inspectable; prose is not semantically certified |
-| Supabase / projection / web | Scoped SELECT RLS is implemented; old “no end-user policies” claim corrected; projections are disposable; web source UNCONNECTED; #33/#75 remain open |
+| Supabase / projection / web | Scoped SELECT RLS and #33 Realtime feed implemented; `serene` now exposed through PostgREST under RLS; optional publisher can lag without undoing append; no page connects the feed; #36 read-only Memory/Dream UI exists; Causal Twin/Memory sources UNCONNECTED; #75 remains open |
 | NeatLogs / privacy #59 | Merged #80 redaction, fixed error boundaries and scans described; token filters are not a universal PII detector; inference context is private external processing |
 | Economics #55 | Genuine cfo.ai Scenario/readback, assumed input economics, measured historical tokens, unknown prices and exact optional confirmation boundary distinguished |
 | Entire #54 | Eight verified repository-reference milestones are distinct from incomplete native checkpoints; index is on local #54 branch, not audited main; no completion claimed |
@@ -55,14 +55,15 @@ parser, arbitrary external-site crawler or automatic proof of prose accuracy.
 
 Recorded local results:
 
-- Five canonical docs: 214 link/path references checked, zero failures;
-  64 referenced GitHub issue/PR numbers and two pinned remote source files validated.
-- Supporting review document also passes the link/reference check.
+- Five canonical docs: 230 link/path references checked, zero failures;
+  67 referenced GitHub issue/PR numbers and two pinned remote source files validated.
+- Supporting review document also passes (six docs, 238 references;
+  68 issue/PR numbers, zero failures).
 - Documentation regression tests: seven passed, including missing paths/anchors,
   wrong issue-versus-PR URL kinds and numeric-heading fragments.
-- Repository Ruff lint/format and strict mypy: passed (96 product source files).
+- Repository Ruff lint/format and strict mypy: passed (97 product source files).
 - Secret/history scan, environment coverage and synthetic-data audit: zero
-  findings; all 76 reviewed synthetic assets/generators retain their bytes.
+  findings; all 77 reviewed synthetic assets/generators retain their bytes.
 - Economics report reproduction and ledger replay/hash/tamper self-check: passed.
 - Full backend-suite and required CI results are reported in the documentation PR.
 
