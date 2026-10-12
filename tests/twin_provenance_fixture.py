@@ -12,8 +12,11 @@ web capture (`run_browse_investigation`). Then, through ordinary admission:
   tested hypothesis and then to a contextual learning (level 5);
 - the "hunger" hypothesis is tested, contradicted and refuted by policy.
 
-`tests/test_twin_provenance.py` checks that the checked-in JSON is exactly what
-this produces. To regenerate it:
+The same family as the live `causal_twin` projection state (`serene.causal.web`,
+with the fixture's variable names) is the live surface's fixture.
+`tests/test_twin_provenance.py` and `tests/test_causal_twin_projection.py` check
+that the checked-in JSON files are exactly what this produces. To regenerate
+them:
 
     uv run python -m tests.twin_provenance_fixture
 """
@@ -27,6 +30,7 @@ from typing import Any
 
 from serene.causal import CausalTwin, build_causal_twin
 from serene.causal.provenance import TwinProvenanceView, build_twin_provenance
+from serene.causal.web import WebCausalTwin, build_web_twin
 from serene.domain.canonical import canonical_json
 from serene.domain.entities import Hypothesis, OutcomeResult
 from serene.domain.events import EventType, HypothesisRefuted, HypothesisSuperseded
@@ -40,6 +44,7 @@ from .test_investigation import HUNGER, TRANSITION
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "app" / "web" / "fixtures" / "synthetic-twin-provenance.json"
+WEB_FIXTURE = ROOT / "app" / "web" / "fixtures" / "synthetic-causal-twin-web.json"
 NARROWER = "Pickups after the posted pickup window drive the distress"
 
 
@@ -150,5 +155,15 @@ def fixture_json(twin: CausalTwin, provenance: TwinProvenanceView) -> str:
     return json.dumps(json.loads(canonical_json(payload)), indent=2) + "\n"
 
 
+def build_web_fixture() -> WebCausalTwin:
+    state, now, labels = build_family()
+    return build_web_twin(state, now, labels)
+
+
+def web_fixture_json(view: WebCausalTwin) -> str:
+    return json.dumps(json.loads(canonical_json(view.model_dump(mode="json"))), indent=2) + "\n"
+
+
 if __name__ == "__main__":
     FIXTURE.write_text(fixture_json(*build_fixture()), encoding="utf-8", newline="\n")
+    WEB_FIXTURE.write_text(web_fixture_json(build_web_fixture()), encoding="utf-8", newline="\n")

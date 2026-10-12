@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:approvals": "playwright test --config playwright.approvals.config.ts",
+    "test:e2e:twin": "playwright test --config playwright.twin.config.ts",
     "test:e2e:supabase": "playwright test --config playwright.supabase.config.ts",
     "brand:export": "node scripts/export-brand.mjs"
   },

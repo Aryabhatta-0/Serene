@@ -15,7 +15,7 @@ import os
 import tempfile
 import time
 import uuid
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from socketserver import ThreadingMixIn
 from typing import Any
 from urllib.parse import parse_qs
@@ -204,7 +204,8 @@ class BrowserKernel:
         return [data]
 
 
-def main() -> None:
+def serve(make_kernel: Callable[[str], Any]) -> None:
+    """Migrate a disposable database, build the kernel on it and serve it on 8806."""
     import pgserver
 
     with tempfile.TemporaryDirectory(prefix="serene-browser-") as temp:
@@ -222,7 +223,7 @@ def main() -> None:
             with psycopg.connect(dsn, autocommit=True) as conn:
                 for migration in MIGRATIONS:
                     conn.execute(migration.read_text("utf-8"))
-            kernel = BrowserKernel(dsn)
+            kernel = make_kernel(dsn)
             with make_server(
                 "127.0.0.1", 8806, kernel, server_class=ThreadedServer, handler_class=QuietHandler
             ) as http:
@@ -232,6 +233,10 @@ def main() -> None:
                 admin.execute(f'drop database "{name}" with (force)')
             if server:
                 server.cleanup()
+
+
+def main() -> None:
+    serve(BrowserKernel)
 
 
 if __name__ == "__main__":

@@ -137,6 +137,17 @@ real family data. This audit does not certify third-party logging behavior.
   (observation statements, pattern descriptions, hypothesis statements, outcome
   summaries, learning statements), so it is private application data, not
   telemetry. Tests pin these omissions (`tests/test_twin_provenance.py`).
+- The `causal_twin` projection ([serene/causal/web.py](../serene/causal/web.py))
+  is what the web reads of the twin: the #75 view plus each edge's verdict,
+  scope, support and counterevidence ids and the creating actor's kind. It is
+  built instead of publishing the canonical `causal-twin/1` twin, which carries
+  the child id and actor ids. Entity ids (`hyp_`, `evd_`, ...) are opaque handles,
+  as in the other parent projections; variables get `var_` ids derived from
+  their names. The builder refuses a view containing any `chd_`/`act_`/`src_`
+  id or a `child_id`/`actor_id`/`source_id`/`user_id` key, and the web parser
+  refuses the same. RLS leaves it parent-only (caregivers read only
+  `active_learnings`). Like the #75 view it carries derived display text, so
+  it is private application data (`tests/test_causal_twin_projection.py`).
 - Model provenance stores provider/model/prompt-version identifiers, not full
   prompts or private reasoning. This does not mean runtime tasks contain no
   private content: [context retrieval](../serene/investigation/context.py) and

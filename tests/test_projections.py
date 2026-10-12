@@ -31,6 +31,7 @@ def test_the_initial_projections_and_the_investigation_view_exist() -> None:
         "active_learnings",
         "investigations",  # issue #35
         "experiments",  # issues #37/#84
+        "causal_twin",  # the Causal Twin surface (#75)
     }
 
 
@@ -112,5 +113,20 @@ def test_stale_learning_is_never_presented_as_active(ladder: dict[str, Any]) -> 
 
 
 def test_projections_do_not_copy_raw_report_text(ladder: dict[str, Any]) -> None:
-    blob = canonical_json(ladder["family"].ledger.projections(ladder["family"].child_id))
+    projections = ladder["family"].ledger.projections(ladder["family"].child_id)
+    blob = canonical_json({k: v for k, v in projections.items() if k != "causal_twin"})
     assert b"crying" not in blob and b"meltdown" not in blob
+    # The Causal Twin shows each observation's derived statement (#75,
+    # docs/privacy.md). The synthetic family's observations restate their
+    # report word for word, so report text may appear there, and only there:
+    # never on a raw-evidence node, which is named by its kind and channel.
+    twin = projections["causal_twin"]
+    for node in twin["provenance"]["nodes"]:
+        text = canonical_json(node)
+        if node["kind"] == "OBSERVATION":
+            text = canonical_json({k: v for k, v in node.items() if k != "summary"})
+        assert b"crying" not in text and b"meltdown" not in text
+    rest = {k: v for k, v in twin.items() if k != "provenance"} | {
+        "provenance": {k: v for k, v in twin["provenance"].items() if k != "nodes"}
+    }
+    assert b"crying" not in canonical_json(rest) and b"meltdown" not in canonical_json(rest)

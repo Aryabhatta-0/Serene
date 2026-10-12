@@ -9,7 +9,7 @@ import { describe, expect, it } from "vitest";
 // children (Issue #87), which is allowed in lib/auth/backend.ts alone.
 
 const ROOT = process.cwd(); // vitest runs from app/web
-const SCANNED = ["app", "components", "lib", "e2e"];
+const SCANNED = ["app", "components", "lib", "e2e", "e2e-kernel", "e2e-twin", "e2e-supabase"];
 const SELF = ["lib", "projections", "no-ledger.test.ts"].join(sep);
 
 // Built from parts so this file does not trip its own check.

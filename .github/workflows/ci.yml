@@ -112,7 +112,7 @@ jobs:
   web-e2e:
     name: Web E2E (Playwright, Chromium - desktop, tablet, mobile)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: app/web
@@ -138,6 +138,11 @@ jobs:
         run: npm run test:e2e
       - name: Browser to test-kernel approvals (synthetic Auth, real PostgreSQL)
         run: npm run test:e2e:approvals
+      # Same ports and public env as the approvals lane, so it reuses that build.
+      - name: Browser to the live Causal Twin (synthetic Auth, real PostgreSQL + RLS)
+        run: npm run test:e2e:twin
+        env:
+          SERENE_E2E_SKIP_BUILD: "1"
       - name: Upload Playwright traces on failure
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
