@@ -22,6 +22,7 @@ from serene.ledger import AdmissionRejected
 from serene.policies.approval import AMBER_MIN_DELIBERATION
 from serene.policies.safety import (
     FORBIDDEN_CATEGORIES,
+    GREEN_CANDIDATE_CATEGORIES,
     classify_intervention,
     intervention_digest,
 )
@@ -84,6 +85,69 @@ def test_classification_table(
 def test_classification_is_deterministic() -> None:
     iv = _iv(C.SCREEN_TIME, "Swap tablet time for a puzzle", burden=Burden.MEDIUM)
     assert len({classify_intervention(iv) for _ in range(10)}) == 1
+
+
+# ------------------------------------------------------------------ supervision hazard (#44)
+UNSUPERVISED_IN_VEHICLE = (
+    "Leave the child alone in the parked car for ten minutes to calm down",
+    "leave child alone in car",
+    "LEAVE CHILD ALONE IN CAR",
+    "Let her wait alone in the vehicle while the parent collects the bag",
+    "Child can stay unsupervised in the parked vehicle until calm",
+    "Child unattended in car for five minutes",
+    "Leave the child by themselves in the vehicle",
+    "Leave him in the parked car to settle",
+    "Leave the toddler inside the locked van",
+    "The child sits in the back seat on his own while the parent goes in",
+    "Let her rest in the car with nobody watching",
+    "Quiet time in the SUV without an adult; then go inside.",
+)
+SAFE_CAR_TRANSITIONS = (
+    "Give a two-minute heads-up in the car before arriving at daycare",
+    "Play a calming song in the car on the way home",
+    "Let the child carry a comfort toy from the car to the classroom",
+    "Parent stays with the child in the car for a quiet minute",
+    "Offer a snack in the car seat after pickup",
+    "Walk through the car park holding hands",
+    "Let the child play alone with a toy car for ten minutes",
+    "Child plays alone in the living room. Then drive home by car.",
+    "Leave the house five minutes earlier by car",
+)
+
+
+@pytest.mark.parametrize("description", UNSUPERVISED_IN_VEHICLE)
+@pytest.mark.parametrize("category", sorted(GREEN_CANDIDATE_CATEGORIES))
+def test_unsupervised_child_in_vehicle_is_red_under_any_green_label(
+    description: str, category: C
+) -> None:
+    decision = classify_intervention(_iv(category, description))
+    assert decision.safety_class is SafetyClass.RED
+    assert "UNSUPERVISED_IN_VEHICLE" in decision.reason_codes
+
+
+@pytest.mark.parametrize("description", UNSUPERVISED_IN_VEHICLE)
+def test_low_burden_reversible_and_short_cannot_lower_a_vehicle_hazard(description: str) -> None:
+    """The fields the model sets to look harmless are exactly the ones that cannot help."""
+    decision = classify_intervention(
+        _iv(C.TRANSITION_SUPPORT, description, reversible=True, days=1, burden=Burden.LOW)
+    )
+    assert decision.safety_class is SafetyClass.RED
+    assert decision.reason_codes == ("UNSUPERVISED_IN_VEHICLE",)
+
+
+@pytest.mark.parametrize("description", SAFE_CAR_TRANSITIONS)
+def test_ordinary_transition_support_mentioning_a_car_stays_green(description: str) -> None:
+    decision = classify_intervention(_iv(C.TRANSITION_SUPPORT, description))
+    assert decision.safety_class is SafetyClass.GREEN
+    assert decision.reason_codes == ("LOW_RISK_REVERSIBLE",)
+
+
+def test_mislabelled_vehicle_hazard_can_never_start(family: SyntheticFamily) -> None:
+    exp = _experiment(family, _iv(C.TRANSITION_SUPPORT, UNSUPERVISED_IN_VEHICLE[0]))
+    family.classify(exp)
+    with pytest.raises(AdmissionRejected) as info:
+        family.request_approval(exp)
+    assert "RED_CANNOT_BE_APPROVED" in _reasons(info)
 
 
 # ------------------------------------------------------------------ lifecycle helpers
