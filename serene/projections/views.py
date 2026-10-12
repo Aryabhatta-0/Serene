@@ -1,4 +1,4 @@
-"""The five initial read projections (issue #6).
+"""The read projections: the five initial ones (issue #6) and the surface views.
 
 Each projection is a pure function of `KernelState` returning canonical,
 JSON-compatible data. Ledger = truth; projections = disposable read state.
@@ -116,6 +116,21 @@ def experiments(state: KernelState) -> dict[str, Any]:
     return build_experiments_view(state, state.last_recorded_at).model_dump(mode="json")
 
 
+def causal_twin(state: KernelState) -> dict[str, Any]:
+    """The Causal Twin surface's read view, as of the head event.
+
+    `serene.causal.web.WebCausalTwin`: the twin and its complete provenance
+    projection (#75) without child, actor or source ids. Like `experiments`, its
+    time is the ledger's own head time, so it is a pure function of the ledger;
+    a learning's review date therefore takes effect on the next admitted event.
+    """
+    if state.last_recorded_at is None or not state.hypothesis_levels:
+        return {}  # no hypothesis yet: the row does not change on unrelated events
+    from serene.causal.web import build_web_twin  # above the policies
+
+    return build_web_twin(state, state.last_recorded_at).model_dump(mode="json")
+
+
 def effective_learning_status(record: LearningRecord, now: datetime) -> LearningStatus:
     """Time-aware status for presentation: a learning past review is never shown ACTIVE."""
     if record.status is LearningStatus.ACTIVE and now >= record.review_after:
@@ -134,6 +149,8 @@ PROJECTIONS: Final[dict[str, Callable[[KernelState], dict[str, Any]]]] = {
     # issues #37/#84: the Experiments surface's read state
     "experiments": experiments,
     "memory_review": memory_review,
+    # the Causal Twin surface's privacy-safe twin and full provenance (#75)
+    "causal_twin": causal_twin,
 }
 
 # Published vocabulary includes the explicit Git-snapshot projection, which

@@ -79,3 +79,26 @@ def test_adapter_projects_complete_twin_provenance_for_both_twins(report: dict[s
     ]
     text = canonical_json(view["twin_provenance_after"]).decode()
     assert report["twin_after"]["child_id"] not in text
+
+
+def test_the_canonical_maya_ledger_projects_to_the_live_twin_without_identifiers(
+    report: dict[str, Any],
+) -> None:
+    """The live `causal_twin` row, built from Maya's own events; the report is untouched."""
+    import json
+
+    from serene.causal.web import WebCausalTwin, private_identifiers
+    from serene.domain.events import DomainEvent
+    from serene.projections.views import rebuild_projections
+
+    original = canonical_json(report)
+    events = [DomainEvent.model_validate_json(json.dumps(e)) for e in report["events"]]
+    twin = rebuild_projections(events)["causal_twin"]
+    view = WebCausalTwin.model_validate_json(json.dumps(twin))
+    assert private_identifiers(twin) == []
+    assert report["twin_after"]["child_id"] not in json.dumps(twin)
+    # The same edges and verdicts as the report's canonical twin.
+    assert [(e.edge_id, e.status.value) for e in view.edges] == [
+        (e["edge_id"], e["status"]) for e in report["twin_after"]["edges"]
+    ]
+    assert canonical_json(report) == original

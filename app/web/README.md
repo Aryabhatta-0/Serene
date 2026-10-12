@@ -5,8 +5,8 @@ bloom, five primary surfaces (Today, Memory, Investigations, Experiments,
 Causal Twin), responsive navigation, Twin/Memory review views, an Experiments/Approval surface, and
 shared layout primitives. The #33 Realtime projection transport is
 implemented, and Today, Investigations and Experiments subscribe to it once a parent signs
-in and chooses a child. Memory and the Causal Twin still
-render unconnected; full Twin provenance projection (#75) is unfinished.
+in and chooses a child, as do Memory (#99) and the Causal Twin, which reads the
+privacy-safe `causal_twin` projection with the complete provenance of every link (#75).
 Without `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` every
 page renders no family data; fixture routes are synthetic previews.
 
@@ -81,8 +81,9 @@ these commands.
   (`categories.ts`), the React Flow graph and its deterministic layout
   (`graph.ts`), the provenance panel's reading of an edge (`provenance.ts`:
   ids typed by prefix, support against counterevidence, lineage and
-  supersession followed by id), and where the twin comes from (`source.ts`:
-  UNCONNECTED until the complete Twin provenance projection exists, #75).
+  supersession followed by id), where the twin comes from (`source.ts`:
+  UNCONNECTED when signed out, else the `causal_twin` row) and the live
+  row's web-only format (`web-model.ts`, `causal-twin-web/1`).
 - `components/causal-twin/`: `CausalTwinSurface` (what pages render: the
   view with the provenance panel wired in), `CausalTwinView` (unconnected,
   loading, error, empty and map states), the map (`TwinCanvas`,

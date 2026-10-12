@@ -79,7 +79,7 @@ def prepare() -> None:
             "where conrelid = 'serene.projection_state'::regclass "
             "and conname = 'projection_state_projection_check'"
         ).fetchone()
-        if not constraint or "'experiments'" not in constraint[0]:
+        if not constraint or "'causal_twin'" not in constraint[0]:
             raise RuntimeError("apply current migrations before preparing the real proof")
         published = conn.execute(
             "select tablename from pg_publication_tables where pubname = 'supabase_realtime' "

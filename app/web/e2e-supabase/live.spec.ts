@@ -156,6 +156,45 @@ test("real sessions respect child RLS, and browser approval/decline update the p
   expect(check().decisions).toBe(before.decisions + 2);
 });
 
+test("real Realtime carries the privacy-safe Causal Twin, parent-only, with full provenance", async ({ page, request }) => {
+  const url = process.env.SUPABASE_URL!;
+  const anon = process.env.SUPABASE_ANON_KEY!;
+  const headers = (access: string) => ({ apikey: anon, authorization: `Bearer ${access}`, "Accept-Profile": "serene" });
+  const login = async (role: string) => {
+    const user = manifest.accounts[role];
+    const response = await request.post(`${url}/auth/v1/token?grant_type=password`, { headers: { apikey: anon }, data: { email: user.email, password: user.password } });
+    expect(response.ok()).toBe(true);
+    return (await response.json()).access_token as string;
+  };
+  const twinAs = async (access: string) => {
+    const response = await request.get(`${url}/rest/v1/projection_state?child_id=eq.${account.child_id}&projection=eq.causal_twin`, { headers: headers(access) });
+    expect(response.ok()).toBe(true);
+    return (await response.json()) as any[];
+  };
+  // The hosted constraint admits the row, the parent alone reads it, and it carries no private ids.
+  const [row] = await twinAs(await login("parent"));
+  expect(row.state.version).toBe("causal-twin-web/1");
+  expect(JSON.stringify(row.state)).not.toMatch(/\b(chd|act|src)_[0-9a-f]{32}\b|"(child_id|actor_id|source_id|user_id)"/);
+  expect(JSON.stringify(row.state)).not.toContain(account.child_id);
+  expect(await twinAs(await login("other"))).toEqual([]);
+  expect(await twinAs(await login("caregiver"))).toEqual([]);
+
+  const changes = realtimeRows(page);
+  await signIn(page, "parent", "/causal-twin");
+  await expect(page.locator('[data-sync="live"]')).toBeVisible();
+  await expect(page.locator("[data-twin-sequence]")).toHaveAttribute("data-twin-sequence", String(check().sequence));
+  const edge = row.state.edges[0];
+  await page.locator(`section button[data-edge-id="${edge.edge_id}"]:not(.react-flow *)`).click();
+  await expect(page.locator(`[data-provenance-for="${edge.edge_id}"]`)).toHaveAttribute("data-provenance", "full");
+  // A kernel append republishes the twin, delivered by a genuine Supabase frame.
+  const before = check();
+  append(`Synthetic: twin append ${Date.now()}`);
+  await expect(page.locator("[data-twin-sequence]")).toHaveAttribute("data-twin-sequence", String(before.sequence + 1));
+  expect(changes.some((r) => r.projection === "causal_twin" && r.last_sequence === before.sequence + 1)).toBe(true);
+  expect(changes.every((r) => r.child_id === account.child_id)).toBe(true);
+  expect(await page.getByRole("main").innerText()).not.toContain(account.child_id);
+});
+
 test("real user switching, caregiver denial and cross-tab session loss clear the family", async ({ page, context }) => {
   await signIn(page, "other", "/today");
   await expect(page.locator('[data-sync="live"]')).toBeVisible();

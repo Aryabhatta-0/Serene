@@ -1,6 +1,12 @@
-// The Causal Twin as the kernel serializes it: `CausalTwin.model_dump(mode="json")`
-// from serene/causal/model.py (Issue #27). Field names and enums mirror the
-// Pydantic models exactly, so a projection can be handed to the web app as is.
+// The Causal Twin as the surface holds it. Two wire formats are read into it:
+// the kernel's own `CausalTwin.model_dump(mode="json")` (serene/causal/model.py,
+// Issue #27), which the canonical Maya report and the fixtures carry, and the
+// live `causal_twin` projection (web-model.ts). Field names and enums mirror
+// the Pydantic models.
+//
+// The view model holds no child or actor id. `parseCausalTwin` checks the ids
+// the kernel format carries (every edge is the same child's) and drops them,
+// so nothing the surface keeps or renders can show one.
 //
 // The web app never decides what an edge means. `parseCausalTwin` re-checks
 // the kernel's own invariants at the boundary and rejects anything else, so a
@@ -52,8 +58,7 @@ export type ModelRef = {
 };
 
 export type Provenance = {
-  schema_version: 1;
-  created_by: { kind: ActorKind; actor_id: string };
+  created_by: { kind: ActorKind };
   created_at: string;
   method: DerivationMethod;
   model: ModelRef | null;
@@ -63,13 +68,12 @@ export type Provenance = {
   supersedes: string | null;
 };
 
-export type Scope = { child_id: string; contexts: readonly string[] };
+export type Scope = { contexts: readonly string[] };
 export type ValidityWindow = { valid_from: string; review_after: string };
 export type SupportItem = { entity_id: string; kind: SupportKind };
 
 export type CausalEdge = {
   edge_id: string;
-  child_id: string;
   relationship: string;
   cause: string | null;
   effect: string | null;
@@ -90,8 +94,6 @@ export type CausalEdge = {
 };
 
 export type CausalTwin = {
-  twin_version: typeof TWIN_VERSION;
-  child_id: string;
   ledger_head: string;
   edges: readonly CausalEdge[];
 };
@@ -117,7 +119,7 @@ const LEARNING_STATUSES: readonly LearningStatus[] = [
   "STALE",
   "DEPRECATED",
 ];
-const ACTOR_KINDS: readonly ActorKind[] = [
+export const ACTOR_KINDS: readonly ActorKind[] = [
   "PARENT",
   "CAREGIVER",
   "AGENT",
@@ -126,7 +128,7 @@ const ACTOR_KINDS: readonly ActorKind[] = [
   "SYSTEM",
   "MEMORY_COMMITTER",
 ];
-const DERIVATION_METHODS: readonly DerivationMethod[] = [
+export const DERIVATION_METHODS: readonly DerivationMethod[] = [
   "PARENT_REPORT",
   "CAREGIVER_REPORT",
   "BROWSER_ACQUISITION",
@@ -136,7 +138,7 @@ const DERIVATION_METHODS: readonly DerivationMethod[] = [
   "EXPERIMENT_OUTCOME",
   "HUMAN_REVIEW",
 ];
-const VERIFICATION_STATUSES: readonly VerificationStatus[] = [
+export const VERIFICATION_STATUSES: readonly VerificationStatus[] = [
   "UNVERIFIED",
   "VERIFIED",
   "REJECTED",
@@ -153,7 +155,7 @@ const ID_RE = /^([a-z]{3})_[0-9a-f]{32}$/;
 const TAG_RE = /^[a-z][a-z0-9_]{0,63}$/;
 const SHA256_RE = /^[0-9a-f]{64}$/;
 
-type Json = Record<string, unknown>;
+export type Json = Record<string, unknown>;
 
 function fail(path: string, problem: string): never {
   throw new TwinValidationError(`${path}: ${problem}`);
@@ -209,24 +211,13 @@ function timestamp(value: unknown, path: string): string {
 function parseProvenance(value: unknown, path: string): Provenance {
   const p = object(value, path);
   const by = object(p.created_by, `${path}.created_by`);
-  const model = optional(p.model, (m) => {
-    const ref = object(m, `${path}.model`);
-    return {
-      provider: text(ref.provider, `${path}.model.provider`, 64),
-      model_id: text(ref.model_id, `${path}.model.model_id`, 128),
-      prompt_version: text(ref.prompt_version, `${path}.model.prompt_version`, 64),
-      runtime: text(ref.runtime, `${path}.model.runtime`, 64),
-    };
-  });
-  const provenance: Provenance = {
-    schema_version: p.schema_version === 1 ? 1 : fail(`${path}.schema_version`, "expected 1"),
-    created_by: {
-      kind: oneOf(by.kind, ACTOR_KINDS, `${path}.created_by.kind`),
-      actor_id: id(by.actor_id, `${path}.created_by.actor_id`, "act"),
-    },
+  if (p.schema_version !== 1) fail(`${path}.schema_version`, "expected 1");
+  id(by.actor_id, `${path}.created_by.actor_id`, "act"); // checked, never kept
+  return {
+    created_by: { kind: oneOf(by.kind, ACTOR_KINDS, `${path}.created_by.kind`) },
     created_at: timestamp(p.created_at, `${path}.created_at`),
     method: oneOf(p.method, DERIVATION_METHODS, `${path}.method`),
-    model,
+    model: parseModelRef(p.model, `${path}.model`),
     derived_from: ids(p.derived_from ?? [], `${path}.derived_from`, 256),
     source_ids: ids(p.source_ids ?? [], `${path}.source_ids`, 256),
     verification_status: oneOf(
@@ -236,26 +227,33 @@ function parseProvenance(value: unknown, path: string): Provenance {
     ),
     supersedes: optional(p.supersedes, (s) => id(s, `${path}.supersedes`)),
   };
-  // CausalEdge._state_is_consistent: every edge carries lineage provenance.
-  if (provenance.derived_from.length === 0 || provenance.source_ids.length === 0) {
-    fail(path, "an edge requires lineage provenance");
-  }
-  return provenance;
 }
 
-function parseEdge(value: unknown, path: string): CausalEdge {
-  const e = object(value, path);
-  const scope = object(e.scope, `${path}.scope`);
+export function parseModelRef(value: unknown, path: string): ModelRef | null {
+  return optional(value, (m) => {
+    const ref = object(m, path);
+    return {
+      provider: text(ref.provider, `${path}.provider`, 64),
+      model_id: text(ref.model_id, `${path}.model_id`, 128),
+      prompt_version: text(ref.prompt_version, `${path}.prompt_version`, 64),
+      runtime: text(ref.runtime, `${path}.runtime`, 64),
+    };
+  });
+}
+
+export function parseContexts(value: unknown, path: string): string[] {
+  return array(value, path, 16, 1).map((c, i) => tag(c, `${path}[${i}]`));
+}
+
+/** The fields of an edge both wire formats carry under the same names. */
+export function parseEdgeFields(e: Json, path: string) {
   const level = e.epistemic_level;
   if (!Number.isInteger(level) || (level as number) < 0 || (level as number) > 5) {
     fail(`${path}.epistemic_level`, "expected a rung from 0 to 5");
   }
-  const edge: CausalEdge = {
+  return {
     edge_id: id(e.edge_id, `${path}.edge_id`, "hyp"),
-    child_id: id(e.child_id, `${path}.child_id`, "chd"),
     relationship: text(e.relationship, `${path}.relationship`),
-    cause: optional(e.cause, (v) => tag(v, `${path}.cause`)),
-    effect: optional(e.effect, (v) => tag(v, `${path}.effect`)),
     status: oneOf(e.status, RELATIONSHIP_STATUSES, `${path}.status`),
     epistemic_level: level as EpistemicLevel,
     support: array(e.support ?? [], `${path}.support`, 512).map((item, i) => {
@@ -277,12 +275,6 @@ function parseEdge(value: unknown, path: string): CausalEdge {
     ).map((a, i) => text(a, `${path}.alternative_explanations[${i}]`)),
     competing_edges: ids(e.competing_edges ?? [], `${path}.competing_edges`, 32, "hyp"),
     experiments: ids(e.experiments ?? [], `${path}.experiments`, 64, "exp"),
-    scope: {
-      child_id: id(scope.child_id, `${path}.scope.child_id`, "chd"),
-      contexts: array(scope.contexts, `${path}.scope.contexts`, 16, 1).map((c, i) =>
-        tag(c, `${path}.scope.contexts[${i}]`),
-      ),
-    },
     validity: optional(e.validity, (v) => {
       const w = object(v, `${path}.validity`);
       const window = {
@@ -297,13 +289,18 @@ function parseEdge(value: unknown, path: string): CausalEdge {
     learning_status: optional(e.learning_status, (v) =>
       oneOf(v, LEARNING_STATUSES, `${path}.learning_status`),
     ),
-    provenance: parseProvenance(e.provenance, `${path}.provenance`),
     raw_evidence: ids(e.raw_evidence, `${path}.raw_evidence`, 512, "evd", 1),
   };
+}
 
-  // The rest of CausalEdge._state_is_consistent, so an illegal state can never
-  // reach the map: a link is only drawn as tested if the kernel could hold it.
-  if (edge.scope.child_id !== edge.child_id) fail(path, "edge scope must belong to the same child");
+/**
+ * CausalEdge._state_is_consistent, so an illegal state can never reach the
+ * map: a link is only drawn as tested if the kernel could hold it.
+ */
+export function checkEdge(edge: CausalEdge, path: string): CausalEdge {
+  if (edge.provenance.derived_from.length === 0 || edge.provenance.source_ids.length === 0) {
+    fail(`${path}.provenance`, "an edge requires lineage provenance");
+  }
   if (edge.status === "SUPPORTED") {
     if (!edge.support.some((s) => s.kind === "EXPERIMENTAL")) {
       fail(path, "observational support alone cannot make an edge SUPPORTED");
@@ -329,7 +326,41 @@ function parseEdge(value: unknown, path: string): CausalEdge {
   return edge;
 }
 
-/** Validate an untrusted payload as a Causal Twin, or throw TwinValidationError. */
+/** A twin whose every edge id appears once. */
+export function checkTwin(twin: CausalTwin, path: string): CausalTwin {
+  const seen = new Set<string>();
+  for (const [i, edge] of twin.edges.entries()) {
+    if (seen.has(edge.edge_id)) fail(`${path}.edges[${i}]`, "duplicate edge id");
+    seen.add(edge.edge_id);
+  }
+  return twin;
+}
+
+function parseEdge(value: unknown, path: string, childId: string): CausalEdge {
+  const e = object(value, path);
+  const scope = object(e.scope, `${path}.scope`);
+  // The kernel format names the child on every edge and scope: checked, never kept.
+  const edgeChild = id(e.child_id, `${path}.child_id`, "chd");
+  if (id(scope.child_id, `${path}.scope.child_id`, "chd") !== edgeChild) {
+    fail(path, "edge scope must belong to the same child");
+  }
+  if (edgeChild !== childId) fail(path, "edge belongs to another child");
+  const { edge_id, relationship, ...rest } = parseEdgeFields(e, path);
+  return checkEdge(
+    {
+      edge_id,
+      relationship,
+      cause: optional(e.cause, (v) => tag(v, `${path}.cause`)),
+      effect: optional(e.effect, (v) => tag(v, `${path}.effect`)),
+      ...rest,
+      scope: { contexts: parseContexts(scope.contexts, `${path}.scope.contexts`) },
+      provenance: parseProvenance(e.provenance, `${path}.provenance`),
+    },
+    path,
+  );
+}
+
+/** Validate an untrusted payload in the kernel's twin format, or throw TwinValidationError. */
 export function parseCausalTwin(value: unknown): CausalTwin {
   const t = object(value, "twin");
   if (t.twin_version !== TWIN_VERSION) fail("twin.twin_version", `expected ${TWIN_VERSION}`);
@@ -337,14 +368,10 @@ export function parseCausalTwin(value: unknown): CausalTwin {
   if (typeof t.ledger_head !== "string" || !SHA256_RE.test(t.ledger_head)) {
     fail("twin.ledger_head", "expected a sha256 digest");
   }
-  const edges = array(t.edges ?? [], "twin.edges", 1024).map((e, i) => parseEdge(e, `twin.edges[${i}]`));
-  const seen = new Set<string>();
-  for (const [i, edge] of edges.entries()) {
-    if (edge.child_id !== childId) fail(`twin.edges[${i}]`, "edge belongs to another child");
-    if (seen.has(edge.edge_id)) fail(`twin.edges[${i}]`, "duplicate edge id");
-    seen.add(edge.edge_id);
-  }
-  return { twin_version: TWIN_VERSION, child_id: childId, ledger_head: t.ledger_head, edges };
+  const edges = array(t.edges ?? [], "twin.edges", 1024).map((e, i) =>
+    parseEdge(e, `twin.edges[${i}]`, childId),
+  );
+  return checkTwin({ ledger_head: t.ledger_head, edges }, "twin");
 }
 
 /** CausalTwin.variables: every named cause and effect, sorted. */

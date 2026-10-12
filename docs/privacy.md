@@ -53,10 +53,9 @@ publishes only `serene.projection_state`, not the ledger. The
 [web feed](../app/web/lib/projections/supabase.ts) uses a child-filtered snapshot
 and subscription under the signed-in user's RLS, not a browser service key.
 Its optional backend publisher cannot undo a durable ledger append on failure;
-read state can lag and be rebuilt. No page creates the feed yet;
-[Causal Twin](../app/web/lib/causal-twin/source.ts) and
-[Memory](../app/web/lib/memory/source.ts) sources remain UNCONNECTED.
-#75 complete Causal Twin provenance projection remains open. No deployed
+read state can lag and be rebuilt. Signed-in pages create the feed for the
+selected child; the [Causal Twin](../app/web/lib/causal-twin/source.ts) reads
+only its privacy-safe `causal_twin` row. No deployed
 family-data service is established by these tests.
 
 ## 3. Privacy-safe observability (#52, audited by #59)
@@ -137,6 +136,22 @@ real family data. This audit does not certify third-party logging behavior.
   (observation statements, pattern descriptions, hypothesis statements, outcome
   summaries, learning statements), so it is private application data, not
   telemetry. Tests pin these omissions (`tests/test_twin_provenance.py`).
+- The `causal_twin` projection ([serene/causal/web.py](../serene/causal/web.py))
+  is what the web reads of the twin: the #75 view plus each edge's verdict,
+  scope, support and counterevidence ids and the creating actor's kind. It is
+  built instead of publishing the canonical `causal-twin/1` twin, which carries
+  the child id and actor ids. Entity ids (`hyp_`, `evd_`, ...) are opaque handles,
+  as in the other parent projections; variables get `var_` ids derived from
+  their names. The builder refuses a view containing any `chd_`/`act_`/`src_`
+  id or a `child_id`/`actor_id`/`source_id`/`user_id` key, and the web parser
+  refuses the same. RLS leaves it parent-only (caregivers read only
+  `active_learnings`). Raw-evidence nodes never carry raw content: they are
+  named by kind and channel, with the capture time, content digest and checks.
+  Observation summaries are shown to the parent on purpose: they are the
+  observation's own derived statement, which can restate the report it was
+  derived from (the synthetic test family's do, word for word). Like the #75
+  view it is therefore private application data, not telemetry. It holds no
+  Telegram or Supabase user id (`tests/test_causal_twin_projection.py`).
 - Model provenance stores provider/model/prompt-version identifiers, not full
   prompts or private reasoning. This does not mean runtime tasks contain no
   private content: [context retrieval](../serene/investigation/context.py) and

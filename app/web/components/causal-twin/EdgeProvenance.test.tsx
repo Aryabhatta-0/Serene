@@ -220,9 +220,11 @@ describe("the edge provenance panel", () => {
         [edge.validity?.valid_from, edge.validity?.review_after, edge.provenance.created_at].filter(Boolean),
       );
       expect(el).not.toHaveTextContent(/%|confidence|probab|likel|score|strength|certain|https?:|doi/i);
-      // Opaque actor and child ids are not shown.
-      expect(el).not.toHaveTextContent(edge.provenance.created_by.actor_id);
-      expect(el).not.toHaveTextContent(edge.child_id);
+      // Actor and child ids are not shown, nor even kept in the view model.
+      const raw = payload.edges.find((e) => e.edge_id === edge.edge_id)!;
+      expect(el).not.toHaveTextContent(raw.provenance.created_by.actor_id);
+      expect(el).not.toHaveTextContent(raw.child_id);
+      expect(JSON.stringify(edge)).not.toMatch(/\b(chd|act)_[0-9a-f]{32}\b/);
     }
   });
 

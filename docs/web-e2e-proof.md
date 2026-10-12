@@ -61,6 +61,36 @@ The fixture service is a tests-only module, binds loopback only, creates a
 fresh disposable database, and is never imported or routed by the application.
 CI runs this lane inside the existing required Web E2E check.
 
+## Live Causal Twin browser path
+
+Run `npm run test:e2e:twin` in `app/web` (with `SERENE_E2E_SKIP_BUILD=1` to
+reuse the approvals lane's build: same ports, same public env). It runs
+`tests/web_twin_server.py` on loopback: synthetic Auth and PostgREST, and the
+production ledger, `postgres_ledger` publisher, migrations and RLS on a
+disposable database. The parent has two synthetic children, another parent a
+third, and a caregiver holds every caregiver scope on the parent's first child.
+
+`/causal-twin` → signed-in session → selected child → PostgREST snapshot of
+`serene.projection_state` under RLS → Realtime `postgres_changes` (held by the
+test) → `causal_twin` row (`causal-twin-web/1`) → map, list and full
+provenance panel.
+
+The test checks, in one browser session: the other parent reads only their
+child's rows, the caregiver only `active_learnings`, anonymous nothing; no
+published row carries a child, actor or source id; signed out, nothing is
+drawn; live, every link opens its complete provenance (experiments, outcomes,
+counterevidence); a kernel append is not shown until its newer row is
+delivered, then is; closing the socket shows Reconnecting with the last twin
+kept, and the client's own reconnect resnapshots and shows an append that was
+never delivered; switching child removes the first child's links and panel at
+once, and a late first-child row delivered on the second child's channel is
+never drawn; the browser's only REST reads are `projection_state` and
+`child_guardians`, never the ledger; the hash chains verify at the end.
+Session end and the remaining states are covered by the component tests
+(`components/causal-twin/LiveCausalTwin.test.tsx`). Like the approvals lane,
+this is **not** real Supabase Auth/Realtime proof. CI runs it inside the
+existing required Web E2E check.
+
 ## Local validation
 
 These initial counts precede integration with concurrently merged #100. The

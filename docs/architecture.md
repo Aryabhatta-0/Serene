@@ -168,7 +168,8 @@ UPDATE/DELETE/TRUNCATE. Hash verification detects changed historical bytes but
 is not an external notarization against wholesale history replacement. See
 [migrations](../supabase/migrations/), [ledger tests](../tests/test_postgres_ledger.py).
 
-[Five pure read projections](../serene/projections/views.py) rebuild from replay.
+[Pure read projections](../serene/projections/views.py) (the five initial ones and the
+surface views: `investigations`, `experiments`, `causal_twin`) rebuild from replay.
 Projection rows can be replaced/deleted; they cannot authorize a ledger append.
 The `serene` schema has parent/caregiver-scoped read policies,
 synthetic-only eval access and backend-only ledger writes
@@ -192,13 +193,24 @@ resnapshots on reconnect and labels connection state explicitly
 the default application assembly does not wire it into a deployed service.
 
 The web has React Flow rendering and an inspectable provenance panel (#34, #38,
-#39; [PR #74](https://github.com/Sathvikar01/morrow/pull/74)), but its
-[live source is UNCONNECTED](../app/web/lib/causal-twin/source.ts), as is the
-[Memory source](../app/web/lib/memory/source.ts). The build-gated
-[fixture](../app/web/fixtures/synthetic-causal-twin.json) is synthetic.
-The feed implementation exists, but [no page creates it](../app/web/lib/projections/client.ts)
-or connects a signed-in child. Complete backend Causal Twin provenance projection
-(#75) remains open. These UI surfaces and offline Maya HTML/JSON reports do not
+#39; [PR #74](https://github.com/Sathvikar01/morrow/pull/74)) with the complete
+provenance projection of every edge (#75). `/causal-twin` reads the selected
+child's `causal_twin` projection row through the signed-in feed
+([LiveCausalTwin](../app/web/components/causal-twin/LiveCausalTwin.tsx)), like
+Investigations and Experiments. The canonical twin (`causal-twin/1`) carries
+child and actor ids and is pinned by the Maya report, so it is not published;
+the row is a web-only format instead,
+[`causal-twin-web/1`](../serene/causal/web.py): the map's variables (opaque
+`var_` ids), each edge's kernel verdict, scope, support, counterevidence,
+experiments and the creating actor's *kind*, and the #75 provenance view, with
+validators that the two agree and a builder that refuses any child, actor or
+source id. Its time is the ledger head's, like `experiments`, so a review date
+takes effect on the next admitted event. Production hypotheses carry no
+variable names, so live edges are listed rather than drawn between guessed
+endpoints. The build-gated
+[fixtures](../app/web/fixtures/synthetic-causal-twin-web.json) are kernel output.
+The [live Twin browser lane](web-e2e-proof.md) runs against a test kernel with
+real PostgreSQL and RLS; offline Maya HTML/JSON reports and that lane do not
 establish a deployed family database connection.
 
 ## Observability, economics and development provenance
