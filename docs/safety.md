@@ -47,9 +47,13 @@ approval by returning a proposal. Main now includes a typed
 [#37 decision surface](../app/web/components/experiments/DecisionPanel.tsx).
 The channel requires an already authenticated parent principal, exact shown
 digest/class and replay-protected request ID, then reuses ledger admission.
-Session authentication is the unwired transport's responsibility. The shipped
-[Experiments page](../app/web/app/experiments/page.tsx) passes no transport and
-offers no decision; the synthetic fixture is not live parent authorization.
+Session authentication is the transport's responsibility (#84): the kernel's
+[`POST /web/approvals`](../serene/adapters/web/http.py) verifies the Supabase
+session, guardianship and binding before the channel runs, and a RED request
+is refused there and again at admission. The
+[Experiments page](../app/web/app/experiments/page.tsx) offers a decision only
+to a signed-in parent for their chosen child; fixture routes are synthetic and
+are not live parent authorization.
 
 | Binding checked by policy | Effect |
 | --- | --- |

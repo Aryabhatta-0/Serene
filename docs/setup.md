@@ -109,7 +109,9 @@ the hosting environment.
    `WebApprovalChannel` and ledger admission.
 8. **Backfill existing ledgers once** (and after any projection definition
    change, with `--replace` while the kernel is quiet):
-   `uv run python scripts/rebuild_projections.py`. It verifies each child's
+   `uv run python scripts/rebuild_projections.py` (after applying a migration
+   that adds a projection, such as `experiments`, run it so existing children
+   get the new row). It verifies each child's
    hash chain first, refuses a child whose chain does not verify, only reads
    the ledger, and prints counts only.
 
