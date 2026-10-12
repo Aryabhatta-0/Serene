@@ -104,6 +104,48 @@ def test_projection_contains_no_child_actor_or_source_identifier(state: KernelSt
     assert state.child_id in internal and PRIVATE_ID.search(internal)
 
 
+UUID = re.compile(r"\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b", re.I)
+
+
+def test_raw_evidence_is_named_never_quoted(state: KernelState) -> None:
+    """The privacy invariant: raw content never leaves the kernel.
+
+    A raw-evidence node is named by its kind and channel. Report text can
+    appear only as a parent-visible OBSERVATION summary, which is the derived
+    statement the domain holds (docs/privacy.md); nowhere else. A raw item's
+    digest appears only in its own node. No Supabase user id (a UUID) appears.
+    """
+    payload = project(state)["causal_twin"]
+    text = json.dumps(payload)
+    assert not UUID.search(text)
+    nodes = payload["provenance"]["nodes"]
+    raw_nodes = [n for n in nodes if n["entity_id"].startswith("evd_")]
+    assert raw_nodes
+    # Each observation summary is the observation's own derived statement.
+    for node in nodes:
+        if node["kind"] == "OBSERVATION":
+            statement = state.entities[node["entity_id"]].entity.statement
+            assert node["summary"] == statement[:500]
+    elsewhere = json.dumps(
+        {k: v for k, v in payload.items() if k != "provenance"}
+        | {"provenance": {k: v for k, v in payload["provenance"].items() if k != "nodes"}}
+        | {"nodes": [n for n in nodes if n["kind"] != "OBSERVATION"]}
+    )
+    for record in state.entities.values():
+        if record.kind != "evd":
+            continue
+        evidence = record.entity
+        # The digest is shown only as that raw item's own integrity detail (#75).
+        assert text.count(evidence.content_digest) == sum(
+            json.dumps(n).count(evidence.content_digest)
+            for n in raw_nodes
+            if n["entity_id"] == evidence.evidence_id
+        )
+        assert evidence.content not in elsewhere
+    for node in raw_nodes:
+        assert " via " in node["summary"]
+
+
 def test_the_builder_refuses_to_return_an_identifier() -> None:
     child = f"chd_{'1' * 32}"
     assert private_identifiers({"edges": [{"note": child}]}) == [child]
