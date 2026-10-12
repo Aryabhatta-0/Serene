@@ -1,7 +1,8 @@
-"""Prepare/append SYNTHETIC records for the opt-in real Supabase browser proof.
+"""Prepare/append/check SYNTHETIC records for the opt-in real Supabase browser proof.
 
 Requires an already migrated, exposed Serene project and real operator-supplied
-SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY and SUPABASE_DB_URL.
+SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_DB_URL. Preparing Auth users also
+requires the server-only SUPABASE_SERVICE_ROLE_KEY; append/check do not.
 No fallback, migrations, production identity changes, or real children. The
 private test accounts/bindings go only in ignored .demo/web-e2e.json. No secrets
 are printed. Keep the synthetic ledger for evidence; use a disposable local
@@ -170,20 +171,58 @@ def append(question: str) -> None:
     print("Appended and published one synthetic kernel event; hash chain verified.")
 
 
+def check() -> None:
+    """Report real ledger/projection agreement without printing private bindings."""
+    manifest = json.loads(PRIVATE.read_text("utf-8"))
+    if manifest.get("classification") != "SYNTHETIC" or not manifest.get("ready"):
+        raise RuntimeError("a completed synthetic run is required")
+    dsn = os.environ["SUPABASE_DB_URL"]
+    child = manifest["accounts"]["parent"]["child_id"]
+    ledger = postgres_ledger(dsn, LiveFixtureClock())
+    assert ledger.verify_hash_chain(child).ok
+    with psycopg.connect(dsn) as conn:
+        assert conn.execute(
+            "select data_class from serene.children where child_id = %s", (child,)
+        ).fetchone() == ("SYNTHETIC",)
+        head = conn.execute(
+            "select sequence, event_hash from serene.domain_events "
+            "where child_id = %s order by sequence desc limit 1",
+            (child,),
+        ).fetchone()
+        rows = conn.execute(
+            "select last_sequence, last_event_hash from serene.projection_state "
+            "where child_id = %s",
+            (child,),
+        ).fetchall()
+        assert head and rows and all(row == head for row in rows)
+        decisions = conn.execute(
+            "select count(*) from serene.domain_events "
+            "where child_id = %s and event_type in ('APPROVAL_GRANTED', 'APPROVAL_REJECTED')",
+            (child,),
+        ).fetchone()[0]
+    print(json.dumps({"sequence": head[0], "decisions": decisions, "verified": True}))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("prepare", "append"))
+    parser.add_argument("action", choices=("prepare", "append", "check"))
     parser.add_argument("--question", default="Synthetic: live Realtime proof")
     args = parser.parse_args()
     configured = (
         os.environ.get("SUPABASE_URL"),
         os.environ.get("SUPABASE_ANON_KEY"),
-        os.environ.get("SUPABASE_SERVICE_ROLE_KEY"),
         os.environ.get("SUPABASE_DB_URL"),
     )
     if not all(configured):
         raise RuntimeError("real Supabase configuration is required; there is no fallback")
-    prepare() if args.action == "prepare" else append(args.question)
+    if args.action == "prepare":
+        if not os.environ.get("SUPABASE_SERVICE_ROLE_KEY"):
+            raise RuntimeError("preparing Auth users requires the server-only admin key")
+        prepare()
+    elif args.action == "append":
+        append(args.question)
+    else:
+        check()
 
 
 if __name__ == "__main__":

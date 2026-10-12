@@ -40,8 +40,9 @@ outdated information.
   connects to their child's record by signing in and choosing a child (#87):
   Today, Investigations and Experiments then read live projection state, and
   approval decisions go through the authenticated transport (#84). Memory
-  (#99) and the Causal Twin (#75) are not streamed yet and show an honest
-  empty state, as does every surface when nobody is signed in.
+  (#99) and the Causal Twin (#75) stream too; the Twin reads a privacy-safe
+  row with the complete provenance of every link. Every surface shows an honest
+  empty state when nobody is signed in.
 - Certainty is part of the product language: possibility, observed, tested in
   this family's context, and refuted (kept visible, never erased).
 - No API keys, model providers or external services are needed to run the web

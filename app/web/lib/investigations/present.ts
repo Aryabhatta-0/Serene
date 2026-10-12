@@ -152,3 +152,60 @@ export function explainReason(code: string): { code: string; text: string; known
   if (head in REASONS) return { code, text: REASONS[head], known: true };
   return { code, text: "Recorded reason (Serene has no plain description for this code yet).", known: false };
 }
+
+/** The rung a hypothesis's level names, for the epistemic ladder. */
+export const LEVEL_NUMBERS: Record<LevelName, 0 | 1 | 2 | 3 | 4 | 5> = {
+  RAW_EVIDENCE: 0,
+  OBSERVATION: 1,
+  PATTERN: 2,
+  HYPOTHESIS: 3,
+  TESTED_HYPOTHESIS: 4,
+  CONTEXTUAL_LEARNING: 5,
+};
+
+export type InvestigationStage = {
+  key: string;
+  label: string;
+  state: "done" | "current" | "upcoming" | "stopped";
+};
+
+const STAGES: readonly { key: string; label: string; phases: readonly Phase[] }[] = [
+  { key: "understand", label: "Understand", phases: ["UNDERSTANDING", "RETRIEVING_CONTEXT"] },
+  { key: "explain", label: "Form explanations", phases: ["FORMING_HYPOTHESES"] },
+  { key: "gather", label: "Gather evidence", phases: ["NEEDS_EVIDENCE", "ASKING_HUMAN", "RESEARCHING"] },
+  { key: "verify", label: "Check evidence", phases: ["VERIFYING"] },
+  { key: "weigh", label: "Weigh and decide", phases: ["EVALUATING", "NEEDS_APPROVAL"] },
+  { key: "end", label: "Finished", phases: ["COMPLETE"] },
+];
+
+/**
+ * Where an investigation stands, as stages of the kernel's own phases. Only
+ * the phase moves the track. A paused investigation does not record where it
+ * paused, so a stage before it is marked passed only when the record shows it
+ * (explanations formed, evidence asked for, evidence received).
+ */
+export function investigationStages(inv: {
+  phase: Phase;
+  hypotheses: readonly unknown[];
+  evidence_requests: readonly { evidence: readonly unknown[] }[];
+}): InvestigationStage[] {
+  if (inv.phase === "PARKED_UNRESOLVED") {
+    const reached: Record<string, boolean> = {
+      understand: true,
+      explain: inv.hypotheses.length > 0,
+      gather: inv.evidence_requests.length > 0,
+      verify: inv.evidence_requests.some((r) => r.evidence.length > 0),
+      weigh: false,
+    };
+    return [
+      ...STAGES.slice(0, -1).map((s) => ({ key: s.key, label: s.label, state: reached[s.key] ? ("done" as const) : ("upcoming" as const) })),
+      { key: "end", label: "Paused without an answer", state: "stopped" },
+    ];
+  }
+  const at = STAGES.findIndex((s) => s.phases.includes(inv.phase));
+  return STAGES.map((s, i) => ({
+    key: s.key,
+    label: s.label,
+    state: i < at ? "done" : i === at ? "current" : "upcoming",
+  }));
+}

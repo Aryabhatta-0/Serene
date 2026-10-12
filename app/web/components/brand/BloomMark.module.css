@@ -1,32 +1,37 @@
+/* The logo is the hellebore alone, on whatever paper it lies on. */
 .mark {
   position: relative;
   display: block;
   flex: none;
-  width: 2rem;
-  height: 2rem;
-  overflow: hidden;
-  border-radius: 22%;
-  background: #2e3d28;
+  width: 2.25rem;
+  height: 2.25rem;
   container-type: size;
+  /* Pale petals on pale paper: a hairline of shade keeps their edges. */
+  filter: drop-shadow(0 0.5px 0.75px rgb(29 39 24 / 0.45)) drop-shadow(0 2px 4px rgb(46 61 40 / 0.18));
 }
 
 .flower {
-  top: 53%;
+  top: 51%;
   left: 50%;
-  --petal-w: 38cqw;
-  --petal-h: 46cqw;
-  --centre: 15cqw;
+  --petal-w: 44cqw;
+  --petal-h: 53cqw;
+  --centre: 17cqw;
   rotate: 4deg;
 }
 
-/* Entering from the landing page: the flower has just flown in, and the tile
- * darkens in under it. */
-:global(html[data-enter]) .mark {
-  animation: tile-in 450ms var(--ease-out) backwards;
+/* Entering from the landing page: the flower has just flown in, and settles. */
+:global(html[data-enter]) .flower {
+  animation: mark-settle 520ms var(--ease-out) backwards;
 }
 
-@keyframes tile-in {
+@keyframes mark-settle {
   from {
-    background-color: transparent;
+    scale: 1.12;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global(html[data-enter]) .flower {
+    animation: none;
   }
 }

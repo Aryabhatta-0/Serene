@@ -1,5 +1,8 @@
 # Auth, Realtime and approval proof — 12 October 2026
 
+> Historical implementation evidence. The hosted blocker and remaining #87
+> acceptance below are superseded by [the real Supabase runtime proof](real-supabase-proof.md).
+
 The final implementation lane proves the existing `experiments-view/1` contract
 through the production projection publisher and authenticated selected child.
 PR #100 merged during this lane's CI run; its projection, migration, empty-row

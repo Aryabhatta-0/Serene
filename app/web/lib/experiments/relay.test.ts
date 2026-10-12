@@ -29,6 +29,36 @@ async function result(res: Response) {
 }
 
 describe("relayApproval", () => {
+  it("waits for a hosted kernel answer beyond ten seconds, but still bounds an unavailable kernel", async () => {
+    vi.useFakeTimers();
+    vi.spyOn(AbortSignal, "timeout").mockImplementation((ms) => {
+      const controller = new AbortController();
+      setTimeout(() => controller.abort(), ms);
+      return controller.signal;
+    });
+    const send: typeof fetch = async (_url, init) => new Promise((resolve, reject) => {
+      const timer = setTimeout(() => resolve(new Response(JSON.stringify(ANSWER))), 20_000);
+      init?.signal?.addEventListener("abort", () => {
+        clearTimeout(timer);
+        reject(new Error("timeout"));
+      }, { once: true });
+    });
+    try {
+      const pending = relayApproval(request(), ENV, send);
+      await vi.advanceTimersByTimeAsync(20_000);
+      expect(await result(await pending)).toEqual([200, ANSWER]);
+      const unavailable: typeof fetch = async (_url, init) => new Promise((_resolve, reject) => {
+        init?.signal?.addEventListener("abort", () => reject(new Error("timeout")), { once: true });
+      });
+      const down = relayApproval(request(), ENV, unavailable);
+      await vi.advanceTimersByTimeAsync(60_000);
+      expect(await result(await down)).toEqual([502, { error: "KERNEL_UNAVAILABLE" }]);
+    } finally {
+      vi.restoreAllMocks();
+      vi.useRealTimers();
+    }
+  });
+
   it("forwards a same-origin request with the caller's own token, and returns the kernel's answer", async () => {
     const send = kernel(200, { ...ANSWER, extra: "dropped" });
     expect(await result(await relayApproval(request(), ENV, send))).toEqual([200, ANSWER]);

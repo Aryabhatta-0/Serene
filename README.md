@@ -53,7 +53,7 @@ experiments, promotion, Dream, Git memory, Causal Twin and Supabase projections.
 The web has Twin/Memory review views, an Experiments/Approval surface and the Realtime projection
 transport (#33). Today, Investigations, Experiments and the Causal Twin connect after Supabase sign-in
 and child selection; the Twin reads a privacy-safe `causal_twin` projection with the complete
-provenance of every link (#75). Memory still renders unconnected.
+provenance of every link (#75), and Memory reads its live projections (#99).
 Current investigation sufficiency can also mistake an empty/filtered plan for
 completion; [the architecture records that limitation](docs/architecture.md#telegram-hermes-and-investigation).
 Web approval decisions have an authenticated transport (#84): the same-origin `/api/approvals`

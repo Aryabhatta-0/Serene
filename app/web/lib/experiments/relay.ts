@@ -6,7 +6,9 @@
 // every approval rule. Only the kernel's known answer shapes are passed back.
 
 export const MAX_BODY_BYTES = 4096;
-const KERNEL_TIMEOUT_MS = 10_000;
+// Hosted Auth verification, ledger admission and projection publication can
+// outlast ten seconds. Keep a bounded wait for their authoritative answer.
+const KERNEL_TIMEOUT_MS = 60_000;
 const PASSED_THROUGH = new Set([200, 400, 401, 403, 409, 413, 415, 429]);
 
 type Env = Record<string, string | undefined>;

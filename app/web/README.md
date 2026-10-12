@@ -5,8 +5,8 @@ bloom, five primary surfaces (Today, Memory, Investigations, Experiments,
 Causal Twin), responsive navigation, Twin/Memory review views, an Experiments/Approval surface, and
 shared layout primitives. The #33 Realtime projection transport is
 implemented, and Today, Investigations and Experiments subscribe to it once a parent signs
-in and chooses a child. Memory and the Causal Twin still
-render unconnected; full Twin provenance projection (#75) is unfinished.
+in and chooses a child, as do Memory (#99) and the Causal Twin, which reads the
+privacy-safe `causal_twin` projection with the complete provenance of every link (#75).
 Without `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` every
 page renders no family data; fixture routes are synthetic previews.
 
@@ -50,16 +50,26 @@ these commands.
 - `lib/surfaces.ts`: the five surfaces; the single source of navigation.
 - `components/landing/`: `Landing`, the page at `/` and the only place the
   bloom grows. Entering clears the plate and flies the bloom's main flower
-  into the logo's tile; the top bar, held empty on `/`, then fills in and
+  into the logo's place; the top bar, held empty on `/`, then fills in and
   Today opens.
 - `components/shell/`: top bar with inline links (at least 60rem) and a menu
   sheet below that.
-- `components/layout/`: `Page` (the plate every surface opens on),
-  `EmptyState`, `SurfaceLoading`.
+- `components/layout/`: `Page` (the title block every surface opens on:
+  name, question, lead and record legend), `EmptyState`, `SurfaceLoading`.
+- `components/system/`: the shared pieces every surface draws the same way:
+  `StageTrack` (where something is in its life, in the certainty notation),
+  `LevelLadder` (the epistemic ladder, never a score), `SafetyBadge` (GREEN,
+  AMBER, RED as name, mark and word), `Reasons`, `Pairs`, `Onward` and the
+  `Icon` set.
+- `components/today/`: `TodayBrief`, Today's composition: the current
+  investigation leads; what needs the parent, what Serene holds
+  (`current_child_state`) and what it has learned (`active_learnings`)
+  recede beside it, each read from the live projections and left out if it
+  does not pass its checks (`lib/today/model.ts`).
 - `components/brand/`: `Hellebore` (one flower: five copies of the
   photographic petal, each pivoting at its base), the bloom (`BloomArt`: two
   hellebores, the bud, stems and frosted glass), the logo (`BloomMark`: the
-  hellebore on a deep-olive tile) and `BloomDirector`, which plays the bloom
+  hellebore alone, on no ground of its own) and `BloomDirector`, which plays the bloom
   on each fresh load of the landing page and ends it on any press, key or
   scroll.
 - `components/notation/`: `LineMark` and `LineKey`, the certainty line
@@ -71,8 +81,9 @@ these commands.
   (`categories.ts`), the React Flow graph and its deterministic layout
   (`graph.ts`), the provenance panel's reading of an edge (`provenance.ts`:
   ids typed by prefix, support against counterevidence, lineage and
-  supersession followed by id), and where the twin comes from (`source.ts`:
-  UNCONNECTED until the complete Twin provenance projection exists, #75).
+  supersession followed by id), where the twin comes from (`source.ts`:
+  UNCONNECTED when signed out, else the `causal_twin` row) and the live
+  row's web-only format (`web-model.ts`, `causal-twin-web/1`).
 - `components/causal-twin/`: `CausalTwinSurface` (what pages render: the
   view with the provenance panel wired in), `CausalTwinView` (unconnected,
   loading, error, empty and map states), the map (`TwinCanvas`,

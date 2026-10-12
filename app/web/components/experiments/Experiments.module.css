@@ -1,6 +1,9 @@
-/* The Experiments surface: what needs the parent first, then what is running,
-   what was not put to them, and what has finished. Every state is written out;
-   line style and rule weight, never colour alone, tell them apart. */
+/* Experiments: a controlled space for deciding what to try. What needs the
+ * parent comes first. Each experiment reads top to bottom: its safety class
+ * and stage, the change itself, where it is in its life, then the facts and
+ * the decision side by side. Safety is said three ways (its name, its mark,
+ * its hue); stage is drawn in the certainty notation. */
+
 .experiments {
   display: flex;
   flex-direction: column;
@@ -14,7 +17,17 @@
 }
 
 .groupTitle {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--rule-strong);
   font-size: var(--text-xl);
+}
+
+.group[data-empty] .groupTitle {
+  font-size: var(--text-lg);
+  color: var(--ink-muted);
 }
 
 .count {
@@ -33,47 +46,87 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  max-width: 40rem;
   padding: var(--space-6) 0;
+  color: var(--rule-strong);
 }
 
 .empty,
 .aside {
   font-size: var(--text-sm);
+  line-height: var(--leading-snug);
   color: var(--ink-muted);
 }
 
+/* One experiment */
+
 .card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+  container-type: inline-size;
+  overflow: hidden;
   min-width: 0;
-  padding: var(--space-5);
-  border: 1px solid var(--rule-strong);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--ground-lifted);
+  scroll-margin-top: calc(var(--topbar-height) + var(--space-4));
+}
+
+/* Waiting for the parent: drawn in ink, lifted off the sheet. */
+.card[data-phase="AWAITING_APPROVAL"] {
+  border-color: var(--ink);
+  box-shadow: var(--lift-strong);
+}
+
+.card:target {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+.card[data-phase="COMPLETED"],
+.card[data-phase="ABANDONED"],
+.card[data-phase="PARKED_UNRESOLVED"] {
   background: var(--ground-raised);
 }
 
-/* Waiting for the parent: dashed, like anything not yet decided. */
-.card[data-phase="AWAITING_APPROVAL"] {
-  border-style: dashed;
-  border-color: var(--ink);
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-5) var(--space-5);
+  border-bottom: 1px solid var(--rule);
 }
 
-/* RED is ruled heavily at the side as well as named. */
-.card[data-safety="RED"] {
-  border-left: 4px double var(--ink);
+.card[data-safety="AMBER"] .head {
+  background: linear-gradient(180deg, rgb(240 227 200 / 0.55), transparent 85%);
+}
+
+/* RED: closed, hatched like a struck line, and named before anything else. */
+.card[data-safety="RED"] .head {
+  background:
+    repeating-linear-gradient(135deg, rgb(142 47 34 / 0.07) 0 2px, transparent 2px 10px),
+    linear-gradient(180deg, rgb(241 220 212 / 0.85), rgb(241 220 212 / 0.25));
+}
+
+.card[data-safety="RED"] .title {
+  color: var(--ink-muted);
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
 }
 
 .state {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-1) var(--space-4);
+  gap: var(--space-1) var(--space-3);
   font-family: var(--font-display);
-  font-size: var(--text-xs);
+  font-size: var(--text-2xs);
   font-weight: 600;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
-  color: var(--ink-muted);
 }
 
 .stateMark {
@@ -81,20 +134,12 @@
   width: 2rem;
 }
 
-.safety {
-  padding: 0 var(--space-2);
-  border: 1px solid var(--rule-strong);
-  border-radius: 999px;
-  color: var(--ink);
-}
-
-.card[data-safety="RED"] .safety {
-  border: 2px solid var(--ink);
-}
-
 .title {
-  font-size: var(--text-lg);
+  max-width: 40ch;
+  font-size: clamp(var(--text-lg), 1.05rem + 0.8vw, var(--text-2xl));
   line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
 }
 
 .phaseText {
@@ -102,28 +147,109 @@
   color: var(--ink-muted);
 }
 
-.pairs {
+.track {
+  margin-top: var(--space-3);
+}
+
+/* The facts beside the decision. */
+.body {
   display: grid;
-  grid-template-columns: minmax(9rem, max-content) 1fr;
-  gap: var(--space-2) var(--space-4);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.spec {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+  padding: var(--space-5);
+}
+
+.approval {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-5);
+  border-top: 1px solid var(--rule);
+  background: var(--ground);
+}
+
+/* Deciding comes first when stacked: it is what this card is for. */
+.body[data-deciding] .approval {
+  order: -1;
+  border-top: 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+@container (min-width: 46rem) {
+  .body {
+    grid-template-columns: minmax(0, 1fr) minmax(17rem, 21rem);
+  }
+
+  /* The record reads in two columns beside the facts: risk and outcomes,
+   * then the Promotion Gate and the timeline. */
+  .spec {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-6);
+    align-content: start;
+  }
+
+  .spec > :not(.block) {
+    grid-column: 1 / -1;
+  }
+
+  .approval,
+  .body[data-deciding] .approval {
+    order: 0;
+    border-top: 0;
+    border-bottom: 0;
+    border-left: 1px solid var(--rule);
+  }
+}
+
+/* The four facts a parent weighs first. */
+.cells {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: var(--space-2);
   margin: 0;
 }
 
-.pairs > div {
-  display: contents;
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--ground);
 }
 
-.pairs dt {
+.cell dt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   font-size: var(--text-xs);
   font-weight: 600;
   color: var(--ink-muted);
-  padding-top: 0.15em;
 }
 
-.pairs dd {
+.cell dd {
   margin: 0;
-  min-width: 0;
-  overflow-wrap: anywhere;
+  font-weight: 600;
+  line-height: var(--leading-snug);
+}
+
+/* Cannot be undone: said in ink, outlined. */
+.cell[data-strong] {
+  outline: 1.5px solid var(--ink);
+  outline-offset: -1.5px;
+}
+
+.cellIcon {
+  width: 0.875rem;
+  height: 0.875rem;
 }
 
 .block {
@@ -135,59 +261,23 @@
 }
 
 .blockTitle {
-  font-size: var(--text-md);
+  font-family: var(--font-display);
+  font-size: var(--text-2xs);
   font-weight: 600;
-  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
 }
 
 .subhead {
   margin-top: var(--space-2);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  color: var(--ink-muted);
-}
-
-.reasons {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  list-style: none;
-}
-
-.reason {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding-left: var(--space-3);
-  border-left: 2px solid var(--ink);
-}
-
-.reason[data-known="false"] {
-  border-left-style: dotted;
-}
-
-.refId {
-  overflow-wrap: anywhere;
-  font-size: var(--text-xs);
-  color: var(--ink-faint);
-}
-
-.timeline {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding-left: var(--space-4);
-  border-left: 1px solid var(--ink);
-  list-style: none;
-}
-
-.eventTerm {
+  font-size: var(--text-sm);
   font-weight: 600;
 }
 
 .outcomes {
   display: flex;
   flex-direction: column;
+  gap: var(--space-3);
   list-style: none;
 }
 
@@ -195,36 +285,153 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  padding: var(--space-2) 0;
-}
-
-.outcome + .outcome {
-  border-top: 1px dotted var(--rule-strong);
 }
 
 .outcomeResult {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   font-weight: 600;
 }
 
-.outcome[data-result="CONTRADICTS"] {
-  padding-left: var(--space-3);
-  border-left: 2px solid var(--ink);
+.outcomeMark {
+  flex: none;
+  width: 1.75rem;
 }
 
-/* The decision: a paper strip with the actions, set apart by a full rule. */
+.outcome[data-result="CONTRADICTS"] .outcomeResult {
+  color: var(--ink-muted);
+}
+
+/* The Promotion Gate's result. */
+.gate {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-weight: 600;
+}
+
+.gateMark {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+}
+
+.gate[data-promotion="granted"] .gateMark {
+  background: var(--ink);
+  color: var(--ground);
+}
+
+.gate[data-promotion="denied"] .gateMark {
+  border-style: dashed;
+}
+
+.timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  list-style: none;
+  font-size: var(--text-sm);
+}
+
+.event {
+  white-space: nowrap;
+}
+
+.eventTerm {
+  font-weight: 600;
+}
+
+/* The decision */
+
 .decision {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  margin-top: var(--space-2);
   padding: var(--space-4);
   border: 1px solid var(--ink);
-  background: var(--ground);
+  border-radius: var(--radius-md);
+  background: var(--ground-lifted);
+}
+
+.decision[data-decision="open"] {
+  box-shadow: var(--lift);
+}
+
+.decision[data-decision="open"][data-safety="AMBER"] {
+  border-style: dashed;
+  border-color: var(--safe-amber);
+  background: linear-gradient(180deg, var(--safe-amber-tint), var(--ground-lifted) 70%);
+}
+
+/* The confirm step: the card holds still, the question is plain. */
+.decision[data-step="confirming"] {
+  outline: 3px solid rgb(169 184 135 / 0.55);
+  outline-offset: 2px;
+}
+
+.decision[data-decision="not-approvable"] {
+  border: 2px solid var(--safe-red);
+  background:
+    repeating-linear-gradient(135deg, rgb(142 47 34 / 0.08) 0 2px, transparent 2px 10px),
+    var(--safe-red-tint);
+}
+
+.decision[data-decision="not-approvable"] .decisionTitle {
+  color: var(--safe-red);
+}
+
+.decision[data-decision="closed"],
+.decision[data-decision="unconnected"] {
+  border-style: dotted;
+  border-color: var(--ink-faint);
+  color: var(--ink-muted);
 }
 
 .decisionTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
   font-size: var(--text-md);
   font-weight: 600;
+  color: var(--ink);
+}
+
+.decisionIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.decisionNote {
+  font-size: var(--text-sm);
+}
+
+.recap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  background: var(--ground);
+  list-style: none;
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+}
+
+.recap li {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  gap: var(--space-2);
+}
+
+.recapIcon {
+  margin-top: 0.15rem;
+  color: var(--ink-muted);
 }
 
 .actions {
@@ -233,16 +440,27 @@
   gap: var(--space-3);
 }
 
-.decisionStatus:empty {
-  display: none;
+.decisionStatus {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.decisionStatus [data-result="recorded"] {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  background: var(--ground);
+  box-shadow: inset 0 0 0 1px var(--rule-strong);
 }
 
 @media (max-width: 40rem) {
-  .card {
+  .head,
+  .spec,
+  .approval {
     padding: var(--space-4);
   }
 
-  .pairs {
-    grid-template-columns: 1fr;
+  .card {
+    border-radius: var(--radius-md);
   }
 }

@@ -69,6 +69,8 @@ type TwinCanvasProps = {
   onResize: (size: Size) => void;
   /** False until the canvas is measured: the map is drawn once, in its final shape. */
   measured: boolean;
+  /** A link is selected and drawn: everything else recedes. */
+  focused?: boolean;
 };
 
 // Above the map rather than over it, so the controls never cover a link.
@@ -160,6 +162,7 @@ export function TwinCanvas({
   reveal,
   onResize,
   measured,
+  focused = false,
 }: TwinCanvasProps) {
   const canvas = useRef<HTMLDivElement>(null);
   const drawn = useMemo(() => [extentNode(bounds), ...nodes], [bounds, nodes]);
@@ -181,6 +184,7 @@ export function TwinCanvas({
           role="group"
           aria-label={label}
           data-direction={direction}
+          data-focus={focused || undefined}
         >
           {measured ? (
             <SelectLinkContext.Provider value={onSelect}>

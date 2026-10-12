@@ -207,8 +207,7 @@ validators that the two agree and a builder that refuses any child, actor or
 source id. Its time is the ledger head's, like `experiments`, so a review date
 takes effect on the next admitted event. Production hypotheses carry no
 variable names, so live edges are listed rather than drawn between guessed
-endpoints. The [Memory source](../app/web/lib/memory/source.ts) is still
-unconnected. The build-gated
+endpoints. The build-gated
 [fixtures](../app/web/fixtures/synthetic-causal-twin-web.json) are kernel output.
 The [live Twin browser lane](web-e2e-proof.md) runs against a test kernel with
 real PostgreSQL and RLS; offline Maya HTML/JSON reports and that lane do not

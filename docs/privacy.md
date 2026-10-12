@@ -53,10 +53,9 @@ publishes only `serene.projection_state`, not the ledger. The
 [web feed](../app/web/lib/projections/supabase.ts) uses a child-filtered snapshot
 and subscription under the signed-in user's RLS, not a browser service key.
 Its optional backend publisher cannot undo a durable ledger append on failure;
-read state can lag and be rebuilt. No page creates the feed yet;
-[Causal Twin](../app/web/lib/causal-twin/source.ts) and
-[Memory](../app/web/lib/memory/source.ts) sources remain UNCONNECTED.
-#75 complete Causal Twin provenance projection remains open. No deployed
+read state can lag and be rebuilt. Signed-in pages create the feed for the
+selected child; the [Causal Twin](../app/web/lib/causal-twin/source.ts) reads
+only its privacy-safe `causal_twin` row. No deployed
 family-data service is established by these tests.
 
 ## 3. Privacy-safe observability (#52, audited by #59)

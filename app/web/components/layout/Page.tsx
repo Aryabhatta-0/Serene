@@ -1,55 +1,44 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { RecordStatus } from "@/components/shell/RecordStatus";
 import styles from "./Page.module.css";
 
 type PageProps = {
   title: string;
+  /** The one question this surface answers, in the parent's words. */
+  question?: string;
   lead: string;
-  /** "wide" gives the sheet room for a map; text-only surfaces stay at reading width. */
-  width?: "reading" | "wide";
-  /** The record status. Surfaces on the signed-in family record pass their own (#87). */
+  /**
+   * "standard": a working surface. "reading": a single column of text (sign
+   * in, errors). "wide": room for a map beside its panel.
+   */
+  width?: "standard" | "reading" | "wide";
+  /** The record status. Surfaces on the signed-in family record pass their own (#87); null shows none. */
   status?: ReactNode;
   children?: ReactNode;
 };
 
-// How many capitals the title has to fit on one line. Long multi-word titles
-// are allowed to break onto two, so they are measured by half their length.
-function titleMeasure(title: string): number {
-  if (title.length <= 14) return title.length;
-  const longestWord = Math.max(...title.split(/\s+/).map((word) => word.length));
-  return Math.max(longestWord, Math.ceil(title.length / 2));
-}
-
-// Every surface opens on the same plate: its title set in wide capitals on
-// the ruled sheet, what it is for in the left margin, Serene's promise in the
-// right, and the record status where a survey sheet keeps its legend. The
-// bloom belongs to the landing page alone.
-export function Page({ title, lead, width = "reading", status, children }: PageProps) {
+// Every surface opens the same way: its name in wide capitals on the ruled
+// sheet, the question it answers, what it holds, and, where a survey sheet
+// keeps its legend, which family record is open. Then straight into the work:
+// the header is a line of context, not a cover page. The bloom belongs to the
+// landing page alone.
+export function Page({ title, question, lead, width = "standard", status, children }: PageProps) {
   return (
-    <div className={styles.page}>
-      <header
-        className={styles.hero}
-        style={{ "--title-measure": titleMeasure(title) } as CSSProperties}
-      >
-        <h1 className={styles.title}>{title}</h1>
-        <p className={styles.lead}>{lead}</p>
-        <p className={styles.tagline}>
-          What happened, what Serene remembers and what it believes are kept
-          apart.
-        </p>
-        <div className={styles.status}>
-          {status ?? <RecordStatus />}
+    <div className={styles.page} data-width={width}>
+      <header className={styles.head}>
+        <div className={styles.heading}>
+          <h1 className={styles.title}>{title}</h1>
+          {question ? <p className={styles.question}>{question}</p> : null}
+          <p className={styles.lead}>{lead}</p>
         </div>
-        <a href="#surface-body" className={styles.onward}>
-          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-            <path d="M8 3v10M4 9l4 4 4-4" />
-          </svg>
-          <span className="visually-hidden">Read on</span>
-        </a>
+        {status === null ? null : <div className={styles.status}>{status ?? <RecordStatus />}</div>}
       </header>
-      <div id="surface-body" className={styles.body} data-width={width}>
+      <div id="surface-body" className={styles.body}>
         {children}
       </div>
+      <p className={styles.colophon}>
+        What happened, what Serene remembers and what it believes are kept apart.
+      </p>
     </div>
   );
 }

@@ -14,10 +14,14 @@
 
 .canvas {
   position: relative;
-  height: min(34rem, 70svh);
+  height: min(38rem, 72svh);
   min-height: 22rem;
+  overflow: hidden;
   border: 1px solid var(--rule-strong);
-  background: var(--ground-raised);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(ellipse at 50% 45%, rgb(232 235 223 / 0.9), transparent 70%),
+    var(--ground-raised);
   /* The cut-out core of a hollow (replaced) line matches the sheet. */
   --hollow-core: var(--ground-raised);
 }
@@ -47,8 +51,39 @@
   height: 100%;
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--ink);
-  background: var(--ground);
+  border-radius: var(--radius-md);
+  background: var(--ground-lifted);
+  color: var(--ink);
   text-align: center;
+  box-shadow: 0 1px 0 rgb(29 39 24 / 0.08);
+  transition: opacity var(--dur-base) ease, background-color var(--dur-base) ease, color var(--dur-base) ease;
+}
+
+/* A link is selected: its two ends are drawn in ink, the rest recede. */
+.node[data-focus="related"] {
+  background: var(--ink);
+  color: var(--ground);
+}
+
+.node[data-focus="dim"] {
+  opacity: 0.42;
+}
+
+.canvas[data-focus] :global(.react-flow__edge) {
+  transition: opacity var(--dur-base) ease;
+}
+
+.canvas[data-focus] g[data-edge-id]:not([data-selected]) {
+  opacity: 0.22;
+}
+
+.canvas[data-focus] .label[aria-pressed="false"] {
+  opacity: 0.5;
+}
+
+.canvas[data-focus] .label[aria-pressed="false"]:hover,
+.canvas[data-focus] .label[aria-pressed="false"]:focus-visible {
+  opacity: 1;
 }
 
 .nodeLabel {
@@ -59,7 +94,7 @@
   font-size: var(--text-sm);
   font-weight: 600;
   line-height: var(--leading-tight);
-  color: var(--ink);
+  color: inherit;
 }
 
 .extent {
@@ -108,13 +143,14 @@
   max-width: 11rem;
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--rule-strong);
-  background: var(--ground-raised);
+  border-radius: var(--radius);
+  background: var(--ground-lifted);
   color: var(--ink);
   font: inherit;
   text-align: start;
   pointer-events: all;
   cursor: pointer;
-  transition: border-color var(--dur-fast) ease, background-color var(--dur-fast) ease;
+  transition: border-color var(--dur-fast) ease, background-color var(--dur-fast) ease, opacity var(--dur-base) ease;
 }
 
 @media (hover: hover) {
@@ -192,8 +228,10 @@
 .toolbar {
   display: flex;
   align-self: flex-end;
+  overflow: hidden;
   border: 1px solid var(--ink);
-  background: var(--ground);
+  border-radius: 999px;
+  background: var(--ground-lifted);
 }
 
 .control {
