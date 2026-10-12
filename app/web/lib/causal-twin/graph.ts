@@ -35,7 +35,13 @@ const LABEL_SPOTS: Record<Direction, Array<{ bow: number; t: number }>> = {
   ),
 };
 
-export type VariableNodeData = { tag: string; label: string; direction: Direction };
+export type VariableNodeData = {
+  tag: string;
+  label: string;
+  direction: Direction;
+  /** With a link selected: whether this variable is one of its two ends. */
+  focus?: "related" | "dim";
+};
 
 export type BeliefEdgeData = {
   edge: CausalEdge;

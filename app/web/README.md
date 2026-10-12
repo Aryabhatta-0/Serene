@@ -50,16 +50,26 @@ these commands.
 - `lib/surfaces.ts`: the five surfaces; the single source of navigation.
 - `components/landing/`: `Landing`, the page at `/` and the only place the
   bloom grows. Entering clears the plate and flies the bloom's main flower
-  into the logo's tile; the top bar, held empty on `/`, then fills in and
+  into the logo's place; the top bar, held empty on `/`, then fills in and
   Today opens.
 - `components/shell/`: top bar with inline links (at least 60rem) and a menu
   sheet below that.
-- `components/layout/`: `Page` (the plate every surface opens on),
-  `EmptyState`, `SurfaceLoading`.
+- `components/layout/`: `Page` (the title block every surface opens on:
+  name, question, lead and record legend), `EmptyState`, `SurfaceLoading`.
+- `components/system/`: the shared pieces every surface draws the same way:
+  `StageTrack` (where something is in its life, in the certainty notation),
+  `LevelLadder` (the epistemic ladder, never a score), `SafetyBadge` (GREEN,
+  AMBER, RED as name, mark and word), `Reasons`, `Pairs`, `Onward` and the
+  `Icon` set.
+- `components/today/`: `TodayBrief`, Today's composition: the current
+  investigation leads; what needs the parent, what Serene holds
+  (`current_child_state`) and what it has learned (`active_learnings`)
+  recede beside it, each read from the live projections and left out if it
+  does not pass its checks (`lib/today/model.ts`).
 - `components/brand/`: `Hellebore` (one flower: five copies of the
   photographic petal, each pivoting at its base), the bloom (`BloomArt`: two
   hellebores, the bud, stems and frosted glass), the logo (`BloomMark`: the
-  hellebore on a deep-olive tile) and `BloomDirector`, which plays the bloom
+  hellebore alone, on no ground of its own) and `BloomDirector`, which plays the bloom
   on each fresh load of the landing page and ends it on any press, key or
   scroll.
 - `components/notation/`: `LineMark` and `LineKey`, the certainty line

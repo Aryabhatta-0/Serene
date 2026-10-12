@@ -4,7 +4,7 @@
 //   app/icon.png                   192px icon (browsers and Android)
 //   app/apple-icon.png             180px home-screen icon (full square)
 //   app/favicon.ico                16px and 32px, for clients that ignore PNG icons
-//   public/brand/serene-mark.png   512px logo tile
+//   public/brand/serene-mark.png   512px logo
 //   public/brand/serene-bloom.jpg  the landing bloom on the ruled sheet
 //
 // Usage: npm run build && npm run start, then in another shell:
@@ -28,14 +28,16 @@ async function open(path, viewport, deviceScaleFactor) {
   return page;
 }
 
-// The logo tile, alone on a transparent page, at `size` pixels square.
-// `square` drops the rounded corners (iOS rounds them itself).
+// The logo, alone on a transparent page, at `size` pixels square.
+// `square` lays it on the paper (iOS rounds the corners itself).
 async function renderMark(size, square) {
   const page = await open("/today", { width: 64, height: 64 }, size / 32);
   await page.evaluate((square) => {
     const mark = document.querySelector("[data-brand-mark]");
     document.body.replaceChildren(mark);
-    mark.style.cssText = `position:fixed;inset:0 auto auto 0;${square ? "border-radius:0" : ""}`;
+    // The logo is the flower alone. Only the home-screen icon (a full square
+    // that iOS would otherwise fill with black) lies on the warm paper.
+    mark.style.cssText = `position:fixed;inset:0 auto auto 0;width:32px;height:32px;${square ? "background:#e0dfd8" : ""}`;
     const style = document.createElement("style");
     style.textContent = "html,body{background:transparent!important}body::before{display:none!important}";
     document.head.append(style);

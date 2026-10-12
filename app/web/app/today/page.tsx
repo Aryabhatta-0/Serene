@@ -29,6 +29,7 @@ export default function TodayPage() {
   return (
     <Page
       title="Today"
+      question="What matters now?"
       lead="What Serene is working on, what it doesn’t know yet, and what it would do next, each with how sure it is."
       status={<RecordControl next="/today" />}
     >
@@ -41,8 +42,8 @@ export default function TodayPage() {
           <EmptyState title="Nothing to review today">
             <p>
               No family record is connected, so there is nothing to report. When
-              there is, each item will show the evidence behind it and how firmly
-              it is held.
+              there is, Today leads with the one question Serene is working on and
+              what it will do next, with anything that needs you beside it.
             </p>
           </EmptyState>
         }

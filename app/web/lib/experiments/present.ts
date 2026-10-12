@@ -150,3 +150,66 @@ export const GROUPS: readonly { title: string; phases: readonly ExperimentPhase[
   },
   { title: "Finished", phases: ["COMPLETED", "ABANDONED", "PARKED_UNRESOLVED"], empty: "Nothing has finished yet." },
 ];
+
+export type LifecycleStep = { key: string; label: string; state: "done" | "current" | "upcoming" | "stopped" };
+
+/**
+ * Where an experiment is in its life, drawn only from the phase the kernel
+ * projected (and, for a stopped one, whether it had started). A decision sent
+ * from this page moves nothing here until Serene's record does.
+ */
+export function lifecycle(e: {
+  phase: ExperimentPhase;
+  started_at: string | null;
+  promotion: unknown | null;
+}): LifecycleStep[] {
+  const names = ["Proposed", "Safety review", "Your approval", "Running", "Outcome", "Promotion decision"];
+  const labels = [...names];
+  let at = 0;
+  let stopped = false;
+  switch (e.phase) {
+    case "PROPOSED":
+      at = 0;
+      break;
+    case "CLASSIFIED":
+      at = 1;
+      break;
+    case "BLOCKED":
+      at = 1;
+      stopped = true;
+      labels[1] = "Blocked at safety review";
+      break;
+    case "AWAITING_APPROVAL":
+      at = 2;
+      break;
+    case "APPROVED":
+      at = 3;
+      labels[3] = "Approved, not started";
+      break;
+    case "WAITING_FOR_OUTCOME":
+      at = 3;
+      break;
+    case "OUTCOME_OVERDUE":
+      at = 4;
+      labels[4] = "Outcome overdue";
+      break;
+    case "COMPLETED":
+      at = e.promotion ? 6 : 5;
+      break;
+    case "ABANDONED":
+      at = e.started_at ? 3 : 2;
+      stopped = true;
+      labels[at] = e.started_at ? "Stopped while running" : "Stopped before it started";
+      break;
+    case "PARKED_UNRESOLVED":
+      at = 2;
+      stopped = true;
+      labels[2] = "Expired without a decision";
+      break;
+  }
+  return labels.map((label, i) => ({
+    key: names[i],
+    label,
+    state: i < at ? "done" : i === at ? (stopped ? "stopped" : "current") : "upcoming",
+  }));
+}

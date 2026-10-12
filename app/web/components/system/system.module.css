@@ -1,0 +1,217 @@
+/* Shared pieces of the Serene system: icons, the epistemic ladder, the
+ * safety badge, reasons and term/value pairs. Every surface draws these the
+ * same way, so a state reads the same wherever it appears. */
+
+.icon {
+  display: block;
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The epistemic ladder */
+
+.ladder {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.rungs {
+  display: inline-flex;
+  flex: none;
+  align-items: flex-end;
+  gap: 3px;
+  height: 1rem;
+}
+
+/* Each rung a little taller than the one below: a ladder you climb. */
+.rung {
+  width: 5px;
+  border-radius: 2px;
+  background: radial-gradient(circle, var(--ink-faint) 0.8px, transparent 1.1px) 50% 0 / 5px 3px repeat-y;
+}
+
+.rung:nth-child(1) { height: 30%; }
+.rung:nth-child(2) { height: 44%; }
+.rung:nth-child(3) { height: 58%; }
+.rung:nth-child(4) { height: 72%; }
+.rung:nth-child(5) { height: 86%; }
+.rung:nth-child(6) { height: 100%; }
+
+.rung[data-climbed] {
+  background: var(--ink-muted);
+}
+
+.rung[data-at] {
+  background: var(--ink);
+  box-shadow: 0 0 0 2px rgb(169 184 135 / 0.55);
+}
+
+.ladderText {
+  min-width: 0;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+/* The safety badge: the kernel's name for the class, its mark and its word. */
+
+.safety {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2rem;
+  padding: 0 var(--space-3) 0 var(--space-2);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.safety[data-size="sm"] {
+  min-height: 1.625rem;
+}
+
+.safetyIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.safetyName {
+  font-family: var(--font-display);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-caps);
+}
+
+.safetyTerm {
+  padding-left: var(--space-2);
+  border-left: 1px solid currentColor;
+}
+
+.safety[data-safety-class="GREEN"] {
+  background: var(--safe-green-tint);
+  color: var(--safe-green);
+}
+
+.safety[data-safety-class="AMBER"] {
+  border-style: dashed;
+  background: var(--safe-amber-tint);
+  color: var(--safe-amber);
+}
+
+/* RED is filled and closed: unmistakably not open for a decision. */
+.safety[data-safety-class="RED"] {
+  border-width: 2px;
+  border-color: var(--safe-red);
+  background: var(--safe-red);
+  color: var(--on-red);
+}
+
+.safety[data-safety-class="UNCLASSIFIED"] {
+  border-style: dotted;
+  padding-left: var(--space-3);
+  color: var(--ink-muted);
+}
+
+/* Reasons: every recorded reason in words, the code kept beside it. */
+
+.reasons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  list-style: none;
+}
+
+.reason {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  background: var(--ground);
+  box-shadow: inset 2px 0 0 var(--ink-muted);
+}
+
+.reasons[data-tone="against"] .reason {
+  box-shadow: inset 2px 0 0 var(--ink);
+}
+
+/* An unexplained code is drawn dotted: Serene has no words for it yet. */
+.reason[data-known="false"] {
+  box-shadow: none;
+  border: 1px dotted var(--ink-faint);
+}
+
+.reasonText {
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+}
+
+.code {
+  overflow-wrap: anywhere;
+  font-size: var(--text-2xs);
+  letter-spacing: 0.02em;
+  color: var(--ink-faint);
+}
+
+/* Term and value pairs. */
+
+.pairs {
+  display: grid;
+  grid-template-columns: minmax(8rem, max-content) minmax(0, 1fr);
+  gap: var(--space-2) var(--space-5);
+  margin: 0;
+}
+
+.pairs > div {
+  display: contents;
+}
+
+.pairs dt {
+  padding-top: 0.15em;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  color: var(--ink-muted);
+}
+
+.pairs dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* A grid of facts: each a small cell with its term above. */
+.pairs[data-layout="grid"] {
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--space-3);
+}
+
+.pairs[data-layout="grid"] > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--ground);
+}
+
+@media (max-width: 40rem) {
+  .pairs:not([data-layout="grid"]) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .pairs:not([data-layout="grid"]) dd {
+    margin-bottom: var(--space-3);
+  }
+}

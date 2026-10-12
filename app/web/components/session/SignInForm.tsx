@@ -72,7 +72,7 @@ export function SignInForm({ next, onSignedIn }: { next?: string | null; onSigne
           {MESSAGES[step.kind]}
         </p>
       ) : null}
-      <button type="submit" className="button" disabled={step.kind === "sending" || record.status === "loading"}>
+      <button type="submit" className="button button-solid" disabled={step.kind === "sending" || record.status === "loading"}>
         {step.kind === "sending" ? "Signing in…" : "Sign in"}
       </button>
     </form>

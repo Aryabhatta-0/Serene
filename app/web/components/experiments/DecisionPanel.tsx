@@ -12,6 +12,8 @@ import {
   type Decision,
 } from "@/lib/experiments/approval";
 import type { Experiment } from "@/lib/experiments/model";
+import { Icon } from "@/components/system/Icon";
+import { Reasons } from "@/components/system/Record";
 import { SAFETY_LABELS, explainReason } from "@/lib/experiments/present";
 import styles from "./Experiments.module.css";
 
@@ -42,15 +44,22 @@ export function DecisionPanel({ experiment, decide }: DecisionPanelProps) {
   if (experiment.safety_class === "RED" || approval?.safety_class === "RED") {
     return (
       <div className={styles.decision} data-decision="not-approvable" role="note">
-        <p className={styles.decisionTitle}>This cannot be approved</p>
+        <p className={styles.decisionTitle}>
+          <Icon name="blocked" className={styles.decisionIcon} />
+          This cannot be approved
+        </p>
         <p>{SAFETY_LABELS.RED.description}</p>
+        <p className={styles.decisionNote}>Serene fails closed: no button, link or message can start it.</p>
       </div>
     );
   }
   if (!approval || !canDecide(experiment)) {
     return (
       <div className={styles.decision} data-decision="closed" role="note">
-        <p className={styles.decisionTitle}>No decision can be made now</p>
+        <p className={styles.decisionTitle}>
+          <Icon name="ring" className={styles.decisionIcon} />
+          No decision can be made now
+        </p>
         <p>This request is no longer open, so nothing here can approve or decline it.</p>
       </div>
     );
@@ -58,7 +67,10 @@ export function DecisionPanel({ experiment, decide }: DecisionPanelProps) {
   if (decide === null) {
     return (
       <div className={styles.decision} data-decision="unconnected" role="note">
-        <p className={styles.decisionTitle}>Deciding from this page is not connected yet</p>
+        <p className={styles.decisionTitle}>
+          <Icon name="ring" className={styles.decisionIcon} />
+          Deciding from this page is not connected yet
+        </p>
         <p>Nothing on this page can approve or decline it. Nothing starts without your approval.</p>
       </div>
     );
@@ -77,8 +89,15 @@ export function DecisionPanel({ experiment, decide }: DecisionPanelProps) {
 
   const approvable = canApprove(experiment);
   return (
-    <section className={styles.decision} data-decision="open" aria-labelledby={headingId}>
+    <section
+      className={styles.decision}
+      data-decision="open"
+      data-safety={approval.safety_class}
+      data-step={step.kind}
+      aria-labelledby={headingId}
+    >
       <h4 id={headingId} className={styles.decisionTitle}>
+        <Icon name="hand" className={styles.decisionIcon} />
         Your decision
       </h4>
       {step.kind === "idle" ? (
@@ -87,6 +106,20 @@ export function DecisionPanel({ experiment, decide }: DecisionPanelProps) {
             You are deciding on exactly what is shown above. Its risk is rated “{SAFETY_LABELS[approval.safety_class].term}”.
             {approval.safety_class === "AMBER" ? " Take your time: an experiment that needs care cannot be approved straight away." : ""}
           </p>
+          <ul className={styles.recap} aria-label="What you would be deciding">
+            <li>
+              <Icon name="undo" className={styles.recapIcon} />
+              {experiment.intervention.reversible ? "Can be stopped and undone at any time" : "Could not be undone"}
+            </li>
+            <li>
+              <Icon name="clock" className={styles.recapIcon} />
+              Runs for {experiment.intervention.max_duration_days === 1 ? "one day" : `${experiment.intervention.max_duration_days} days`} at most
+            </li>
+            <li>
+              <Icon name="eye" className={styles.recapIcon} />
+              Judged by: {experiment.outcome_measure}
+            </li>
+          </ul>
           <div className={styles.actions}>
             {approvable ? (
               <button
@@ -122,7 +155,12 @@ export function DecisionPanel({ experiment, decide }: DecisionPanelProps) {
               : "Decline this experiment? It will not run."}
           </p>
           <div className={styles.actions}>
-            <button ref={confirmRef} type="button" className="button" onClick={() => send(step.decision)}>
+            <button
+              ref={confirmRef}
+              type="button"
+              className={step.decision === "APPROVE" ? "button button-solid" : "button"}
+              onClick={() => send(step.decision)}
+            >
               {step.decision === "APPROVE" ? "Yes, approve" : "Yes, decline"}
             </button>
             <button type="button" className="button" onClick={() => setStep({ kind: "idle" })}>
@@ -143,17 +181,7 @@ export function DecisionPanel({ experiment, decide }: DecisionPanelProps) {
         {step.kind === "answered" && step.result.outcome === "REFUSED" ? (
           <div data-result="refused">
             <p>Serene did not record this decision.</p>
-            <ul className={styles.reasons} aria-label="Why it was not recorded">
-              {step.result.reason_codes.map((code, i) => {
-                const reason = explainReason(code);
-                return (
-                  <li key={i} className={styles.reason} data-reason-code={code}>
-                    <span>{reason.text}</span>
-                    <code className={styles.refId}>{code}</code>
-                  </li>
-                );
-              })}
-            </ul>
+            <Reasons codes={step.result.reason_codes} label="Why it was not recorded" explain={explainReason} tone="against" />
           </div>
         ) : null}
         {step.kind === "failed" ? (

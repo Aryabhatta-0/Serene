@@ -1,13 +1,15 @@
+/* The legend of the certainty notation, set like a survey sheet's key: a
+ * quiet strip of paper with each line style beside its meaning. */
 .key {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  max-width: var(--measure);
-  padding-top: var(--space-6);
-  border-top: 1px solid var(--rule);
+  padding: var(--space-5);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-md);
+  background: var(--ground);
 }
 
-/* Set like the legend of a survey sheet. */
 .title {
   font-size: var(--text-2xs);
   font-weight: 600;
@@ -16,28 +18,31 @@
 }
 
 .list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--space-4) var(--space-6);
   margin: 0;
 }
 
 .row {
-  --key-column: 4.5rem;
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
+  min-width: 0;
 }
 
 .term {
   display: grid;
-  grid-template-columns: var(--key-column) minmax(0, 1fr);
-  column-gap: var(--space-4);
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  column-gap: var(--space-3);
   align-items: center;
+  font-size: var(--text-sm);
   font-weight: 600;
 }
 
 .description {
-  margin: 0 0 0 calc(var(--key-column) + var(--space-4));
+  margin: 0 0 0 calc(2.5rem + var(--space-3));
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
   color: var(--ink-muted);
 }

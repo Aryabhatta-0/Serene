@@ -12,6 +12,7 @@ export default function ExperimentsPage() {
   return (
     <Page
       title="Experiments"
+      question="What could we safely try?"
       lead="Small, reversible changes you might try at home to tell one explanation from another."
       status={<RecordControl next="/experiments" />}
     >

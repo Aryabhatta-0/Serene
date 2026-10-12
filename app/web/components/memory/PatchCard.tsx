@@ -40,11 +40,18 @@ export function PatchCard({ patch, memoryHref, headingLevel: Heading = "h5" }: P
         <span className={styles.patchOperation}>{OPERATION_LABELS[patch.operation]}</span>
       </p>
       <Heading className={styles.patchTitle}>{title ?? patch.target_path}</Heading>
+      <p className={styles.effect} data-effect={patch.status}>
+        {patch.status === "COMMITTED"
+          ? "Memory changed"
+          : patch.status === "REJECTED"
+            ? "Memory unchanged: the review refused it"
+            : "Memory unchanged until the review decides"}
+      </p>
 
       {patch.status === "REJECTED" ? (
         <div className={styles.refusal}>
           <p className={styles.subhead}>Why it was refused</p>
-          <Reasons codes={patch.rejection_reasons} label="Reasons it was refused" />
+          <Reasons codes={patch.rejection_reasons} label="Reasons it was refused" tone="against" />
         </div>
       ) : null}
 

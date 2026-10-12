@@ -1,10 +1,12 @@
-"use client";
-
 import { useId, type ReactNode } from "react";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { LineMark, type Certainty } from "@/components/notation/LineMark";
+import { Icon } from "@/components/system/Icon";
+import { Pair, Pairs, Reasons, Time } from "@/components/system/Record";
+import { SafetyBadge } from "@/components/system/SafetyBadge";
+import { StageTrack } from "@/components/system/StageTrack";
 import { variableLabel } from "@/lib/causal-twin/categories";
-import { ACTOR_LABELS, formatDate } from "@/lib/causal-twin/provenance";
+import { ACTOR_LABELS } from "@/lib/causal-twin/provenance";
 import type { ApprovalTransport } from "@/lib/experiments/approval";
 import type { Experiment, ExperimentPhase, ExperimentsView as View } from "@/lib/experiments/model";
 import {
@@ -16,6 +18,7 @@ import {
   RESULT_LABELS,
   SAFETY_LABELS,
   explainReason,
+  lifecycle,
   promotionText,
 } from "@/lib/experiments/present";
 import type { ExperimentsSource } from "@/lib/experiments/source";
@@ -29,11 +32,14 @@ type ExperimentsViewProps = {
   retry?: ReactNode;
 };
 
-// The Experiments surface (Issue #37): each experiment's change, its risk,
-// whether it can be undone, its approval, where it is in its life, what came
-// of it and whether the explanation it tested was promoted. What needs the
-// parent comes first. Decisions go to the kernel; this view never changes an
-// experiment's state itself.
+export const experimentAnchor = (id: string) => `experiment-${id}`;
+
+// The Experiments surface (Issue #37): a controlled space for deciding what
+// to try. Each experiment shows its change, why it is suggested, its safety
+// class, whether it can be undone, how long it runs, what will be watched,
+// where it is in its life, what came of it and what the Promotion Gate
+// decided. What needs the parent comes first. Decisions go to the kernel;
+// this view never changes an experiment's state itself.
 export function ExperimentsView({ source, decide = null, retry }: ExperimentsViewProps) {
   switch (source.status) {
     case "unconnected":
@@ -52,16 +58,16 @@ export function ExperimentsView({ source, decide = null, retry }: ExperimentsVie
           <span className="visually-hidden">Loading experiments</span>
           <LineMark certainty="unknown" />
           <LineMark certainty="unknown" />
+          <LineMark certainty="unknown" />
         </div>
       );
     case "error":
       return (
-        <EmptyState title="Experiments couldn’t be shown">
+        <EmptyState title="Experiments couldn’t be shown" tone="stopped" actions={retry}>
           <p>
             What Serene sent did not pass its own checks, so nothing is shown rather than showing
             something wrong. No experiment was started or changed.
           </p>
-          {retry ? <p>{retry}</p> : null}
         </EmptyState>
       );
     case "ready":
@@ -79,10 +85,10 @@ export function ExperimentsView({ source, decide = null, retry }: ExperimentsVie
 function Experiments({ view, decide }: { view: View; decide: ApprovalTransport | null }) {
   return (
     <div className={styles.experiments} data-experiments>
-      {GROUPS.map((group) => {
+      {GROUPS.map((group, i) => {
         const members = view.experiments.filter((e) => group.phases.includes(e.phase));
         return (
-          <Group key={group.title} title={group.title} count={members.length}>
+          <Group key={group.title} title={group.title} count={members.length} lead={i === 0}>
             {members.length === 0 ? (
               <p className={styles.empty}>{group.empty}</p>
             ) : (
@@ -101,10 +107,10 @@ function Experiments({ view, decide }: { view: View; decide: ApprovalTransport |
   );
 }
 
-function Group({ title, count, children }: { title: string; count: number; children: ReactNode }) {
+function Group({ title, count, lead, children }: { title: string; count: number; lead: boolean; children: ReactNode }) {
   const id = useId();
   return (
-    <section className={styles.group} aria-labelledby={id}>
+    <section className={styles.group} aria-labelledby={id} data-lead={lead || undefined} data-empty={count === 0 || undefined}>
       <h2 id={id} className={styles.groupTitle}>
         {title} <span className={styles.count}>({count})</span>
       </h2>
@@ -132,151 +138,207 @@ function ExperimentCard({ experiment, decide }: { experiment: Experiment; decide
   const headingId = useId();
   const { intervention, approval } = experiment;
   const safety = experiment.safety_class;
+  const deciding = experiment.phase === "AWAITING_APPROVAL" || safety === "RED";
+  const days = intervention.max_duration_days;
   return (
     <article
+      id={experimentAnchor(experiment.experiment_id)}
       className={styles.card}
       aria-labelledby={headingId}
       data-experiment-id={experiment.experiment_id}
       data-phase={experiment.phase}
       data-safety={safety ?? "UNCLASSIFIED"}
     >
-      <p className={styles.state}>
-        <LineMark certainty={PHASE_MARK[experiment.phase]} className={styles.stateMark} />
-        <span data-phase-label>{PHASE_LABELS[experiment.phase].term}</span>
-        <span className={styles.safety} data-safety-label>
-          {safety ? `Risk: ${SAFETY_LABELS[safety].term}` : "Risk: not checked yet"}
-        </span>
-      </p>
-      <h3 id={headingId} className={styles.title}>
-        {intervention.description}
-      </h3>
-      <p className={styles.phaseText}>{PHASE_LABELS[experiment.phase].description}</p>
+      <header className={styles.head}>
+        <div className={styles.badges}>
+          <SafetyBadge safety={safety} labelled />
+          <p className={styles.state}>
+            <LineMark certainty={PHASE_MARK[experiment.phase]} className={styles.stateMark} />
+            <span data-phase-label>{PHASE_LABELS[experiment.phase].term}</span>
+          </p>
+        </div>
+        <h3 id={headingId} className={styles.title}>
+          {intervention.description}
+        </h3>
+        <p className={styles.phaseText}>{PHASE_LABELS[experiment.phase].description}</p>
+        <StageTrack label="Where this experiment is" steps={lifecycle(experiment)} className={styles.track} />
+      </header>
 
-      <dl className={styles.pairs}>
-        <Pair term="What it tests">{experiment.hypothesis_statement ?? "Not recorded."}</Pair>
-        <Pair term="Kind of change">{CATEGORY_LABELS[intervention.category]}</Pair>
-        <Pair term="Can it be undone?">
-          {intervention.reversible ? "Yes. It can be stopped and undone at any time." : "No. It could not be undone."}
-        </Pair>
-        <Pair term="Longest it runs">
-          {intervention.max_duration_days} {intervention.max_duration_days === 1 ? "day" : "days"}
-        </Pair>
-        <Pair term="Effort for your family">{BURDEN_LABELS[intervention.burden]}</Pair>
-        <Pair term="Compared with">{experiment.comparison}</Pair>
-        <Pair term="Judged by">{experiment.outcome_measure}</Pair>
-        <Pair term="Applies in">{experiment.contexts.map(variableLabel).join(", ")}</Pair>
-      </dl>
-
-      <section className={styles.block} aria-label="Risk">
-        <h4 className={styles.blockTitle}>Risk</h4>
-        {safety ? (
-          <>
-            <p>
-              <strong>Risk: {SAFETY_LABELS[safety].term}.</strong> {SAFETY_LABELS[safety].description}
-            </p>
-            <Reasons codes={experiment.classification_reasons} label="Why it was rated this way" />
-          </>
-        ) : (
-          <p className={styles.empty}>Not checked for safety yet. Nothing can be approved until it is.</p>
-        )}
-        {experiment.blocked_reasons.length > 0 ? (
-          <>
-            <p className={styles.subhead}>Why it is blocked</p>
-            <Reasons codes={experiment.blocked_reasons} label="Why it is blocked" />
-          </>
-        ) : null}
-      </section>
-
-      <section className={styles.block} aria-label="Approval">
-        <h4 className={styles.blockTitle}>Approval</h4>
-        {approval ? (
-          <dl className={styles.pairs}>
-            <Pair term="Decision">{approvalState(approval.state)}</Pair>
-            {approval.requested_at ? (
-              <Pair term="Asked">
-                <Time iso={approval.requested_at} />
-              </Pair>
-            ) : null}
-            <Pair term={approval.decision_open ? "Open until" : "Was open until"}>
-              <Time iso={approval.expires_at} />
-            </Pair>
-            {approval.nudges > 0 ? (
-              <Pair term="Reminders">{approval.nudges === 1 ? "One reminder sent" : `${approval.nudges} reminders sent`}</Pair>
-            ) : null}
-            {approval.decided_at ? (
-              <Pair term="Decided">
-                <Time iso={approval.decided_at} />
-                {approval.decided_via ? ` ${CHANNEL_LABELS[approval.decided_via]}` : null}
-              </Pair>
-            ) : null}
+      <div className={styles.body} data-deciding={deciding || undefined}>
+        <div className={styles.spec}>
+          <dl className={styles.cells}>
+            <Fact icon="undo" term="Can it be undone?" strong={!intervention.reversible}>
+              {intervention.reversible ? "Yes. It can be stopped and undone at any time." : "No. It could not be undone."}
+            </Fact>
+            <Fact icon="clock" term="Longest it runs">
+              {days} {days === 1 ? "day" : "days"}
+            </Fact>
+            <Fact icon="weight" term="Effort for your family">
+              {BURDEN_LABELS[intervention.burden]}
+            </Fact>
+            <Fact icon="flask" term="Kind of change">
+              {CATEGORY_LABELS[intervention.category]}
+            </Fact>
           </dl>
-        ) : (
-          <p className={styles.empty}>
-            {safety === "RED" ? "Never asked: it cannot be approved." : "You have not been asked yet."}
-          </p>
-        )}
-        {experiment.phase === "AWAITING_APPROVAL" || safety === "RED" ? (
-          <DecisionPanel experiment={experiment} decide={decide} />
-        ) : null}
-      </section>
 
-      <section className={styles.block} aria-label="Timeline">
-        <h4 className={styles.blockTitle}>Timeline</h4>
-        <ol className={styles.timeline}>
-          {experiment.proposed_at ? <Event term="Proposed" iso={experiment.proposed_at} /> : null}
-          {experiment.started_at ? <Event term="Started" iso={experiment.started_at} /> : null}
-          {experiment.outcome_due_at ? (
-            <Event
-              term={experiment.phase === "OUTCOME_OVERDUE" ? "Outcome was due" : "Outcome due"}
-              iso={experiment.outcome_due_at}
-            />
-          ) : null}
-          {experiment.ended_at ? <Event term="Ended" iso={experiment.ended_at} /> : null}
-        </ol>
-        {experiment.outcome_timed_out ? (
-          <p>No outcome was reported in time, so it was stopped. Nothing was concluded from it.</p>
-        ) : null}
-        {experiment.abandoned_reasons.length > 0 ? (
-          <Reasons codes={experiment.abandoned_reasons} label="Why it was stopped" />
-        ) : null}
-      </section>
+          <Pairs>
+            <Pair term="Why it is suggested">
+              {experiment.hypothesis_statement ? (
+                <>It tests one explanation: “{experiment.hypothesis_statement}”</>
+              ) : (
+                "Not recorded."
+              )}
+            </Pair>
+            <Pair term="Compared with">{experiment.comparison}</Pair>
+            <Pair term="What will be watched">{experiment.outcome_measure}</Pair>
+            <Pair term="Applies in">{experiment.contexts.map(variableLabel).join(", ")}</Pair>
+          </Pairs>
 
-      <section className={styles.block} aria-label="Outcomes">
-        <h4 className={styles.blockTitle}>Outcomes</h4>
-        {experiment.outcomes.length === 0 ? (
-          <p className={styles.empty}>No outcome reported.</p>
-        ) : (
-          <ul className={styles.outcomes}>
-            {experiment.outcomes.map((o) => (
-              <li key={o.outcome_id} className={styles.outcome} data-result={o.result}>
-                <span className={styles.outcomeResult}>{RESULT_LABELS[o.result]}</span>
-                <span>{o.summary}</span>
-                <span className={styles.aside}>
-                  Reported by {ACTOR_LABELS[o.reported_by].replace(/^A /, "a ")} on{" "}
-                  <Time iso={o.reported_at} />
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+          <section className={styles.block} aria-label="Risk">
+            <h4 className={styles.blockTitle}>Risk</h4>
+            {safety ? (
+              <>
+                <p>
+                  <strong>
+                    {safety} · {SAFETY_LABELS[safety].term}.
+                  </strong>{" "}
+                  {SAFETY_LABELS[safety].description}
+                </p>
+                <Reasons codes={experiment.classification_reasons} label="Why it was rated this way" explain={explainReason} />
+              </>
+            ) : (
+              <p className={styles.empty}>Not checked for safety yet. Nothing can be approved until it is.</p>
+            )}
+            {experiment.blocked_reasons.length > 0 ? (
+              <>
+                <p className={styles.subhead}>Why it is blocked</p>
+                <Reasons codes={experiment.blocked_reasons} label="Why it is blocked" explain={explainReason} tone="against" />
+              </>
+            ) : null}
+          </section>
 
-      <section className={styles.block} aria-label="Promotion result">
-        <h4 className={styles.blockTitle}>Promotion result</h4>
-        {experiment.promotion ? (
-          <>
-            <p data-promotion={experiment.promotion.granted ? "granted" : "denied"}>
-              {promotionText(experiment.promotion.granted, experiment.promotion.to_level)}
+          <section className={styles.block} aria-label="Outcomes">
+            <h4 className={styles.blockTitle}>Outcomes</h4>
+            {experiment.outcomes.length === 0 ? (
+              <p className={styles.empty}>No outcome reported.</p>
+            ) : (
+              <ul className={styles.outcomes}>
+                {experiment.outcomes.map((o) => (
+                  <li key={o.outcome_id} className={styles.outcome} data-result={o.result}>
+                    <span className={styles.outcomeResult}>
+                      <LineMark
+                        certainty={o.result === "SUPPORTS" ? "tested" : o.result === "CONTRADICTS" ? "refuted" : "unknown"}
+                        className={styles.outcomeMark}
+                      />
+                      {RESULT_LABELS[o.result]}
+                    </span>
+                    <span>{o.summary}</span>
+                    <span className={styles.aside}>
+                      Reported by {ACTOR_LABELS[o.reported_by].replace(/^A /, "a ")} on <Time iso={o.reported_at} />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section className={styles.block} aria-label="Promotion result" data-gate={experiment.promotion ? (experiment.promotion.granted ? "granted" : "denied") : "pending"}>
+            <h4 className={styles.blockTitle}>Promotion result</h4>
+            {experiment.promotion ? (
+              <>
+                <p className={styles.gate} data-promotion={experiment.promotion.granted ? "granted" : "denied"}>
+                  <span className={styles.gateMark} aria-hidden="true">
+                    <Icon name={experiment.promotion.granted ? "check" : "cross"} />
+                  </span>
+                  <span>{promotionText(experiment.promotion.granted, experiment.promotion.to_level)}</span>
+                </p>
+                <Reasons codes={experiment.promotion.reason_codes} label="Why" explain={explainReason} />
+              </>
+            ) : (
+              <p className={styles.empty}>
+                {experiment.phase === "COMPLETED"
+                  ? "No promotion decision recorded."
+                  : "The Promotion Gate decides only after it finishes."}
+              </p>
+            )}
+          </section>
+
+          <section className={styles.block} aria-label="Timeline">
+            <h4 className={styles.blockTitle}>Timeline</h4>
+            <ol className={styles.timeline}>
+              {experiment.proposed_at ? <Event term="Proposed" iso={experiment.proposed_at} /> : null}
+              {experiment.started_at ? <Event term="Started" iso={experiment.started_at} /> : null}
+              {experiment.outcome_due_at ? (
+                <Event
+                  term={experiment.phase === "OUTCOME_OVERDUE" ? "Outcome was due" : "Outcome due"}
+                  iso={experiment.outcome_due_at}
+                />
+              ) : null}
+              {experiment.ended_at ? <Event term="Ended" iso={experiment.ended_at} /> : null}
+            </ol>
+            {experiment.outcome_timed_out ? (
+              <p>No outcome was reported in time, so it was stopped. Nothing was concluded from it.</p>
+            ) : null}
+            {experiment.abandoned_reasons.length > 0 ? (
+              <Reasons codes={experiment.abandoned_reasons} label="Why it was stopped" explain={explainReason} tone="against" />
+            ) : null}
+          </section>
+        </div>
+
+        <section className={styles.approval} aria-label="Approval">
+          <h4 className={styles.blockTitle}>Approval</h4>
+          {approval ? (
+            <Pairs>
+              <Pair term="Decision">{approvalState(approval.state)}</Pair>
+              {approval.requested_at ? (
+                <Pair term="Asked">
+                  <Time iso={approval.requested_at} />
+                </Pair>
+              ) : null}
+              <Pair term={approval.decision_open ? "Open until" : "Was open until"}>
+                <Time iso={approval.expires_at} />
+              </Pair>
+              {approval.nudges > 0 ? (
+                <Pair term="Reminders">{approval.nudges === 1 ? "One reminder sent" : `${approval.nudges} reminders sent`}</Pair>
+              ) : null}
+              {approval.decided_at ? (
+                <Pair term="Decided">
+                  <Time iso={approval.decided_at} />
+                  {approval.decided_via ? ` ${CHANNEL_LABELS[approval.decided_via]}` : null}
+                </Pair>
+              ) : null}
+            </Pairs>
+          ) : (
+            <p className={styles.empty}>
+              {safety === "RED" ? "Never asked: it cannot be approved." : "You have not been asked yet."}
             </p>
-            <Reasons codes={experiment.promotion.reason_codes} label="Why" />
-          </>
-        ) : (
-          <p className={styles.empty}>
-            {experiment.phase === "COMPLETED" ? "No promotion decision recorded." : "Decided only after it finishes."}
-          </p>
-        )}
-      </section>
+          )}
+          {deciding ? <DecisionPanel experiment={experiment} decide={decide} /> : null}
+        </section>
+      </div>
     </article>
+  );
+}
+
+function Fact({
+  icon,
+  term,
+  strong = false,
+  children,
+}: {
+  icon: "undo" | "clock" | "weight" | "flask";
+  term: string;
+  strong?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div className={styles.cell} data-strong={strong || undefined}>
+      <dt>
+        <Icon name={icon} className={styles.cellIcon} />
+        {term}
+      </dt>
+      <dd>{children}</dd>
+    </div>
   );
 }
 
@@ -295,40 +357,10 @@ function approvalState(state: NonNullable<Experiment["approval"]>["state"]): str
   }
 }
 
-function Pair({ term, children }: { term: string; children: ReactNode }) {
-  return (
-    <div>
-      <dt>{term}</dt>
-      <dd>{children}</dd>
-    </div>
-  );
-}
-
-function Time({ iso }: { iso: string }) {
-  return <time dateTime={iso}>{formatDate(iso)}</time>;
-}
-
 function Event({ term, iso }: { term: string; iso: string }) {
   return (
     <li className={styles.event}>
       <span className={styles.eventTerm}>{term}</span> <Time iso={iso} />
     </li>
-  );
-}
-
-function Reasons({ codes, label }: { codes: readonly string[]; label: string }) {
-  if (codes.length === 0) return null;
-  return (
-    <ul className={styles.reasons} aria-label={label}>
-      {codes.map((code, i) => {
-        const reason = explainReason(code);
-        return (
-          <li key={i} className={styles.reason} data-reason-code={code} data-known={reason.known}>
-            <span>{reason.text}</span>
-            <code className={styles.refId}>{code}</code>
-          </li>
-        );
-      })}
-    </ul>
   );
 }

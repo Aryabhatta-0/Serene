@@ -1,23 +1,117 @@
 .empty {
   display: grid;
-  grid-template-columns: var(--mark-size) minmax(0, 1fr);
+  grid-template-columns: 3rem minmax(0, 1fr);
   column-gap: var(--space-5);
-  max-width: var(--measure);
+  align-items: start;
+  max-width: 46rem;
+  padding: var(--space-6) var(--space-5);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--ground-lifted);
 }
 
-.line {
-  color: var(--accent);
+.empty[data-tone="stopped"] {
+  border-color: var(--ink-muted);
+}
+
+.glyph {
+  width: 3rem;
+  height: 4.5rem;
+  overflow: visible;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Not yet known: the stem is dotted. */
+.stem {
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 0.1 5;
+}
+
+.leaf {
+  fill: rgb(169 184 135 / 0.35);
+  stroke: var(--accent);
+  stroke-width: 1.25;
+}
+
+.bud {
+  fill: rgb(169 184 135 / 0.22);
+  stroke: var(--ink-muted);
+  stroke-width: 1.5;
+}
+
+.sepal {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.ring {
+  stroke: var(--ink-muted);
+  stroke-width: 1.75;
+}
+
+.bar {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+/* The bud breathes once as the state arrives, then rests. */
+.empty[data-tone="waiting"] .bud {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: bud-in 900ms var(--ease-bloom) both;
 }
 
 .body {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  padding-block: var(--space-2);
+  min-width: 0;
+  padding-top: var(--space-2);
   color: var(--ink-muted);
+}
+
+.body > p {
+  max-width: var(--measure);
 }
 
 .title {
   font-size: var(--text-xl);
   color: var(--ink);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+  margin-top: var(--space-2);
+}
+
+@keyframes bud-in {
+  from {
+    scale: 0.82;
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .empty[data-tone="waiting"] .bud {
+    animation: none;
+  }
+}
+
+@media (max-width: 30rem) {
+  .empty {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--space-3);
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .glyph {
+    width: 2.25rem;
+    height: 3.375rem;
+  }
 }

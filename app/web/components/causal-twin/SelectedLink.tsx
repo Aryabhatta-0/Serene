@@ -10,6 +10,19 @@ import {
 import type { CausalEdge } from "@/lib/causal-twin/model";
 import styles from "./CausalTwin.module.css";
 
+// The questions the provenance panel answers, in its order, for jumping
+// straight to one inside a long explanation.
+const JUMPS: readonly (readonly [string, string])[] = [
+  ["verdict", "Why"],
+  ["support", "For"],
+  ["against", "Against"],
+  ["experiments", "Experiments"],
+  ["scope", "Where and when"],
+  ["alternatives", "Alternatives"],
+  ["supersession", "Replaced"],
+  ["lineage", "Trail to evidence"],
+];
+
 function plural(n: number, one: string, many: string): string {
   return `${n} ${n === 1 ? one : many}`;
 }
@@ -32,9 +45,10 @@ export function SelectedLink({ edge, onClear, children }: SelectedLinkProps) {
         <h3 id={headingId} className={styles.selectionTitle}>
           Selected link
         </h3>
+        <p className={styles.selectionLead}>Why does Serene believe this?</p>
         <p className={styles.selectionHint}>
-          Choose a link on the map or in the list below to see what supports it and what counts
-          against it.
+          Choose a link on the map or in the list below to see what supports it, what counts
+          against it, and the trail down to raw evidence.
         </p>
       </aside>
     );
@@ -70,6 +84,13 @@ export function SelectedLink({ edge, onClear, children }: SelectedLinkProps) {
         {meta.term}
       </p>
       <p className={styles.selectionStatement}>{edge.relationship}</p>
+      {edge.cause !== null && edge.effect !== null ? (
+        <p className={styles.ends} aria-hidden="true">
+          <span>{variableLabel(edge.cause)}</span>
+          <LineMark certainty={meta.certainty} className={styles.endsMark} />
+          <span>{variableLabel(edge.effect)}</span>
+        </p>
+      ) : null}
       <p className={styles.selectionNote}>{meta.description}</p>
 
       <dl className={styles.facts}>
@@ -123,7 +144,18 @@ export function SelectedLink({ edge, onClear, children }: SelectedLinkProps) {
       ) : null}
       {learningNote ? <p className={styles.caution}>{learningNote}</p> : null}
 
-      {children}
+      {children ? (
+        <>
+          <nav className={styles.jump} aria-label="Parts of this explanation">
+            {JUMPS.map(([name, label]) => (
+              <a key={name} href={`#provenance-${name}`}>
+                {label}
+              </a>
+            ))}
+          </nav>
+          {children}
+        </>
+      ) : null}
 
       <p className={styles.reference}>
         <span>Link reference</span> <code>{edge.edge_id}</code>

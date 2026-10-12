@@ -32,7 +32,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main id="content" tabIndex={-1} className={styles.main}>
+      <main id="content" tabIndex={-1} className={styles.main} data-landing={landing || undefined}>
         {children}
       </main>
     </div>

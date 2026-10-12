@@ -4,8 +4,8 @@ import { useCallback, useId, useMemo, useRef, useState, type ReactNode } from "r
 import { EmptyState } from "@/components/layout/EmptyState";
 import { LineKey, type LineKeyEntry } from "@/components/notation/LineKey";
 import { LineMark } from "@/components/notation/LineMark";
-import { CATEGORIES, CATEGORY_ORDER } from "@/lib/causal-twin/categories";
-import { buildTwinGraph, chooseDirection, type Size } from "@/lib/causal-twin/graph";
+import { CATEGORIES, CATEGORY_ORDER, categorize, type EdgeCategory } from "@/lib/causal-twin/categories";
+import { buildTwinGraph, chooseDirection, isPlaced, type Size } from "@/lib/causal-twin/graph";
 import type { CausalEdge, CausalTwin } from "@/lib/causal-twin/model";
 import type { TwinSource } from "@/lib/causal-twin/source";
 import { LinkList } from "./LinkList";
@@ -61,7 +61,7 @@ export function CausalTwinView({ source, ...selection }: CausalTwinViewProps) {
       );
     case "error":
       return (
-        <EmptyState title="The map couldn’t be drawn">
+        <EmptyState title="The map couldn’t be drawn" tone="stopped">
           <p>
             What Serene sent did not pass its own checks, so nothing is drawn rather than drawing
             something wrong. Nothing in your family’s record was changed.
@@ -97,10 +97,17 @@ type TwinMapProps = Omit<CausalTwinViewProps, "source" | "onRetry"> & { twin: Ca
 
 function TwinMap({ twin, selectedEdgeId, onSelectedEdgeChange, renderEdgeDetail }: TwinMapProps) {
   const headingId = useId();
+  // Kinds of link the parent has set aside to see the rest more clearly. The
+  // list below always carries every link; only the map is filtered.
+  const [hidden, setHidden] = useState<ReadonlySet<EdgeCategory>>(() => new Set());
+  const drawnTwin = useMemo(
+    () => (hidden.size === 0 ? twin : { ...twin, edges: twin.edges.filter((e) => !hidden.has(categorize(e))) }),
+    [twin, hidden],
+  );
   // The map waits for the canvas to be measured, so it is laid out once, in
   // the direction that suits it. (The list below carries every link anyway.)
   const [size, setSize] = useState<Size | null>(null);
-  const direction = useMemo(() => (size ? chooseDirection(twin, size) : "LR"), [twin, size]);
+  const direction = useMemo(() => (size ? chooseDirection(drawnTwin, size) : "LR"), [drawnTwin, size]);
   const [ownSelection, setOwnSelection] = useState<string | null>(null);
   const [reveal, setReveal] = useState<{ edgeId: string } | null>(null);
   const selectedId = selectedEdgeId !== undefined ? selectedEdgeId : ownSelection;
@@ -119,12 +126,21 @@ function TwinMap({ twin, selectedEdgeId, onSelectedEdgeChange, renderEdgeDetail 
     [select, selectedId],
   );
   // Chosen outside the map (the list, the panel): the map moves to show it.
+  // A link of a kind that was set aside is put back on the map first.
   const choose = useCallback(
     (edgeId: string) => {
+      const edge = twin.edges.find((e) => e.edge_id === edgeId);
+      if (edge && hidden.has(categorize(edge))) {
+        setHidden((h) => {
+          const next = new Set(h);
+          next.delete(categorize(edge));
+          return next;
+        });
+      }
       select(edgeId);
       setReveal({ edgeId });
     },
-    [select],
+    [select, twin, hidden],
   );
   // Closing the panel hands focus back to the link in the list, which is
   // always there (a link may not be drawn), without scrolling the page.
@@ -135,8 +151,23 @@ function TwinMap({ twin, selectedEdgeId, onSelectedEdgeChange, renderEdgeDetail 
     list.current?.querySelector<HTMLElement>(`button[data-edge-id="${closed}"]`)?.focus({ preventScroll: true });
   }, [select, selectedId]);
 
-  const graph = useMemo(() => buildTwinGraph(twin, direction, selectedId), [twin, direction, selectedId]);
+  const graph = useMemo(() => buildTwinGraph(drawnTwin, direction, selectedId), [drawnTwin, direction, selectedId]);
   const selected = twin.edges.find((e) => e.edge_id === selectedId) ?? null;
+  const drawnSelection = graph.edges.find((e) => e.id === selectedId) ?? null;
+  // With a link selected, its two ends stay in full; everything else recedes.
+  const nodes = useMemo(() => {
+    if (!drawnSelection?.data) return graph.nodes;
+    const ends = new Set([drawnSelection.data.edge.cause, drawnSelection.data.edge.effect]);
+    return graph.nodes.map((n) => ({
+      ...n,
+      data: { ...n.data, focus: ends.has(n.data.tag) ? ("related" as const) : ("dim" as const) },
+    }));
+  }, [graph.nodes, drawnSelection]);
+  const counts = useMemo(() => {
+    const out = Object.fromEntries(CATEGORY_ORDER.map((c) => [c, 0])) as Record<EdgeCategory, number>;
+    for (const edge of twin.edges) out[categorize(edge)] += 1;
+    return out;
+  }, [twin]);
   const total = twin.edges.length;
 
   return (
@@ -148,56 +179,82 @@ function TwinMap({ twin, selectedEdgeId, onSelectedEdgeChange, renderEdgeDetail 
         <p>
           {total === 1 ? "One link is" : `${total} links are`} on record. Each line joins two
           parts of your child’s days, drawn by how firmly Serene holds it. Refuted links stay on
-          the map, struck through.
+          the map, struck through. Choose any link to see why Serene holds it.
         </p>
       </header>
 
-      <ul className={styles.legend} aria-label="How links are drawn">
-        {CATEGORY_ORDER.map((category) => (
-          <li key={category} className={styles.legendItem} data-category={category}>
-            <LineMark certainty={CATEGORIES[category].certainty} className={styles.legendMark} />
-            <span className={styles.legendTerm}>{CATEGORIES[category].term}</span>
-            <span className={styles.legendCount}>
-              {graph.counts[category]}
-              <span className="visually-hidden">{graph.counts[category] === 1 ? " link" : " links"}</span>
-            </span>
-          </li>
-        ))}
-      </ul>
+      <div className={styles.mapBar}>
+        <p className={styles.filtersLabel} id={`${headingId}-legend`}>
+          Links on the map
+        </p>
+        <ul className={styles.legend} aria-label="How links are drawn">
+          {CATEGORY_ORDER.map((category) => (
+            <li key={category} className={styles.legendItem} data-category={category} data-empty={counts[category] === 0 || undefined}>
+              <label className={styles.filter}>
+                {/* Each kind of link can be set aside on the map; the list keeps every one. */}
+                <input
+                  type="checkbox"
+                  checked={counts[category] > 0 && !hidden.has(category)}
+                  disabled={counts[category] === 0}
+                  aria-describedby={`${headingId}-legend`}
+                  onChange={(event) => {
+                    const show = event.currentTarget.checked;
+                    setHidden((h) => {
+                      const next = new Set(h);
+                      if (show) next.delete(category);
+                      else next.add(category);
+                      return next;
+                    });
+                  }}
+                />
+                <LineMark certainty={CATEGORIES[category].certainty} className={styles.legendMark} />
+                <span className={styles.legendTerm}>{CATEGORIES[category].term}</span>
+                <span className={styles.legendCount}>
+                  {counts[category]}
+                  <span className="visually-hidden">{counts[category] === 1 ? " link" : " links"}</span>
+                </span>
+              </label>
+            </li>
+          ))}
+        </ul>
+      </div>
 
-      <div className={styles.stage}>
-        {graph.edges.length > 0 ? (
-          <TwinCanvas
-            nodes={graph.nodes}
-            bounds={graph.bounds}
-            edges={graph.edges}
-            direction={direction}
-            label="Map of links. Drag to move around; use the buttons to zoom."
-            onSelect={toggle}
-            reveal={reveal}
-            onResize={setSize}
-            measured={size !== null}
-          />
-        ) : (
-          <p className={styles.unplacedOnly}>
-            None of these links can be placed on the map yet, because what they connect has not
-            been named. They are listed below.
-          </p>
-        )}
+      <div className={styles.stage} data-has-selection={selected ? "" : undefined}>
+        <div className={styles.mapColumn}>
+          {graph.edges.length > 0 ? (
+            <TwinCanvas
+              nodes={nodes}
+              bounds={graph.bounds}
+              edges={graph.edges}
+              direction={direction}
+              label="Map of links. Drag to move around; use the buttons to zoom."
+              onSelect={toggle}
+              reveal={reveal}
+              onResize={setSize}
+              measured={size !== null}
+              focused={drawnSelection !== null}
+            />
+          ) : (
+            <p className={styles.unplacedOnly}>
+              {hidden.size > 0 && twin.edges.some(isPlaced)
+                ? "Every kind of link on the map is set aside. Turn one back on above, or choose a link from the list below."
+                : "None of these links can be placed on the map yet, because what they connect has not been named. They are listed below."}
+            </p>
+          )}
+        </div>
         <SelectedLink edge={selected} onClear={clear}>
           {selected && renderEdgeDetail ? renderEdgeDetail(selected, { selectEdge: choose }) : null}
         </SelectedLink>
       </div>
 
-      <div ref={list}>
+      <div ref={list} className={styles.listWrap}>
         <LinkList
           edges={twin.edges}
           selectedEdgeId={selectedId}
           onSelect={(edgeId) => (edgeId === selectedId ? select(null) : choose(edgeId))}
         />
+        <LineKey title="How to read the map" entries={LINK_KEY} />
       </div>
-
-      <LineKey title="How to read the map" entries={LINK_KEY} />
     </section>
   );
 }
