@@ -31,8 +31,10 @@ npm run test:e2e
 The e2e build is made with `SERENE_FIXTURE_ROUTES=1`, which also routes the
 test-only `page.fixture.tsx` pages (`/fixtures/causal-twin` draws the
 synthetic Causal Twin, `/fixtures/memory` the synthetic memory and Dream
-runs, `/fixtures/experiments` the synthetic experiments). A normal `npm run build` has no such route and bundles no fixture
-data. To look at the fixture map by hand:
+runs, `/fixtures/experiments` the synthetic experiments, `/fixtures/today` and
+`/fixtures/investigations` a kernel-recorded investigation). A normal
+`npm run build` has no such route and bundles no fixture data. To look at the
+fixture map by hand:
 
 ```sh
 SERENE_FIXTURE_ROUTES=1 npm run dev   # then open /fixtures/causal-twin
@@ -91,6 +93,17 @@ these commands.
   `components/projections/ProjectionStatus` says in words how current the
   state is. Web sign-in is not built yet (#84), so no page subscribes and
   surfaces stay unconnected.
+- `lib/investigations/` and `components/investigations/`: Today and
+  Investigations (Issue #35), read from the kernel's `investigations`
+  projection over the Realtime projection path (`useProjections`). They show
+  the state, hypotheses, missing evidence with the source the minimum-data
+  policy chose, verification, uncertainty as the kernel's explicit facts
+  (never a score), and the next action. The next action is the kernel's
+  `serene.policies.investigation.next_action`, which mirrors the controller's
+  phase dispatch; the surface only words it. `/fixtures/today` and
+  `/fixtures/investigations` (test builds only) replay kernel-recorded
+  projection rows, with controls to deliver the next change, drop the
+  connection and reconnect.
 - `lib/memory/`: consolidated memory and Dream runs as the kernel serializes
   them (`model.ts`, a mirror of `serene/memory/view.py` with a parser that
   re-checks its invariants and fails closed: a refused change can never be

@@ -14,6 +14,8 @@ guarded by ledger facts, so the orchestrator cannot claim progress it lacks.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+from enum import StrEnum
 from typing import Final
 
 from serene.domain.entities import (
@@ -210,3 +212,97 @@ def information_value_of(
     if expected:
         return InformationValue.MEDIUM
     return InformationValue.LOW
+
+
+# ------------------------------------------------------------------ next action (issue #35)
+class NextActionKind(StrEnum):
+    """What the investigation controller does on its next step, by phase.
+
+    This mirrors the controller's phase dispatch (`InvestigationController.step`
+    in serene.investigation.service); tests drive a real investigation and check
+    each step against it. The surface shows this; it never decides it.
+    """
+
+    UNDERSTAND_QUESTION = "UNDERSTAND_QUESTION"
+    RETRIEVE_CONTEXT = "RETRIEVE_CONTEXT"
+    FORM_HYPOTHESES = "FORM_HYPOTHESES"
+    CHOOSE_EVIDENCE = "CHOOSE_EVIDENCE"
+    WAIT_FOR_PARENT_ANSWER = "WAIT_FOR_PARENT_ANSWER"
+    PROCESS_ANSWER = "PROCESS_ANSWER"  # ASKING_HUMAN, and the parent has answered
+    RESEARCH = "RESEARCH"
+    VERIFY_EVIDENCE = "VERIFY_EVIDENCE"
+    EVALUATE = "EVALUATE"
+    WAIT_FOR_APPROVAL = "WAIT_FOR_APPROVAL"
+    NONE_COMPLETE = "NONE_COMPLETE"
+    NONE_PARKED = "NONE_PARKED"
+
+
+NEXT_ACTION_BY_PHASE: Final[dict[InvestigationPhase, NextActionKind]] = {
+    _P.UNDERSTANDING: NextActionKind.UNDERSTAND_QUESTION,
+    _P.RETRIEVING_CONTEXT: NextActionKind.RETRIEVE_CONTEXT,
+    _P.FORMING_HYPOTHESES: NextActionKind.FORM_HYPOTHESES,
+    _P.NEEDS_EVIDENCE: NextActionKind.CHOOSE_EVIDENCE,
+    _P.ASKING_HUMAN: NextActionKind.WAIT_FOR_PARENT_ANSWER,
+    _P.RESEARCHING: NextActionKind.RESEARCH,
+    _P.VERIFYING: NextActionKind.VERIFY_EVIDENCE,
+    _P.EVALUATING: NextActionKind.EVALUATE,
+    _P.NEEDS_APPROVAL: NextActionKind.WAIT_FOR_APPROVAL,
+    _P.COMPLETE: NextActionKind.NONE_COMPLETE,
+    _P.PARKED_UNRESOLVED: NextActionKind.NONE_PARKED,
+}
+
+
+@dataclass(frozen=True, slots=True)
+class NextAction:
+    kind: NextActionKind
+    phase: InvestigationPhase
+    # The recorded MinimumDataPolicy choice the step acts on (ASK / RESEARCH).
+    request_id: str | None = None
+    acquisition_mode: AcquisitionMode | None = None
+    question: str | None = None
+    subject: str | None = None
+    allowed_domains: tuple[str, ...] = ()
+    # Evidence the verifier must decide (VERIFY) / experiments awaiting a parent.
+    evidence_ids: tuple[str, ...] = ()
+    experiment_ids: tuple[str, ...] = ()
+    # Why a terminal investigation ended (its last phase change).
+    reason_codes: tuple[str, ...] = ()
+
+
+def next_action(investigation_id: str, state: KernelState) -> NextAction:
+    """The controller's next step for an investigation, from recorded policy outputs only."""
+    phase = state.investigation_phases[investigation_id]
+    kind = NEXT_ACTION_BY_PHASE[phase]
+    if kind in (NextActionKind.WAIT_FOR_PARENT_ANSWER, NextActionKind.RESEARCH):
+        record = latest_request(investigation_id, state)
+        if record is None:
+            return NextAction(kind, phase)
+        if kind is NextActionKind.WAIT_FOR_PARENT_ANSWER and record.answered:
+            kind = NextActionKind.PROCESS_ANSWER  # the controller moves on to verifying
+        request = record.request
+        return NextAction(
+            kind,
+            phase,
+            request_id=request.request_id,
+            acquisition_mode=request.acquisition_mode,
+            question=request.question,
+            subject=request.subject,
+            allowed_domains=tuple(request.allowed_domains),
+        )
+    if kind is NextActionKind.VERIFY_EVIDENCE:
+        return NextAction(
+            kind, phase, evidence_ids=tuple(pending_evidence(investigation_id, state))
+        )
+    if kind is NextActionKind.WAIT_FOR_APPROVAL:
+        waiting = tuple(
+            exp_id
+            for exp_id, record in state.experiments.items()
+            if record.experiment.investigation_id == investigation_id
+            and record.status in _AWAITING_EXPERIMENT
+        )
+        return NextAction(kind, phase, experiment_ids=waiting)
+    if phase in TERMINAL_INVESTIGATION_PHASES:
+        return NextAction(
+            kind, phase, reason_codes=state.investigation_phase_reasons.get(investigation_id, ())
+        )
+    return NextAction(kind, phase)
