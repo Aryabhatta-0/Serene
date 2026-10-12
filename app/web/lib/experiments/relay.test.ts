@@ -44,12 +44,13 @@ describe("relayApproval", () => {
 
   it("refuses cross-site and origin-less requests before anything is sent", async () => {
     const send = kernel(200, ANSWER);
-    for (const headers of [
+    const refused: Record<string, string | null>[] = [
       { origin: "https://evil.example.com" },
       { origin: null },
       { "sec-fetch-site": "cross-site" },
       { "sec-fetch-site": "same-site" },
-    ]) {
+    ];
+    for (const headers of refused) {
       expect(await result(await relayApproval(request({ headers }), ENV, send))).toEqual([
         403,
         { error: "ORIGIN_NOT_ALLOWED" },
