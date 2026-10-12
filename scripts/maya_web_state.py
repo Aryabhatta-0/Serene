@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from serene.causal import build_causal_twin
+from serene.causal.provenance import build_twin_provenance
 from serene.demo.report import verify_report
 from serene.domain.canonical import canonical_json, sha256_hex
 from serene.domain.events import DomainEvent
@@ -57,15 +58,27 @@ def build_web_state(report: dict[str, Any]) -> dict[str, Any]:
     events = [DomainEvent.model_validate_json(json.dumps(e)) for e in report["events"]]
     state = KernelState()
     snapshots = []
+    provenance_before = None
     for event in events:
         apply_event(state, event)
+        # The report's "before" twin was taken once the competing hypotheses were
+        # proposed; its provenance is that of the first ledger position whose
+        # twin is exactly the recorded one (issue #75).
+        if provenance_before is None and state.hypothesis_levels:
+            twin_now = build_causal_twin(state, event.occurred_at)
+            if twin_now.model_dump(mode="json") == report["twin_before"]:
+                provenance_before = build_twin_provenance(state, event.occurred_at, twin_now)
         if event.event_type.value == "INVESTIGATION_PHASE_CHANGED":
             snapshots.append({"sequence": event.sequence, "investigations": investigations(state)})
     final = investigations(state)
     snapshots.append({"sequence": events[-1].sequence, "investigations": final})
-    twin = build_causal_twin(state, events[-1].occurred_at).model_dump(mode="json")
+    twin_after = build_causal_twin(state, events[-1].occurred_at)
+    twin = twin_after.model_dump(mode="json")
     if twin != report["twin_after"]:
         raise ValueError("Report twin disagrees with its events")
+    if provenance_before is None:
+        raise ValueError("Report twin_before matches no ledger position")
+    provenance_after = build_twin_provenance(state, events[-1].occurred_at, twin_after)
     memory = build_memory_dream_view(state, ReportMemory(report)).model_dump(mode="json")
     if memory["unreadable"]:
         raise ValueError("Report memory is unreadable")
@@ -82,6 +95,8 @@ def build_web_state(report: dict[str, Any]) -> dict[str, Any]:
         "memory": memory,
         "twin_before": report["twin_before"],
         "twin_after": twin,
+        "twin_provenance_before": provenance_before.model_dump(mode="json"),
+        "twin_provenance_after": provenance_after.model_dump(mode="json"),
         "promotions": [
             {
                 "sequence": e.sequence,

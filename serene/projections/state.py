@@ -109,6 +109,10 @@ class EntityRecord:
     status: LifecycleStatus = LifecycleStatus.ACTIVE
     superseded_by: str | None = None
     introduced_at: datetime | None = None  # ledger recorded_at of the introducing event
+    # read-view detail for the Causal Twin provenance projection (issue #75)
+    supersession_reason: str | None = None
+    refutation_reason_codes: tuple[str, ...] = ()
+    refuting_outcome_ids: tuple[str, ...] = ()
 
 
 @dataclass(slots=True)
@@ -334,8 +338,12 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
             record = state.entities[hyp_id]
             record.status = LifecycleStatus.SUPERSEDED
             record.superseded_by = successor
+            record.supersession_reason = payload.reason
         case HypothesisRefuted(hypothesis_id=hyp_id):
-            state.entities[hyp_id].status = LifecycleStatus.REFUTED
+            refuted = state.entities[hyp_id]
+            refuted.status = LifecycleStatus.REFUTED
+            refuted.refutation_reason_codes = payload.reason_codes
+            refuted.refuting_outcome_ids = payload.outcome_ids
         case PromotionDecisionRecord():
             granted = event.event_type is EventType.PROMOTION_GRANTED
             state.promotions[event.event_id] = PromotionRecord(

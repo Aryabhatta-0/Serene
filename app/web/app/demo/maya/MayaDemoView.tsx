@@ -71,7 +71,13 @@ export function MayaDemoView() {
         <h2>Causal Twin</h2>
         <label><input type="checkbox" checked={before} onChange={(e) => setBefore(e.target.checked)} /> Show recorded before state</label>
         <p>{before ? "Before experiment" : "After experiment and Dream"} · canonical report snapshot</p>
-        <CausalTwinSurface source={{ status: "ready", twin: before ? state.twinBefore : state.twinAfter }} />
+        <CausalTwinSurface
+          source={{
+            status: "ready",
+            twin: before ? state.twinBefore : state.twinAfter,
+            provenance: before ? state.provenanceBefore : state.provenanceAfter,
+          }}
+        />
       </section>
     </>}
   </div>;

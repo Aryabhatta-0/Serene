@@ -42,8 +42,11 @@
   margin-left: auto;
 }
 
+/* Content wider than the sheet is clipped, never scrolled sideways: no page
+ * may widen the phone viewport, whatever its decorative art does mid-animation. */
 .main {
   padding: var(--space-5) var(--gutter) var(--space-8);
+  overflow-x: clip;
 }
 
 .main:focus {

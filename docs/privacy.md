@@ -129,6 +129,14 @@ real family data. This audit does not certify third-party logging behavior.
   the same read view, parent-only under RLS. Synthetic
   Experiments fixture routes do not establish deployed family authorization.
   [Real Supabase acceptance remains pending](web-e2e-proof.md).
+- The #75 [Causal Twin provenance view](../serene/causal/provenance.py) omits
+  child, actor and `src_` source ids (actors appear only by kind) and never
+  quotes raw evidence: a raw-evidence node shows its kind, channel, capture
+  time, content digest and verification checks, and an external source only
+  its public host (never its URI). It does include derived display text
+  (observation statements, pattern descriptions, hypothesis statements, outcome
+  summaries, learning statements), so it is private application data, not
+  telemetry. Tests pin these omissions (`tests/test_twin_provenance.py`).
 - Model provenance stores provider/model/prompt-version identifiers, not full
   prompts or private reasoning. This does not mean runtime tasks contain no
   private content: [context retrieval](../serene/investigation/context.py) and
