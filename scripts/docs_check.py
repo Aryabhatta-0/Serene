@@ -81,9 +81,11 @@ def issue_numbers(paths: tuple[Path, ...]) -> set[int]:
     numbers: set[int] = set()
     for path in paths:
         contents = prose(path)
-        numbers.update(int(n) for n in re.findall(r"#(\d+)", contents))
+        # Local heading fragments (e.g. setup.md#5-merge-gates) are not issue #5.
+        visible = re.sub(r"\]\([^)]+\)", "]", contents)
+        numbers.update(int(n) for n in re.findall(r"#(\d+)", visible))
         numbers.update(int(n) for _, n in GITHUB_REF.findall(contents))
-        for first, last in re.findall(r"#(\d+)[\u2013-]#?(\d+)", contents):
+        for first, last in re.findall(r"#(\d+)[\u2013-]#?(\d+)", visible):
             numbers.update(range(int(first), int(last) + 1))
     return numbers
 
