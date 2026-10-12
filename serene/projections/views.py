@@ -136,6 +136,10 @@ PROJECTIONS: Final[dict[str, Callable[[KernelState], dict[str, Any]]]] = {
     "memory_review": memory_review,
 }
 
+# Published vocabulary includes the explicit Git-snapshot projection, which
+# deliberately cannot be produced by the ledger-only project/rebuild functions.
+PUBLISHED_PROJECTIONS: Final = frozenset(PROJECTIONS) | {"memory_dream"}
+
 
 def project(state: KernelState) -> dict[str, dict[str, Any]]:
     return {name: to_canonical_data(fn(state)) for name, fn in PROJECTIONS.items()}

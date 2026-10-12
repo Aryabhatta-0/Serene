@@ -218,10 +218,10 @@ def test_the_web_app_knows_exactly_the_kernels_projections() -> None:
     import re
     from pathlib import Path
 
-    from serene.projections import PROJECTIONS
+    from serene.projections.views import PUBLISHED_PROJECTIONS
 
     source = (Path(__file__).resolve().parents[1] / "app/web/lib/projections/model.ts").read_text(
         encoding="utf-8"
     )
     block = source[source.index("PROJECTION_NAMES = [") : source.index("] as const")]
-    assert set(re.findall(r'"([a-z_]+)"', block)) == set(PROJECTIONS)
+    assert set(re.findall(r'"([a-z_]+)"', block)) == PUBLISHED_PROJECTIONS
