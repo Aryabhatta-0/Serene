@@ -71,8 +71,9 @@ situation, with their own SHA-pinned pages, are the `holdout` split
 one at the same commit. [Holdout tests](../tests/test_holdout_split.py) check
 that no development config names a holdout scenario. “Hidden” means withheld
 from runtime model/tuning inputs, not secret from readers of this public repo.
-This documentation task performs no live run or holdout and makes no holdout
-eligibility claim.
+This documentation task performs no live run or holdout. The separately frozen
+controlled-dev/1 PASS establishes #67's one-time holdout eligibility under that
+protocol; it does not supply a holdout result or pass the full regression gate.
 
 ## 5. Scorers (deterministic, no LLM-as-judge)
 

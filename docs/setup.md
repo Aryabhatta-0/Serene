@@ -26,7 +26,7 @@ tools; run `scripts/bootstrap.ps1` (Windows) or `scripts/bootstrap.sh`
 
 ```bash
 uv sync --locked --all-extras --group dev
-uv run pytest                                   # full suite, incl. real Postgres via pgserver
+uv run pytest                                   # backend suite, incl. real Postgres via pgserver
 uv run python scripts/ledger_selfcheck.py       # replay + hash-chain + tamper self-check
 uv run inspect eval eval/tasks/kernel_invariants.py --model mockllm/model
 ```
@@ -44,7 +44,7 @@ applies `supabase/migrations/`.
    `install.ps1 -Commit f97608f178d1ffeca59860195ab7da295f7c8e5f -NonInteractive -SkipComputerUse`.
    Linux/macOS/WSL: `scripts/bootstrap.sh --install-hermes`.
    Then `hermes setup` (model provider + keys go to `HERMES_HOME/.env`) and,
-   for branch A, `hermes gateway setup` (Telegram bot token).
+   configure Telegram separately using [the channel boundary notes](../app/telegram/README.md).
 2. **cfo.ai**: in Claude Code run `/mcp`, select `cfoai`, choose
    *Authenticate*, and sign in with the cfo.ai account in the browser. Use a
    cfo.ai Scenario rather than the live Main model for any edits.
@@ -62,11 +62,11 @@ applies `supabase/migrations/`.
 
 | Tool | Role in Serene | Never |
 | --- | --- | --- |
-| Hermes | reasoning, tools, Telegram gateway, browser, model routing behind ports | evidence truth, promotion, safety, approval, memory authority |
+| Hermes | reasoning, browser and model transport behind ports; Serene owns authenticated Telegram ingestion | evidence truth, promotion, safety, approval, memory authority |
 | Supabase / Postgres | canonical ledger + disposable projections | business decisions (kept in kernel code) |
 | neatlogs | runtime traces with opaque ids | receiving child narratives or raw reports |
 | Entire | development provenance: architecture checkpoints on commits | storing secrets; auto-pushing transcripts of a public repo |
-| cfo.ai | unit-economics model; later the cost table behind `CostModel` | overriding safety or evidence quality (cost is a tie-breaker only) |
+| cfo.ai | assumed economics analysis and one constrained optional confirmation helper; default runtime costs remain unknown ([details](economics.md)) | overriding safety or evidence quality (cost is a certified-equivalence tie-breaker only) |
 | Inspect AI | frozen, deterministic evaluation harness | LLM-as-judge where a deterministic scorer exists |
 
 ## 5. Merge gates (#58)
@@ -86,4 +86,3 @@ The checks are pinned to the GitHub Actions app. Renaming a job changes its
 check name, so the ruleset must be updated in the same change or every PR
 stays blocked. No approvals, up-to-date branch or linear history are
 required, and there is no bypass list.
-
