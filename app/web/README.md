@@ -72,7 +72,7 @@ these commands.
   (`graph.ts`), the provenance panel's reading of an edge (`provenance.ts`:
   ids typed by prefix, support against counterevidence, lineage and
   supersession followed by id), and where the twin comes from (`source.ts`:
-  UNCONNECTED; wiring still requires sign-in and full Twin projection).
+  UNCONNECTED until the complete Twin provenance projection exists, #75).
 - `components/causal-twin/`: `CausalTwinSurface` (what pages render: the
   view with the provenance panel wired in), `CausalTwinView` (unconnected,
   loading, error, empty and map states), the map (`TwinCanvas`,

@@ -5,9 +5,11 @@ import { UNCONNECTED } from "@/lib/memory/source";
 
 export const metadata: Metadata = { title: "Memory" };
 
-// The memory view is not connected yet (Issue #33), so the surface draws the
-// honest unconnected state. Once it is, the live source replaces this
-// constant and the same view shows memory and Dream runs.
+// The Realtime projection transport (#33) and sign-in (#87) exist, but the
+// memory view reads the Git memory repo as well as the ledger, so it is not a
+// published projection yet (#99). The surface draws the honest unconnected
+// state; once it is published, a live source replaces this constant and the
+// same view shows memory and Dream runs.
 const source = UNCONNECTED;
 
 export default function MemoryPage() {

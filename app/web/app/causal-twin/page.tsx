@@ -5,9 +5,10 @@ import { UNCONNECTED } from "@/lib/causal-twin/source";
 
 export const metadata: Metadata = { title: "Causal Twin" };
 
-// The twin projection is not connected yet (Issue #33), so the surface draws
-// the honest unconnected state. Once it is, the live source replaces this
-// constant and the same view draws the map.
+// The Realtime projection transport (#33) and sign-in (#87) exist, but the
+// kernel publishes no complete Twin provenance projection yet (#75), so the
+// surface draws the honest unconnected state. Once it does, a live source
+// replaces this constant and the same view draws the map.
 const source = UNCONNECTED;
 
 export default function CausalTwinPage() {
