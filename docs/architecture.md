@@ -138,10 +138,13 @@ Main also includes #37's [Experiments view](../serene/experiments/view.py),
 [WebApprovalChannel](../serene/adapters/web/approvals.py). Commands quote the
 shown intervention digest/safety class and a single-use request ID; channel and
 ledger admission reject RED and recheck parent, expiry, replay and deliberation.
-The channel trusts a principal resolved by an authenticated transport; it does
-not authenticate sessions itself. The shipped [page](../app/web/app/experiments/page.tsx)
-uses UNCONNECTED and `decide={null}`: no live approval transport is wired. A
-scripted fixture response is not a real parent approval. Tests:
+The channel trusts a principal resolved by the authenticated kernel HTTP transport,
+which verifies the Supabase session, guardianship and web binding. The shipped
+[page](../app/web/app/experiments/page.tsx) subscribes to the selected child's
+parent-only `experiments` projection and sends decisions through the same-origin
+relay. It changes stage only when the projection changes. The
+[browser proof](web-e2e-proof.md) exercises the production transport with a test
+kernel and PostgreSQL; real Supabase Auth/Realtime acceptance remains pending. Tests:
 [web approvals](../tests/test_web_approvals.py), [read view](../tests/test_experiments_view.py).
 
 ## Causal Twin, Supabase and projections

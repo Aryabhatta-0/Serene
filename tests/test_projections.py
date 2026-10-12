@@ -30,6 +30,7 @@ def test_the_initial_projections_and_the_investigation_view_exist() -> None:
         "pending_approvals",
         "active_learnings",
         "investigations",  # issue #35
+        "experiments",  # issues #37/#84
     }
 
 
@@ -62,7 +63,12 @@ def test_a_new_event_changes_exactly_the_expected_projection(family: SyntheticFa
     family.open_investigation("Why is pickup hard?")
     after = family.ledger.projections(family.child_id)
     changed = {name for name in PROJECTIONS if before[name] != after[name]}
-    assert changed == {"active_investigations", "current_child_state", "investigations"}
+    assert changed == {
+        "active_investigations",
+        "current_child_state",
+        "investigations",
+        "experiments",
+    }
 
 
 def test_pending_approvals_track_the_lifecycle(family: SyntheticFamily) -> None:

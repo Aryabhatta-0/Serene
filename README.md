@@ -51,15 +51,16 @@ remain inspectable. Cost cannot override safety or evidence quality.
 Implemented services include Telegram, investigation/recovery, verification,
 experiments, promotion, Dream, Git memory, Causal Twin and Supabase projections.
 The web has Twin/Memory review views, an Experiments/Approval surface and the Realtime projection
-transport (#33). Today and Investigations connect after Supabase sign-in and child selection (#87);
-Memory, Experiments and the Causal Twin pages still render unconnected, and full Twin provenance
+transport (#33). Today, Investigations and Experiments connect after Supabase sign-in and child selection;
+Memory and the Causal Twin pages still render unconnected, and full Twin provenance
 projection (#75) is unfinished.
 Current investigation sufficiency can also mistake an empty/filtered plan for
 completion; [the architecture records that limitation](docs/architecture.md#telegram-hermes-and-investigation).
 Web approval decisions have an authenticated transport (#84): the same-origin `/api/approvals`
 relay and the kernel's `POST /web/approvals` (Supabase session, guardianship, rate limit, replay-safe
-`request_id`, then ledger admission). The shipped Experiments page still has no live experiments to
-decide on, so it offers no decisions yet.
+`request_id`, then ledger admission). Experiments reads the private parent-only projection and changes
+stage only after a projection update. [The test-kernel proof and remaining real
+Supabase acceptance](docs/web-e2e-proof.md) distinguish #84/#37 coverage from blocked #87.
 [Implemented UI boundary](docs/architecture.md#experiments-promotion-and-dream).
 
 ## See the canonical Maya story

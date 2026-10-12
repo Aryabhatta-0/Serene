@@ -47,9 +47,12 @@ approval by returning a proposal. Main now includes a typed
 [#37 decision surface](../app/web/components/experiments/DecisionPanel.tsx).
 The channel requires an already authenticated parent principal, exact shown
 digest/class and replay-protected request ID, then reuses ledger admission.
-Session authentication is the unwired transport's responsibility. The shipped
-[Experiments page](../app/web/app/experiments/page.tsx) passes no transport and
-offers no decision; the synthetic fixture is not live parent authorization.
+The kernel HTTP transport verifies the Supabase session, guardianship and web
+binding before invoking the channel. The shipped
+[Experiments page](../app/web/app/experiments/page.tsx) reads the parent-only
+projection and sends decisions through the same-origin relay, without optimistic
+stage changes. [Real Supabase acceptance remains pending](web-e2e-proof.md);
+synthetic fixture responses do not establish live parent authorization.
 
 | Binding checked by policy | Effect |
 | --- | --- |

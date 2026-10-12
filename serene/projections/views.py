@@ -7,7 +7,7 @@ JSON-compatible data. Ledger = truth; projections = disposable read state.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any, Final
 
 from serene.domain.canonical import canonical_digest, format_timestamp, to_canonical_data
@@ -18,6 +18,7 @@ from serene.domain.entities import (
 )
 from serene.domain.events import DomainEvent
 from serene.domain.values import VerificationStatus
+from serene.experiments.view import build_experiments_view
 from serene.projections.investigations import investigations
 from serene.projections.state import (
     OPEN_APPROVAL_STATES,
@@ -106,6 +107,17 @@ def effective_learning_status(record: LearningRecord, now: datetime) -> Learning
     return record.status
 
 
+def experiments(state: KernelState) -> dict[str, Any]:
+    """Existing privacy-filtered UI contract, as of the last admitted event.
+
+    Replay/backfill must be byte-identical and never consult a wall clock.
+    Expiry shown here is as of this ledger position; admission always checks
+    the current clock again when a parent attempts a decision.
+    """
+    as_of = state.last_recorded_at or datetime(1970, 1, 1, tzinfo=UTC)
+    return build_experiments_view(state, as_of).model_dump(mode="json")
+
+
 PROJECTIONS: Final[dict[str, Callable[[KernelState], dict[str, Any]]]] = {
     "current_child_state": current_child_state,
     "active_investigations": active_investigations,
@@ -114,6 +126,7 @@ PROJECTIONS: Final[dict[str, Callable[[KernelState], dict[str, Any]]]] = {
     "active_learnings": active_learnings,
     # issue #35: the investigation surface's read state, streamed by #33
     "investigations": investigations,
+    "experiments": experiments,
 }
 
 
