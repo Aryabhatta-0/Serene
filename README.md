@@ -56,8 +56,10 @@ Memory, Experiments and the Causal Twin pages still render unconnected, and full
 projection (#75) is unfinished.
 Current investigation sufficiency can also mistake an empty/filtered plan for
 completion; [the architecture records that limitation](docs/architecture.md#telegram-hermes-and-investigation).
-The web approval command/channel exists, but its authenticated transport is unwired;
-the shipped Experiments page offers no decisions.
+Web approval decisions have an authenticated transport (#84): the same-origin `/api/approvals`
+relay and the kernel's `POST /web/approvals` (Supabase session, guardianship, rate limit, replay-safe
+`request_id`, then ledger admission). The shipped Experiments page still has no live experiments to
+decide on, so it offers no decisions yet.
 [Implemented UI boundary](docs/architecture.md#experiments-promotion-and-dream).
 
 ## See the canonical Maya story

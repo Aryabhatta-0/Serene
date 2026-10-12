@@ -17,6 +17,8 @@ export interface FamilyBackend {
   onAuthChange(listener: (session: AuthSnapshot) => void): () => void;
   signIn(email: string, password: string): Promise<SignInResult>;
   signOut(): Promise<void>;
+  /** The current session's access token (refreshed if due), or null. Sent only to Serene's own /api routes. */
+  accessToken(): Promise<string | null>;
   /** The children this user is a parent of, as RLS shows them. */
   listChildren(userId: string): Promise<string[]>;
   feed: ProjectionFeed;
@@ -45,6 +47,10 @@ export function supabaseBackend(client: SupabaseClient): FamilyBackend {
     async signOut() {
       // This browser only; supabase-js clears the stored session even offline.
       await client.auth.signOut({ scope: "local" });
+    },
+    async accessToken() {
+      const { data } = await client.auth.getSession();
+      return data.session?.access_token ?? null;
     },
     async listChildren(userId) {
       // serene.child_guardians (#8): RLS returns only the signed-in user's own

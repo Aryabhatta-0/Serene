@@ -25,6 +25,8 @@ export type FamilyRecord = FamilyRecordState & {
   signIn(email: string, password: string): Promise<SignInResult>;
   signOut(): Promise<void>;
   selectChild(childId: string): void;
+  /** The signed-in session's access token, for Serene's own authenticated routes (#84). */
+  accessToken(): Promise<string | null>;
 };
 
 const UNAVAILABLE: SignInResult = { ok: false, reason: "unavailable" };
@@ -35,6 +37,7 @@ const Context = createContext<FamilyRecord>({
   signIn: async () => UNAVAILABLE,
   signOut: async () => {},
   selectChild: () => {},
+  accessToken: async () => null,
 });
 
 export function useFamilyRecord(): FamilyRecord {
@@ -116,8 +119,13 @@ export function FamilyRecordProvider({ backend: given, children }: Props) {
     [userId, kids],
   );
 
+  const accessToken = useCallback(
+    () => (backend && userId ? backend.accessToken() : Promise.resolve(null)),
+    [backend, userId],
+  );
+
   const value = useMemo<FamilyRecord>(() => {
-    const actions = { signIn, signOut, selectChild };
+    const actions = { signIn, signOut, selectChild, accessToken };
     if (session.status !== "signed-in") return { ...session, live: null, ...actions };
     const chosen = kids.status === "ready" && childId !== null && kids.ids.includes(childId) ? childId : null;
     return {
@@ -127,7 +135,7 @@ export function FamilyRecordProvider({ backend: given, children }: Props) {
       live: backend && chosen ? { feed: backend.feed, childId: chosen } : null,
       ...actions,
     };
-  }, [session, kids, childId, backend, signIn, signOut, selectChild]);
+  }, [session, kids, childId, backend, signIn, signOut, selectChild, accessToken]);
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }

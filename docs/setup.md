@@ -93,7 +93,21 @@ the hosting environment.
    `serene.adapters.postgres.postgres_ledger`, which publishes
    `projection_state` after each admitted append. A failed publish never undoes
    the append; it is reported as `ledger.after_append_failed`.
-7. **Backfill existing ledgers once** (and after any projection definition
+7. **Web approval decisions (#84).** Run the kernel endpoint
+   `uv run python app/approvals/approvals_server.py --port 8788` with
+   `SUPABASE_DB_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`,
+   `SERENE_WEB_ORIGINS` (the web app's public origin) and
+   `SERENE_WEB_BINDINGS` (each parent's Supabase user id, for each child, bound
+   to the opaque `act_` PARENT actor approval requests are addressed to; the
+   user must also be that child's PARENT in `serene.child_guardians`). Give the
+   web server `SERENE_KERNEL_URL` (server-side only). The browser posts to the
+   same-origin `/api/approvals`, which refuses cross-site, oversized, non-JSON
+   and unauthenticated requests and relays the rest with the caller's own
+   token. The kernel verifies the session with Supabase Auth, the
+   guardianship and binding (401/403), rate-limits per user, treats a replayed
+   `request_id` as the first answer, and decides only through
+   `WebApprovalChannel` and ledger admission.
+8. **Backfill existing ledgers once** (and after any projection definition
    change, with `--replace` while the kernel is quiet):
    `uv run python scripts/rebuild_projections.py`. It verifies each child's
    hash chain first, refuses a child whose chain does not verify, only reads
