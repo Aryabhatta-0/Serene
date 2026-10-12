@@ -19,6 +19,7 @@ from serene.domain.entities import (
 from serene.domain.events import DomainEvent
 from serene.domain.values import VerificationStatus
 from serene.projections.investigations import investigations
+from serene.projections.memory import memory_review
 from serene.projections.state import (
     OPEN_APPROVAL_STATES,
     KernelState,
@@ -147,9 +148,14 @@ PROJECTIONS: Final[dict[str, Callable[[KernelState], dict[str, Any]]]] = {
     "investigations": investigations,
     # issues #37/#84: the Experiments surface's read state
     "experiments": experiments,
+    "memory_review": memory_review,
     # the Causal Twin surface's privacy-safe twin and full provenance (#75)
     "causal_twin": causal_twin,
 }
+
+# Published vocabulary includes the explicit Git-snapshot projection, which
+# deliberately cannot be produced by the ledger-only project/rebuild functions.
+PUBLISHED_PROJECTIONS: Final = frozenset(PROJECTIONS) | {"memory_dream"}
 
 
 def project(state: KernelState) -> dict[str, dict[str, Any]]:

@@ -4338,6 +4338,13 @@
       "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
       "last_event_hash": "ebd2b306a49697e55730a7f5fc677d508693f439a777d20b268e3a995ac11b87",
       "last_sequence": 15,
+      "projection": "memory_review",
+      "state": {}
+    },
+    {
+      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
+      "last_event_hash": "ebd2b306a49697e55730a7f5fc677d508693f439a777d20b268e3a995ac11b87",
+      "last_sequence": 15,
       "projection": "pending_approvals",
       "state": {}
     }

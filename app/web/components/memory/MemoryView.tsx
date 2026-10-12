@@ -89,6 +89,7 @@ function MemoryReview({ view }: { view: MemoryDreamView }) {
   const others = otherPatches(view);
   return (
     <div className={styles.review} data-memory-review>
+      <p>Memory revision: <code className={styles.refId}>{view.memory_head}</code></p>
       <Region title="What Serene remembers" name="memories">
         <p className={styles.intro}>
           Memories are written only by Serene’s memory writer, after a fixed review. Each one shows

@@ -24,5 +24,7 @@ alter table serene.projection_state
       'active_learnings',
       'investigations',
       'experiments',
+      'memory_review',
+      'memory_dream',
       'causal_twin'
   ));

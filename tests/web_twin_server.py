@@ -201,4 +201,4 @@ class TwinKernel:
 
 
 if __name__ == "__main__":
-    serve(TwinKernel)
+    serve(lambda dsn, _temp: TwinKernel(dsn))

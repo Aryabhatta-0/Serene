@@ -138,6 +138,33 @@ def _types(conn: psycopg.Connection[Any]) -> set[str]:
     return {r[0] for r in conn.execute("select distinct event_type from serene.domain_events")}
 
 
+@pytest.mark.parametrize("projection", ["memory_review", "memory_dream"])
+def test_memory_projection_is_parent_only_and_child_scoped(
+    rls_db: dict[str, Any], projection: str
+) -> None:
+    with psycopg.connect(rls_db["dsn"]) as conn:
+        for child in (rls_db["a"], rls_db["b"]):
+            conn.execute(
+                "insert into serene.projection_state "
+                "(child_id, projection, state, last_sequence, last_event_hash) "
+                "values (%s, %s, '{}'::jsonb, 1, %s) on conflict do nothing",
+                (child, projection, "0" * 64),
+            )
+    for user, child in ((P1, rls_db["a"]), (P2, rls_db["b"])):
+        with session(rls_db["dsn"], "authenticated", user) as conn:
+            rows = conn.execute(
+                "select child_id from serene.projection_state where projection = %s",
+                (projection,),
+            ).fetchall()
+            assert rows == [(child,)]
+    for user in (C_OBS, C_NONE, C_EXPIRED, C_REVOKED):
+        with session(rls_db["dsn"], "authenticated", user) as conn:
+            assert conn.execute(
+                "select count(*) from serene.projection_state where projection = %s",
+                (projection,),
+            ).fetchone() == (0,)
+
+
 # ------------------------------------------------------------------ parents
 def test_parent_reads_own_child_only(rls_db: dict[str, Any]) -> None:
     with session(rls_db["dsn"], "authenticated", P1) as conn:

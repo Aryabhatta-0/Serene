@@ -15,6 +15,8 @@ export const PROJECTION_NAMES = [
   "active_learnings",
   "investigations", // issue #35
   "experiments", // issues #37, #84
+  "memory_review",
+  "memory_dream",
   "causal_twin", // the Causal Twin surface (#75)
 ] as const;
 export type ProjectionName = (typeof PROJECTION_NAMES)[number];
