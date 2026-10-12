@@ -76,6 +76,18 @@ test("canonical reset → Maya → report → rendered UI, then regeneration wit
   await expect(page.locator("#demo-twin div[data-category=tested] button")).toHaveCount(1);
   await page.locator(`#demo-twin button[data-edge-id="${supported.edge_id}"]`).click();
   await expect(page.locator(`[data-provenance-for="${supported.edge_id}"]`)).toContainText(`Level ${supported.epistemic_level} of 5`);
+  // #39/#75: the full provenance projection, down to raw evidence.
+  const full = page.locator(`[data-provenance-for="${supported.edge_id}"][data-provenance="full"]`);
+  await expect(full).toBeVisible();
+  const traced = state.twin_provenance_after.edges.find((e: { edge_id: string }) => e.edge_id === supported.edge_id);
+  await expect(full.locator('[data-chain="lineage"] > li')).toHaveCount(traced.lineage.steps.length);
+  for (const evd of supported.raw_evidence) {
+    await expect(full.locator(`[data-chain="lineage"] [data-node-id="${evd}"][data-node-kind="EVIDENCE"]`)).toHaveCount(1);
+  }
+  await expect(full.locator("[data-field=review-after]")).toBeVisible();
+  await expect(full.locator("[data-field=review-status]")).toBeVisible();
+  await expect(full.locator(`[data-outcome-id][data-from-experiment="${supported.experiments[0]}"]`)).toHaveCount(1);
+  await expect(full.locator("[data-missing-node]")).toHaveCount(0);
   await page.getByLabel("Show recorded before state").check();
   await expect(page.locator("#demo-twin")).toContainText("Before experiment");
   await expect(page.locator("#demo-twin div[data-category=tested] button")).toHaveCount(0);

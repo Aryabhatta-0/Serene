@@ -52,3 +52,30 @@ def test_adapter_rejects_corrupt_or_non_demo_reports(report: dict[str, Any]) -> 
     corrupt = {**report, "twin_after": report["twin_before"]}
     with pytest.raises((ValueError, AssertionError)):
         build_web_state(corrupt)
+
+
+def test_adapter_projects_complete_twin_provenance_for_both_twins(report: dict[str, Any]) -> None:
+    """Issue #75: every Maya edge, before and after, resolves to raw evidence."""
+    from serene.causal.provenance import TwinProvenanceView
+
+    view = build_web_state(report)
+    for when in ("before", "after"):
+        twin = view[f"twin_{when}"]
+        provenance = TwinProvenanceView.model_validate_json(
+            canonical_json(view[f"twin_provenance_{when}"])
+        )
+        assert provenance.ledger_head == twin["ledger_head"]
+        assert [e.edge_id for e in provenance.edges] == [e["edge_id"] for e in twin["edges"]]
+        assert provenance.missing == ()
+        for edge, raw in zip(provenance.edges, twin["edges"], strict=True):
+            assert edge.lineage.complete
+            assert edge.lineage.raw_evidence == tuple(raw["raw_evidence"])
+            assert edge.status.value == raw["status"]
+    after = TwinProvenanceView.model_validate_json(canonical_json(view["twin_provenance_after"]))
+    (learned,) = (e for e in after.edges if e.epistemic_level == 5)
+    assert learned.learning is not None and learned.validity is not None
+    assert [o.experiment_id for x in learned.experiments for o in x.outcomes] == [
+        x.experiment_id for x in learned.experiments
+    ]
+    text = canonical_json(view["twin_provenance_after"]).decode()
+    assert report["twin_after"]["child_id"] not in text

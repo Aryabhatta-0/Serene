@@ -1,0 +1,1711 @@
+{
+  "provenance": {
+    "as_of": "2026-09-04T08:35:00Z",
+    "edges": [
+      {
+        "alternative_explanations": [
+          "The abrupt transition at pickup drives the distress"
+        ],
+        "competing_edges": [
+          "hyp_ba2b0b777846bc222c2df87feb8ee21b"
+        ],
+        "confounders": [
+          "variable nap length"
+        ],
+        "counterevidence": [
+          {
+            "contradicting_outcome": true,
+            "entity_id": "out_b1acf15ec9cdaee8f062f02599a14644"
+          }
+        ],
+        "edge_id": "hyp_4a17d5837afc92074dd2845a2bdfc3d7",
+        "epistemic_level": 3,
+        "experiments": [
+          {
+            "ended_at": "2026-09-04T08:34:00Z",
+            "experiment_id": "exp_e7076dad8dad1bc5d72cf7008762b605",
+            "intervention": "Give a five-minute heads-up before leaving daycare",
+            "outcome_measure": "parent-reported calm pickup (yes/no)",
+            "outcomes": [
+              {
+                "experiment_id": "exp_e7076dad8dad1bc5d72cf7008762b605",
+                "outcome_id": "out_b1acf15ec9cdaee8f062f02599a14644",
+                "reported_at": "2026-09-04T08:32:00Z",
+                "result": "CONTRADICTS",
+                "summary": "pickups were calm on most heads-up days"
+              }
+            ],
+            "safety_class": "GREEN",
+            "started_at": "2026-09-04T08:28:00Z",
+            "status": "COMPLETED"
+          }
+        ],
+        "learning": null,
+        "learning_status": null,
+        "lifecycle": "REFUTED",
+        "lineage": {
+          "complete": true,
+          "missing": [],
+          "raw_evidence": [
+            "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c",
+            "evd_45998d2767838780126f1f2f372be570",
+            "evd_70b147d96ea817e3678782789e924614"
+          ],
+          "root": "hyp_4a17d5837afc92074dd2845a2bdfc3d7",
+          "steps": [
+            {
+              "depth": 0,
+              "entity_id": "hyp_4a17d5837afc92074dd2845a2bdfc3d7"
+            },
+            {
+              "depth": 1,
+              "entity_id": "pat_ec003518acb088083008da547ff9f321"
+            },
+            {
+              "depth": 2,
+              "entity_id": "obs_0a71bb472f7a6a9253446804e67af83b"
+            },
+            {
+              "depth": 2,
+              "entity_id": "obs_32446e1702c128bff12f062e6d6b3f41"
+            },
+            {
+              "depth": 2,
+              "entity_id": "obs_392318c8b95bcfca97d8991f12267adf"
+            },
+            {
+              "depth": 3,
+              "entity_id": "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c"
+            },
+            {
+              "depth": 3,
+              "entity_id": "evd_45998d2767838780126f1f2f372be570"
+            },
+            {
+              "depth": 3,
+              "entity_id": "evd_70b147d96ea817e3678782789e924614"
+            }
+          ]
+        },
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:00:00Z",
+          "derived_from": [
+            "pat_ec003518acb088083008da547ff9f321"
+          ],
+          "method": "MODEL_INFERENCE",
+          "model": {
+            "model_id": "scripted/hermes",
+            "prompt_version": "serene-hermes/2",
+            "provider": "hermes",
+            "runtime": "hermes-agent@v2026.9.24"
+          },
+          "source_ids": [
+            "evd_45998d2767838780126f1f2f372be570",
+            "evd_70b147d96ea817e3678782789e924614",
+            "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c"
+          ],
+          "supersedes": null
+        },
+        "refutation": {
+          "outcome_ids": [
+            "out_b1acf15ec9cdaee8f062f02599a14644"
+          ],
+          "reason_codes": [
+            "CONTRADICTING_OUTCOME"
+          ]
+        },
+        "relationship": "Hunger after a long day drives the distress",
+        "scope_contexts": [
+          "daycare_pickup"
+        ],
+        "status": "REFUTED",
+        "supersession": {
+          "reason": null,
+          "superseded_by": null,
+          "supersedes": null
+        },
+        "support": [
+          {
+            "entity_id": "obs_0a71bb472f7a6a9253446804e67af83b",
+            "kind": "OBSERVATIONAL"
+          },
+          {
+            "entity_id": "obs_32446e1702c128bff12f062e6d6b3f41",
+            "kind": "OBSERVATIONAL"
+          },
+          {
+            "entity_id": "obs_392318c8b95bcfca97d8991f12267adf",
+            "kind": "OBSERVATIONAL"
+          }
+        ],
+        "validity": null,
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "alternative_explanations": [
+          "hunger after daycare",
+          "end-of-day tiredness"
+        ],
+        "competing_edges": [],
+        "confounders": [
+          "variable nap length"
+        ],
+        "counterevidence": [],
+        "edge_id": "hyp_6071150c3c9a22e0d76ae061088f01cc",
+        "epistemic_level": 5,
+        "experiments": [
+          {
+            "ended_at": "2026-09-04T08:20:00Z",
+            "experiment_id": "exp_200e49075dbf5f70d7b4c1563b1f3662",
+            "intervention": "Give a five-minute heads-up before leaving daycare",
+            "outcome_measure": "parent-reported calm pickup (yes/no)",
+            "outcomes": [
+              {
+                "experiment_id": "exp_200e49075dbf5f70d7b4c1563b1f3662",
+                "outcome_id": "out_ac79d13b3706b67861b7eb0ce6bf16a6",
+                "reported_at": "2026-09-04T08:18:00Z",
+                "result": "SUPPORTS",
+                "summary": "pickups were calm on most heads-up days"
+              }
+            ],
+            "safety_class": "GREEN",
+            "started_at": "2026-09-04T08:14:00Z",
+            "status": "COMPLETED"
+          }
+        ],
+        "learning": {
+          "confounders": [
+            "variable nap length"
+          ],
+          "counterevidence": [],
+          "effective_status": "ACTIVE",
+          "experiment_ids": [
+            "exp_200e49075dbf5f70d7b4c1563b1f3662"
+          ],
+          "learning_id": "lrn_d8445430b8097fdc1897ee66acb5671c",
+          "outcome_ids": [
+            "out_ac79d13b3706b67861b7eb0ce6bf16a6"
+          ],
+          "recorded_status": "ACTIVE",
+          "retest_triggers": [
+            "daycare schedule changes",
+            "new caregiver at pickup"
+          ],
+          "review_after": "2026-11-03T08:22:00Z",
+          "review_due": false,
+          "reviewer_kind": "PARENT",
+          "scope_contexts": [
+            "daycare_pickup",
+            "weekday_evening"
+          ],
+          "statement": "A five-minute heads-up helps weekday daycare pickups go calmly",
+          "status_changed_at": "2026-09-04T08:23:00Z",
+          "superseded_learnings": [],
+          "valid_from": "2026-09-04T08:22:00Z"
+        },
+        "learning_status": "ACTIVE",
+        "lifecycle": "ACTIVE",
+        "lineage": {
+          "complete": true,
+          "missing": [],
+          "raw_evidence": [
+            "evd_4686b42b276dce2a3950ebccc70dfaa7",
+            "evd_86ce05d816acf24552b2df55bf7bdd84"
+          ],
+          "root": "hyp_6071150c3c9a22e0d76ae061088f01cc",
+          "steps": [
+            {
+              "depth": 0,
+              "entity_id": "hyp_6071150c3c9a22e0d76ae061088f01cc"
+            },
+            {
+              "depth": 1,
+              "entity_id": "pat_c3a116036693a65b30facb58ee686d0d"
+            },
+            {
+              "depth": 2,
+              "entity_id": "obs_5a4a163991c3e4f33c247fa264203c1f"
+            },
+            {
+              "depth": 2,
+              "entity_id": "obs_62ac58048536daa2be0d72d8e22df51c"
+            },
+            {
+              "depth": 3,
+              "entity_id": "evd_4686b42b276dce2a3950ebccc70dfaa7"
+            },
+            {
+              "depth": 3,
+              "entity_id": "evd_86ce05d816acf24552b2df55bf7bdd84"
+            }
+          ]
+        },
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:07:00Z",
+          "derived_from": [
+            "pat_c3a116036693a65b30facb58ee686d0d"
+          ],
+          "method": "MODEL_INFERENCE",
+          "model": {
+            "model_id": "scripted-proposer",
+            "prompt_version": "test/1",
+            "provider": "synthetic",
+            "runtime": "scripted"
+          },
+          "source_ids": [
+            "evd_4686b42b276dce2a3950ebccc70dfaa7",
+            "evd_86ce05d816acf24552b2df55bf7bdd84"
+          ],
+          "supersedes": null
+        },
+        "refutation": null,
+        "relationship": "Pickups after the posted pickup window drive the distress",
+        "scope_contexts": [
+          "daycare_pickup",
+          "weekday_evening"
+        ],
+        "status": "SUPPORTED",
+        "supersession": {
+          "reason": null,
+          "superseded_by": null,
+          "supersedes": null
+        },
+        "support": [
+          {
+            "entity_id": "obs_5a4a163991c3e4f33c247fa264203c1f",
+            "kind": "OBSERVATIONAL"
+          },
+          {
+            "entity_id": "obs_62ac58048536daa2be0d72d8e22df51c",
+            "kind": "OBSERVATIONAL"
+          },
+          {
+            "entity_id": "out_ac79d13b3706b67861b7eb0ce6bf16a6",
+            "kind": "EXPERIMENTAL"
+          }
+        ],
+        "validity": {
+          "review_after": "2026-11-03T08:22:00Z",
+          "valid_from": "2026-09-04T08:22:00Z"
+        },
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "alternative_explanations": [
+          "Hunger after a long day drives the distress"
+        ],
+        "competing_edges": [
+          "hyp_4a17d5837afc92074dd2845a2bdfc3d7"
+        ],
+        "confounders": [
+          "variable nap length"
+        ],
+        "counterevidence": [],
+        "edge_id": "hyp_ba2b0b777846bc222c2df87feb8ee21b",
+        "epistemic_level": 3,
+        "experiments": [],
+        "learning": null,
+        "learning_status": null,
+        "lifecycle": "SUPERSEDED",
+        "lineage": {
+          "complete": true,
+          "missing": [],
+          "raw_evidence": [
+            "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c",
+            "evd_45998d2767838780126f1f2f372be570",
+            "evd_70b147d96ea817e3678782789e924614"
+          ],
+          "root": "hyp_ba2b0b777846bc222c2df87feb8ee21b",
+          "steps": [
+            {
+              "depth": 0,
+              "entity_id": "hyp_ba2b0b777846bc222c2df87feb8ee21b"
+            },
+            {
+              "depth": 1,
+              "entity_id": "pat_ec003518acb088083008da547ff9f321"
+            },
+            {
+              "depth": 2,
+              "entity_id": "obs_0a71bb472f7a6a9253446804e67af83b"
+            },
+            {
+              "depth": 2,
+              "entity_id": "obs_32446e1702c128bff12f062e6d6b3f41"
+            },
+            {
+              "depth": 2,
+              "entity_id": "obs_392318c8b95bcfca97d8991f12267adf"
+            },
+            {
+              "depth": 3,
+              "entity_id": "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c"
+            },
+            {
+              "depth": 3,
+              "entity_id": "evd_45998d2767838780126f1f2f372be570"
+            },
+            {
+              "depth": 3,
+              "entity_id": "evd_70b147d96ea817e3678782789e924614"
+            }
+          ]
+        },
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:00:00Z",
+          "derived_from": [
+            "pat_ec003518acb088083008da547ff9f321"
+          ],
+          "method": "MODEL_INFERENCE",
+          "model": {
+            "model_id": "scripted/hermes",
+            "prompt_version": "serene-hermes/2",
+            "provider": "hermes",
+            "runtime": "hermes-agent@v2026.9.24"
+          },
+          "source_ids": [
+            "evd_45998d2767838780126f1f2f372be570",
+            "evd_70b147d96ea817e3678782789e924614",
+            "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c"
+          ],
+          "supersedes": null
+        },
+        "refutation": null,
+        "relationship": "The abrupt transition at pickup drives the distress",
+        "scope_contexts": [
+          "daycare_pickup"
+        ],
+        "status": "SUPERSEDED",
+        "supersession": {
+          "reason": "Narrowed to pickups after the posted pickup window",
+          "superseded_by": "hyp_6071150c3c9a22e0d76ae061088f01cc",
+          "supersedes": null
+        },
+        "support": [
+          {
+            "entity_id": "obs_0a71bb472f7a6a9253446804e67af83b",
+            "kind": "OBSERVATIONAL"
+          },
+          {
+            "entity_id": "obs_32446e1702c128bff12f062e6d6b3f41",
+            "kind": "OBSERVATIONAL"
+          },
+          {
+            "entity_id": "obs_392318c8b95bcfca97d8991f12267adf",
+            "kind": "OBSERVATIONAL"
+          }
+        ],
+        "validity": null,
+        "verification_status": "UNVERIFIED"
+      }
+    ],
+    "ledger_head": "c1bfd79287eb8eb701025e29f1c7ee2a7296068891d7516c3e63e8d27965c30b",
+    "missing": [],
+    "nodes": [
+      {
+        "entity_id": "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c",
+        "epistemic_level": 0,
+        "evidence": {
+          "captured_at": "2026-09-04T08:00:00Z",
+          "checks_passed": [],
+          "content_digest": "a2e314807abc25699ce705fa23e5dca637fe221692f54d62d82d7b6207800505",
+          "evidence_kind": "PARENT_REPORT",
+          "external": false,
+          "rejection_reason_codes": [],
+          "retrieved_at": null,
+          "source_host": null,
+          "source_kind": "TELEGRAM"
+        },
+        "evidence_origin": "FAMILY",
+        "kind": "EVIDENCE",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:00:00Z",
+        "origin": {
+          "actor_kind": "PARENT",
+          "created_at": "2026-09-04T08:00:00Z",
+          "derived_from": [],
+          "method": "PARENT_REPORT",
+          "model": null,
+          "source_ids": [],
+          "supersedes": null
+        },
+        "parents": [],
+        "raw_evidence": [
+          "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c"
+        ],
+        "summary": "Parent report via Telegram",
+        "superseded_by": null,
+        "verification_status": "VERIFIED"
+      },
+      {
+        "entity_id": "evd_1b1d8e8043129a4c7147faec0aad3648",
+        "epistemic_level": 0,
+        "evidence": {
+          "captured_at": "2026-09-04T08:14:00Z",
+          "checks_passed": [],
+          "content_digest": "0dba37c12c85e318acad83f12c2654437d690df010d1cefb99055f151e06c543",
+          "evidence_kind": "PARENT_REPORT",
+          "external": false,
+          "rejection_reason_codes": [],
+          "retrieved_at": null,
+          "source_host": null,
+          "source_kind": "TELEGRAM"
+        },
+        "evidence_origin": "FAMILY",
+        "kind": "EVIDENCE",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:14:00Z",
+        "origin": {
+          "actor_kind": "PARENT",
+          "created_at": "2026-09-04T08:14:00Z",
+          "derived_from": [],
+          "method": "PARENT_REPORT",
+          "model": null,
+          "source_ids": [],
+          "supersedes": null
+        },
+        "parents": [],
+        "raw_evidence": [
+          "evd_1b1d8e8043129a4c7147faec0aad3648"
+        ],
+        "summary": "Parent report via Telegram",
+        "superseded_by": null,
+        "verification_status": "VERIFIED"
+      },
+      {
+        "entity_id": "evd_45998d2767838780126f1f2f372be570",
+        "epistemic_level": 0,
+        "evidence": {
+          "captured_at": "2026-09-02T08:00:00Z",
+          "checks_passed": [],
+          "content_digest": "6be97cff81f02aee9a3adf7f4710fcecca1870434d62d6baf33643e696443c62",
+          "evidence_kind": "PARENT_REPORT",
+          "external": false,
+          "rejection_reason_codes": [],
+          "retrieved_at": null,
+          "source_host": null,
+          "source_kind": "TELEGRAM"
+        },
+        "evidence_origin": "FAMILY",
+        "kind": "EVIDENCE",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-02T08:00:00Z",
+        "origin": {
+          "actor_kind": "PARENT",
+          "created_at": "2026-09-02T08:00:00Z",
+          "derived_from": [],
+          "method": "PARENT_REPORT",
+          "model": null,
+          "source_ids": [],
+          "supersedes": null
+        },
+        "parents": [],
+        "raw_evidence": [
+          "evd_45998d2767838780126f1f2f372be570"
+        ],
+        "summary": "Parent report via Telegram",
+        "superseded_by": null,
+        "verification_status": "VERIFIED"
+      },
+      {
+        "entity_id": "evd_4686b42b276dce2a3950ebccc70dfaa7",
+        "epistemic_level": 0,
+        "evidence": {
+          "captured_at": "2026-09-04T08:00:00Z",
+          "checks_passed": [
+            "DIGEST_MATCHES",
+            "EFFECTIVE_DATE_VALID",
+            "PROVENANCE_VALID",
+            "REQUESTED_FIELDS_PRESENT",
+            "SOURCE_ALLOWED",
+            "SUBJECT_MATCHES"
+          ],
+          "content_digest": "ac0aac36978bc4025229467b582de3e278837c88a005fb521840321ba56eed4a",
+          "evidence_kind": "BROWSER_CAPTURE",
+          "external": true,
+          "rejection_reason_codes": [],
+          "retrieved_at": "2026-09-04T08:00:00Z",
+          "source_host": "example.org",
+          "source_kind": "BROWSER"
+        },
+        "evidence_origin": "EXTERNAL",
+        "kind": "EVIDENCE",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:00:00Z",
+        "origin": {
+          "actor_kind": "SYSTEM",
+          "created_at": "2026-09-04T08:00:00Z",
+          "derived_from": [],
+          "method": "BROWSER_ACQUISITION",
+          "model": null,
+          "source_ids": [],
+          "supersedes": null
+        },
+        "parents": [],
+        "raw_evidence": [
+          "evd_4686b42b276dce2a3950ebccc70dfaa7"
+        ],
+        "summary": "Web page capture via example.org",
+        "superseded_by": null,
+        "verification_status": "VERIFIED"
+      },
+      {
+        "entity_id": "evd_70b147d96ea817e3678782789e924614",
+        "epistemic_level": 0,
+        "evidence": {
+          "captured_at": "2026-09-03T08:00:00Z",
+          "checks_passed": [],
+          "content_digest": "276299c71d038ecec19a2f1461f8a3cb09ef11fbb4a8a74ddacedc0644312246",
+          "evidence_kind": "PARENT_REPORT",
+          "external": false,
+          "rejection_reason_codes": [],
+          "retrieved_at": null,
+          "source_host": null,
+          "source_kind": "TELEGRAM"
+        },
+        "evidence_origin": "FAMILY",
+        "kind": "EVIDENCE",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-03T08:00:00Z",
+        "origin": {
+          "actor_kind": "PARENT",
+          "created_at": "2026-09-03T08:00:00Z",
+          "derived_from": [],
+          "method": "PARENT_REPORT",
+          "model": null,
+          "source_ids": [],
+          "supersedes": null
+        },
+        "parents": [],
+        "raw_evidence": [
+          "evd_70b147d96ea817e3678782789e924614"
+        ],
+        "summary": "Parent report via Telegram",
+        "superseded_by": null,
+        "verification_status": "VERIFIED"
+      },
+      {
+        "entity_id": "evd_86ce05d816acf24552b2df55bf7bdd84",
+        "epistemic_level": 0,
+        "evidence": {
+          "captured_at": "2026-09-04T08:01:00Z",
+          "checks_passed": [],
+          "content_digest": "95f62011aa05b1bec8e24d93502d7a64913101dc3094efc08d2c80c260dfce1d",
+          "evidence_kind": "PARENT_REPORT",
+          "external": false,
+          "rejection_reason_codes": [],
+          "retrieved_at": null,
+          "source_host": null,
+          "source_kind": "TELEGRAM"
+        },
+        "evidence_origin": "FAMILY",
+        "kind": "EVIDENCE",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:01:00Z",
+        "origin": {
+          "actor_kind": "PARENT",
+          "created_at": "2026-09-04T08:01:00Z",
+          "derived_from": [],
+          "method": "PARENT_REPORT",
+          "model": null,
+          "source_ids": [],
+          "supersedes": null
+        },
+        "parents": [],
+        "raw_evidence": [
+          "evd_86ce05d816acf24552b2df55bf7bdd84"
+        ],
+        "summary": "Parent report via Telegram",
+        "superseded_by": null,
+        "verification_status": "VERIFIED"
+      },
+      {
+        "entity_id": "evd_8a37e9a492b70879acf9d183326c325e",
+        "epistemic_level": 0,
+        "evidence": {
+          "captured_at": "2026-09-04T08:28:00Z",
+          "checks_passed": [],
+          "content_digest": "709d6af8ed47507e7666589978407376ecb634920e64cb91540cd80283ea3900",
+          "evidence_kind": "PARENT_REPORT",
+          "external": false,
+          "rejection_reason_codes": [],
+          "retrieved_at": null,
+          "source_host": null,
+          "source_kind": "TELEGRAM"
+        },
+        "evidence_origin": "FAMILY",
+        "kind": "EVIDENCE",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:28:00Z",
+        "origin": {
+          "actor_kind": "PARENT",
+          "created_at": "2026-09-04T08:28:00Z",
+          "derived_from": [],
+          "method": "PARENT_REPORT",
+          "model": null,
+          "source_ids": [],
+          "supersedes": null
+        },
+        "parents": [],
+        "raw_evidence": [
+          "evd_8a37e9a492b70879acf9d183326c325e"
+        ],
+        "summary": "Parent report via Telegram",
+        "superseded_by": null,
+        "verification_status": "VERIFIED"
+      },
+      {
+        "entity_id": "evd_b96646f2d7b979e107bcc34f806f39d7",
+        "epistemic_level": 0,
+        "evidence": {
+          "captured_at": "2026-09-04T08:30:00Z",
+          "checks_passed": [],
+          "content_digest": "a0b0eaa60d457838154545b811f8752cfbf22010af7267bc9813382563d8341e",
+          "evidence_kind": "PARENT_REPORT",
+          "external": false,
+          "rejection_reason_codes": [],
+          "retrieved_at": null,
+          "source_host": null,
+          "source_kind": "TELEGRAM"
+        },
+        "evidence_origin": "FAMILY",
+        "kind": "EVIDENCE",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:30:00Z",
+        "origin": {
+          "actor_kind": "PARENT",
+          "created_at": "2026-09-04T08:30:00Z",
+          "derived_from": [],
+          "method": "PARENT_REPORT",
+          "model": null,
+          "source_ids": [],
+          "supersedes": null
+        },
+        "parents": [],
+        "raw_evidence": [
+          "evd_b96646f2d7b979e107bcc34f806f39d7"
+        ],
+        "summary": "Parent report via Telegram",
+        "superseded_by": null,
+        "verification_status": "VERIFIED"
+      },
+      {
+        "entity_id": "evd_cf55c7d9069e2dbe7b7d40c5779e4881",
+        "epistemic_level": 0,
+        "evidence": {
+          "captured_at": "2026-09-04T08:16:00Z",
+          "checks_passed": [],
+          "content_digest": "392cf18f914036e73f9aa9f0c74dde962990fa54267899ecb18f5ed3cb65f936",
+          "evidence_kind": "PARENT_REPORT",
+          "external": false,
+          "rejection_reason_codes": [],
+          "retrieved_at": null,
+          "source_host": null,
+          "source_kind": "TELEGRAM"
+        },
+        "evidence_origin": "FAMILY",
+        "kind": "EVIDENCE",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:16:00Z",
+        "origin": {
+          "actor_kind": "PARENT",
+          "created_at": "2026-09-04T08:16:00Z",
+          "derived_from": [],
+          "method": "PARENT_REPORT",
+          "model": null,
+          "source_ids": [],
+          "supersedes": null
+        },
+        "parents": [],
+        "raw_evidence": [
+          "evd_cf55c7d9069e2dbe7b7d40c5779e4881"
+        ],
+        "summary": "Parent report via Telegram",
+        "superseded_by": null,
+        "verification_status": "VERIFIED"
+      },
+      {
+        "entity_id": "exp_200e49075dbf5f70d7b4c1563b1f3662",
+        "epistemic_level": null,
+        "evidence": null,
+        "evidence_origin": "MIXED",
+        "kind": "EXPERIMENT",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:09:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:09:00Z",
+          "derived_from": [
+            "hyp_6071150c3c9a22e0d76ae061088f01cc"
+          ],
+          "method": "MODEL_INFERENCE",
+          "model": {
+            "model_id": "scripted-proposer",
+            "prompt_version": "test/1",
+            "provider": "synthetic",
+            "runtime": "scripted"
+          },
+          "source_ids": [
+            "evd_4686b42b276dce2a3950ebccc70dfaa7",
+            "evd_86ce05d816acf24552b2df55bf7bdd84"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "hyp_6071150c3c9a22e0d76ae061088f01cc"
+        ],
+        "raw_evidence": [
+          "evd_4686b42b276dce2a3950ebccc70dfaa7",
+          "evd_86ce05d816acf24552b2df55bf7bdd84"
+        ],
+        "summary": "Give a five-minute heads-up before leaving daycare",
+        "superseded_by": null,
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "entity_id": "exp_e7076dad8dad1bc5d72cf7008762b605",
+        "epistemic_level": null,
+        "evidence": null,
+        "evidence_origin": "FAMILY",
+        "kind": "EXPERIMENT",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:23:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:23:00Z",
+          "derived_from": [
+            "hyp_4a17d5837afc92074dd2845a2bdfc3d7"
+          ],
+          "method": "MODEL_INFERENCE",
+          "model": {
+            "model_id": "scripted-proposer",
+            "prompt_version": "test/1",
+            "provider": "synthetic",
+            "runtime": "scripted"
+          },
+          "source_ids": [
+            "evd_45998d2767838780126f1f2f372be570",
+            "evd_70b147d96ea817e3678782789e924614",
+            "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "hyp_4a17d5837afc92074dd2845a2bdfc3d7"
+        ],
+        "raw_evidence": [
+          "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c",
+          "evd_45998d2767838780126f1f2f372be570",
+          "evd_70b147d96ea817e3678782789e924614"
+        ],
+        "summary": "Give a five-minute heads-up before leaving daycare",
+        "superseded_by": null,
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "entity_id": "hyp_4a17d5837afc92074dd2845a2bdfc3d7",
+        "epistemic_level": 3,
+        "evidence": null,
+        "evidence_origin": "FAMILY",
+        "kind": "HYPOTHESIS",
+        "lifecycle": "REFUTED",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:00:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:00:00Z",
+          "derived_from": [
+            "pat_ec003518acb088083008da547ff9f321"
+          ],
+          "method": "MODEL_INFERENCE",
+          "model": {
+            "model_id": "scripted/hermes",
+            "prompt_version": "serene-hermes/2",
+            "provider": "hermes",
+            "runtime": "hermes-agent@v2026.9.24"
+          },
+          "source_ids": [
+            "evd_45998d2767838780126f1f2f372be570",
+            "evd_70b147d96ea817e3678782789e924614",
+            "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "pat_ec003518acb088083008da547ff9f321"
+        ],
+        "raw_evidence": [
+          "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c",
+          "evd_45998d2767838780126f1f2f372be570",
+          "evd_70b147d96ea817e3678782789e924614"
+        ],
+        "summary": "Hunger after a long day drives the distress",
+        "superseded_by": null,
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "entity_id": "hyp_6071150c3c9a22e0d76ae061088f01cc",
+        "epistemic_level": 3,
+        "evidence": null,
+        "evidence_origin": "MIXED",
+        "kind": "HYPOTHESIS",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:07:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:07:00Z",
+          "derived_from": [
+            "pat_c3a116036693a65b30facb58ee686d0d"
+          ],
+          "method": "MODEL_INFERENCE",
+          "model": {
+            "model_id": "scripted-proposer",
+            "prompt_version": "test/1",
+            "provider": "synthetic",
+            "runtime": "scripted"
+          },
+          "source_ids": [
+            "evd_4686b42b276dce2a3950ebccc70dfaa7",
+            "evd_86ce05d816acf24552b2df55bf7bdd84"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "pat_c3a116036693a65b30facb58ee686d0d"
+        ],
+        "raw_evidence": [
+          "evd_4686b42b276dce2a3950ebccc70dfaa7",
+          "evd_86ce05d816acf24552b2df55bf7bdd84"
+        ],
+        "summary": "Pickups after the posted pickup window drive the distress",
+        "superseded_by": null,
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "entity_id": "hyp_ba2b0b777846bc222c2df87feb8ee21b",
+        "epistemic_level": 3,
+        "evidence": null,
+        "evidence_origin": "FAMILY",
+        "kind": "HYPOTHESIS",
+        "lifecycle": "SUPERSEDED",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:00:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:00:00Z",
+          "derived_from": [
+            "pat_ec003518acb088083008da547ff9f321"
+          ],
+          "method": "MODEL_INFERENCE",
+          "model": {
+            "model_id": "scripted/hermes",
+            "prompt_version": "serene-hermes/2",
+            "provider": "hermes",
+            "runtime": "hermes-agent@v2026.9.24"
+          },
+          "source_ids": [
+            "evd_45998d2767838780126f1f2f372be570",
+            "evd_70b147d96ea817e3678782789e924614",
+            "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "pat_ec003518acb088083008da547ff9f321"
+        ],
+        "raw_evidence": [
+          "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c",
+          "evd_45998d2767838780126f1f2f372be570",
+          "evd_70b147d96ea817e3678782789e924614"
+        ],
+        "summary": "The abrupt transition at pickup drives the distress",
+        "superseded_by": "hyp_6071150c3c9a22e0d76ae061088f01cc",
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "entity_id": "lrn_d8445430b8097fdc1897ee66acb5671c",
+        "epistemic_level": 5,
+        "evidence": null,
+        "evidence_origin": "MIXED",
+        "kind": "LEARNING",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:22:00Z",
+        "origin": {
+          "actor_kind": "POLICY",
+          "created_at": "2026-09-04T08:22:00Z",
+          "derived_from": [
+            "hyp_6071150c3c9a22e0d76ae061088f01cc",
+            "exp_200e49075dbf5f70d7b4c1563b1f3662",
+            "out_ac79d13b3706b67861b7eb0ce6bf16a6"
+          ],
+          "method": "DETERMINISTIC_RULE",
+          "model": null,
+          "source_ids": [
+            "evd_4686b42b276dce2a3950ebccc70dfaa7",
+            "evd_86ce05d816acf24552b2df55bf7bdd84",
+            "evd_1b1d8e8043129a4c7147faec0aad3648",
+            "evd_cf55c7d9069e2dbe7b7d40c5779e4881"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "hyp_6071150c3c9a22e0d76ae061088f01cc",
+          "exp_200e49075dbf5f70d7b4c1563b1f3662",
+          "out_ac79d13b3706b67861b7eb0ce6bf16a6"
+        ],
+        "raw_evidence": [
+          "evd_1b1d8e8043129a4c7147faec0aad3648",
+          "evd_4686b42b276dce2a3950ebccc70dfaa7",
+          "evd_86ce05d816acf24552b2df55bf7bdd84",
+          "evd_cf55c7d9069e2dbe7b7d40c5779e4881"
+        ],
+        "summary": "A five-minute heads-up helps weekday daycare pickups go calmly",
+        "superseded_by": null,
+        "verification_status": "VERIFIED"
+      },
+      {
+        "entity_id": "obs_0a71bb472f7a6a9253446804e67af83b",
+        "epistemic_level": 1,
+        "evidence": null,
+        "evidence_origin": "FAMILY",
+        "kind": "OBSERVATION",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:00:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:00:00Z",
+          "derived_from": [
+            "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c"
+          ],
+          "method": "MODEL_EXTRACTION",
+          "model": {
+            "model_id": "scripted/hermes",
+            "prompt_version": "serene-hermes/2",
+            "provider": "hermes",
+            "runtime": "hermes-agent@v2026.9.24"
+          },
+          "source_ids": [
+            "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c"
+        ],
+        "raw_evidence": [
+          "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c"
+        ],
+        "summary": "Tearful at pickup, calmer later",
+        "superseded_by": null,
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "entity_id": "obs_1732bab687cd6edd556640e60bcb2469",
+        "epistemic_level": 1,
+        "evidence": null,
+        "evidence_origin": "FAMILY",
+        "kind": "OBSERVATION",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-15T08:00:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:15:00Z",
+          "derived_from": [
+            "evd_1b1d8e8043129a4c7147faec0aad3648"
+          ],
+          "method": "MODEL_EXTRACTION",
+          "model": {
+            "model_id": "scripted-proposer",
+            "prompt_version": "test/1",
+            "provider": "synthetic",
+            "runtime": "scripted"
+          },
+          "source_ids": [
+            "evd_1b1d8e8043129a4c7147faec0aad3648"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "evd_1b1d8e8043129a4c7147faec0aad3648"
+        ],
+        "raw_evidence": [
+          "evd_1b1d8e8043129a4c7147faec0aad3648"
+        ],
+        "summary": "Pickup during the trial was calm",
+        "superseded_by": null,
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "entity_id": "obs_22f54b36e02190b9edf62549f021648b",
+        "epistemic_level": 1,
+        "evidence": null,
+        "evidence_origin": "FAMILY",
+        "kind": "OBSERVATION",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-21T08:00:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:29:00Z",
+          "derived_from": [
+            "evd_8a37e9a492b70879acf9d183326c325e"
+          ],
+          "method": "MODEL_EXTRACTION",
+          "model": {
+            "model_id": "scripted-proposer",
+            "prompt_version": "test/1",
+            "provider": "synthetic",
+            "runtime": "scripted"
+          },
+          "source_ids": [
+            "evd_8a37e9a492b70879acf9d183326c325e"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "evd_8a37e9a492b70879acf9d183326c325e"
+        ],
+        "raw_evidence": [
+          "evd_8a37e9a492b70879acf9d183326c325e"
+        ],
+        "summary": "Pickup during the trial was tearful despite a snack",
+        "superseded_by": null,
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "entity_id": "obs_32446e1702c128bff12f062e6d6b3f41",
+        "epistemic_level": 1,
+        "evidence": null,
+        "evidence_origin": "FAMILY",
+        "kind": "OBSERVATION",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-03T08:00:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-03T08:00:00Z",
+          "derived_from": [
+            "evd_70b147d96ea817e3678782789e924614"
+          ],
+          "method": "MODEL_EXTRACTION",
+          "model": {
+            "model_id": "scripted/hermes",
+            "prompt_version": "serene-hermes/2",
+            "provider": "hermes",
+            "runtime": "hermes-agent@v2026.9.24"
+          },
+          "source_ids": [
+            "evd_70b147d96ea817e3678782789e924614"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "evd_70b147d96ea817e3678782789e924614"
+        ],
+        "raw_evidence": [
+          "evd_70b147d96ea817e3678782789e924614"
+        ],
+        "summary": "Meltdown at daycare pickup",
+        "superseded_by": null,
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "entity_id": "obs_392318c8b95bcfca97d8991f12267adf",
+        "epistemic_level": 1,
+        "evidence": null,
+        "evidence_origin": "FAMILY",
+        "kind": "OBSERVATION",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-02T08:00:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-02T08:00:00Z",
+          "derived_from": [
+            "evd_45998d2767838780126f1f2f372be570"
+          ],
+          "method": "MODEL_EXTRACTION",
+          "model": {
+            "model_id": "scripted/hermes",
+            "prompt_version": "serene-hermes/2",
+            "provider": "hermes",
+            "runtime": "hermes-agent@v2026.9.24"
+          },
+          "source_ids": [
+            "evd_45998d2767838780126f1f2f372be570"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "evd_45998d2767838780126f1f2f372be570"
+        ],
+        "raw_evidence": [
+          "evd_45998d2767838780126f1f2f372be570"
+        ],
+        "summary": "Crying at daycare pickup",
+        "superseded_by": null,
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "entity_id": "obs_5a4a163991c3e4f33c247fa264203c1f",
+        "epistemic_level": 1,
+        "evidence": null,
+        "evidence_origin": "EXTERNAL",
+        "kind": "OBSERVATION",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-11T08:00:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:00:00Z",
+          "derived_from": [
+            "evd_4686b42b276dce2a3950ebccc70dfaa7"
+          ],
+          "method": "MODEL_EXTRACTION",
+          "model": {
+            "model_id": "scripted-proposer",
+            "prompt_version": "test/1",
+            "provider": "synthetic",
+            "runtime": "scripted"
+          },
+          "source_ids": [
+            "evd_4686b42b276dce2a3950ebccc70dfaa7"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "evd_4686b42b276dce2a3950ebccc70dfaa7"
+        ],
+        "raw_evidence": [
+          "evd_4686b42b276dce2a3950ebccc70dfaa7"
+        ],
+        "summary": "The daycare posts a fixed afternoon pickup window",
+        "superseded_by": null,
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "entity_id": "obs_62ac58048536daa2be0d72d8e22df51c",
+        "epistemic_level": 1,
+        "evidence": null,
+        "evidence_origin": "FAMILY",
+        "kind": "OBSERVATION",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-12T08:00:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:02:00Z",
+          "derived_from": [
+            "evd_86ce05d816acf24552b2df55bf7bdd84"
+          ],
+          "method": "MODEL_EXTRACTION",
+          "model": {
+            "model_id": "scripted-proposer",
+            "prompt_version": "test/1",
+            "provider": "synthetic",
+            "runtime": "scripted"
+          },
+          "source_ids": [
+            "evd_86ce05d816acf24552b2df55bf7bdd84"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "evd_86ce05d816acf24552b2df55bf7bdd84"
+        ],
+        "raw_evidence": [
+          "evd_86ce05d816acf24552b2df55bf7bdd84"
+        ],
+        "summary": "Picked up after the window closed and it was tearful again",
+        "superseded_by": null,
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "entity_id": "obs_f6936d3730e47ccd26255ba3c2b1b02e",
+        "epistemic_level": 1,
+        "evidence": null,
+        "evidence_origin": "FAMILY",
+        "kind": "OBSERVATION",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-22T08:00:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:31:00Z",
+          "derived_from": [
+            "evd_b96646f2d7b979e107bcc34f806f39d7"
+          ],
+          "method": "MODEL_EXTRACTION",
+          "model": {
+            "model_id": "scripted-proposer",
+            "prompt_version": "test/1",
+            "provider": "synthetic",
+            "runtime": "scripted"
+          },
+          "source_ids": [
+            "evd_b96646f2d7b979e107bcc34f806f39d7"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "evd_b96646f2d7b979e107bcc34f806f39d7"
+        ],
+        "raw_evidence": [
+          "evd_b96646f2d7b979e107bcc34f806f39d7"
+        ],
+        "summary": "Second trial pickup was tearful despite a snack too",
+        "superseded_by": null,
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "entity_id": "obs_ff27134b83cd2ea635264051b8f7a696",
+        "epistemic_level": 1,
+        "evidence": null,
+        "evidence_origin": "FAMILY",
+        "kind": "OBSERVATION",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-16T08:00:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:17:00Z",
+          "derived_from": [
+            "evd_cf55c7d9069e2dbe7b7d40c5779e4881"
+          ],
+          "method": "MODEL_EXTRACTION",
+          "model": {
+            "model_id": "scripted-proposer",
+            "prompt_version": "test/1",
+            "provider": "synthetic",
+            "runtime": "scripted"
+          },
+          "source_ids": [
+            "evd_cf55c7d9069e2dbe7b7d40c5779e4881"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "evd_cf55c7d9069e2dbe7b7d40c5779e4881"
+        ],
+        "raw_evidence": [
+          "evd_cf55c7d9069e2dbe7b7d40c5779e4881"
+        ],
+        "summary": "Second trial pickup was calm too",
+        "superseded_by": null,
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "entity_id": "out_ac79d13b3706b67861b7eb0ce6bf16a6",
+        "epistemic_level": null,
+        "evidence": null,
+        "evidence_origin": "FAMILY",
+        "kind": "OUTCOME",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:18:00Z",
+        "origin": {
+          "actor_kind": "PARENT",
+          "created_at": "2026-09-04T08:18:00Z",
+          "derived_from": [
+            "obs_1732bab687cd6edd556640e60bcb2469",
+            "obs_ff27134b83cd2ea635264051b8f7a696"
+          ],
+          "method": "EXPERIMENT_OUTCOME",
+          "model": null,
+          "source_ids": [
+            "evd_1b1d8e8043129a4c7147faec0aad3648",
+            "evd_cf55c7d9069e2dbe7b7d40c5779e4881"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "obs_1732bab687cd6edd556640e60bcb2469",
+          "obs_ff27134b83cd2ea635264051b8f7a696"
+        ],
+        "raw_evidence": [
+          "evd_1b1d8e8043129a4c7147faec0aad3648",
+          "evd_cf55c7d9069e2dbe7b7d40c5779e4881"
+        ],
+        "summary": "pickups were calm on most heads-up days",
+        "superseded_by": null,
+        "verification_status": "VERIFIED"
+      },
+      {
+        "entity_id": "out_b1acf15ec9cdaee8f062f02599a14644",
+        "epistemic_level": null,
+        "evidence": null,
+        "evidence_origin": "FAMILY",
+        "kind": "OUTCOME",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:32:00Z",
+        "origin": {
+          "actor_kind": "PARENT",
+          "created_at": "2026-09-04T08:32:00Z",
+          "derived_from": [
+            "obs_22f54b36e02190b9edf62549f021648b",
+            "obs_f6936d3730e47ccd26255ba3c2b1b02e"
+          ],
+          "method": "EXPERIMENT_OUTCOME",
+          "model": null,
+          "source_ids": [
+            "evd_8a37e9a492b70879acf9d183326c325e",
+            "evd_b96646f2d7b979e107bcc34f806f39d7"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "obs_22f54b36e02190b9edf62549f021648b",
+          "obs_f6936d3730e47ccd26255ba3c2b1b02e"
+        ],
+        "raw_evidence": [
+          "evd_8a37e9a492b70879acf9d183326c325e",
+          "evd_b96646f2d7b979e107bcc34f806f39d7"
+        ],
+        "summary": "pickups were calm on most heads-up days",
+        "superseded_by": null,
+        "verification_status": "VERIFIED"
+      },
+      {
+        "entity_id": "pat_c3a116036693a65b30facb58ee686d0d",
+        "epistemic_level": 2,
+        "evidence": null,
+        "evidence_origin": "MIXED",
+        "kind": "PATTERN",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:03:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:03:00Z",
+          "derived_from": [
+            "obs_5a4a163991c3e4f33c247fa264203c1f",
+            "obs_62ac58048536daa2be0d72d8e22df51c"
+          ],
+          "method": "MODEL_INFERENCE",
+          "model": {
+            "model_id": "scripted-proposer",
+            "prompt_version": "test/1",
+            "provider": "synthetic",
+            "runtime": "scripted"
+          },
+          "source_ids": [
+            "evd_4686b42b276dce2a3950ebccc70dfaa7",
+            "evd_86ce05d816acf24552b2df55bf7bdd84"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "obs_5a4a163991c3e4f33c247fa264203c1f",
+          "obs_62ac58048536daa2be0d72d8e22df51c"
+        ],
+        "raw_evidence": [
+          "evd_4686b42b276dce2a3950ebccc70dfaa7",
+          "evd_86ce05d816acf24552b2df55bf7bdd84"
+        ],
+        "summary": "Tearful pickups follow pickups after the posted window",
+        "superseded_by": null,
+        "verification_status": "UNVERIFIED"
+      },
+      {
+        "entity_id": "pat_ec003518acb088083008da547ff9f321",
+        "epistemic_level": 2,
+        "evidence": null,
+        "evidence_origin": "FAMILY",
+        "kind": "PATTERN",
+        "lifecycle": "ACTIVE",
+        "missing": [],
+        "occurred_at": "2026-09-04T08:00:00Z",
+        "origin": {
+          "actor_kind": "AGENT",
+          "created_at": "2026-09-04T08:00:00Z",
+          "derived_from": [
+            "obs_392318c8b95bcfca97d8991f12267adf",
+            "obs_32446e1702c128bff12f062e6d6b3f41",
+            "obs_0a71bb472f7a6a9253446804e67af83b"
+          ],
+          "method": "MODEL_INFERENCE",
+          "model": {
+            "model_id": "scripted/hermes",
+            "prompt_version": "serene-hermes/2",
+            "provider": "hermes",
+            "runtime": "hermes-agent@v2026.9.24"
+          },
+          "source_ids": [
+            "evd_45998d2767838780126f1f2f372be570",
+            "evd_70b147d96ea817e3678782789e924614",
+            "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c"
+          ],
+          "supersedes": null
+        },
+        "parents": [
+          "obs_392318c8b95bcfca97d8991f12267adf",
+          "obs_32446e1702c128bff12f062e6d6b3f41",
+          "obs_0a71bb472f7a6a9253446804e67af83b"
+        ],
+        "raw_evidence": [
+          "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c",
+          "evd_45998d2767838780126f1f2f372be570",
+          "evd_70b147d96ea817e3678782789e924614"
+        ],
+        "summary": "Pickups are hard",
+        "superseded_by": null,
+        "verification_status": "UNVERIFIED"
+      }
+    ],
+    "version": "causal-twin-provenance/1"
+  },
+  "twin": {
+    "child_id": "chd_3e9fb7aa7f618635dd5b3d0efe3828da",
+    "edges": [
+      {
+        "alternative_explanations": [
+          "The abrupt transition at pickup drives the distress"
+        ],
+        "cause": "hunger_after_daycare",
+        "child_id": "chd_3e9fb7aa7f618635dd5b3d0efe3828da",
+        "competing_edges": [
+          "hyp_ba2b0b777846bc222c2df87feb8ee21b"
+        ],
+        "confounders": [
+          "variable nap length"
+        ],
+        "contradicting_outcomes": [
+          "out_b1acf15ec9cdaee8f062f02599a14644"
+        ],
+        "counterevidence": [
+          "out_b1acf15ec9cdaee8f062f02599a14644"
+        ],
+        "edge_id": "hyp_4a17d5837afc92074dd2845a2bdfc3d7",
+        "effect": "pickup_distress",
+        "epistemic_level": 3,
+        "experiments": [
+          "exp_e7076dad8dad1bc5d72cf7008762b605"
+        ],
+        "learning_status": null,
+        "provenance": {
+          "created_at": "2026-09-04T08:00:00Z",
+          "created_by": {
+            "actor_id": "act_882ccae6773c5129e561edf73a3d85af",
+            "kind": "AGENT"
+          },
+          "derived_from": [
+            "pat_ec003518acb088083008da547ff9f321"
+          ],
+          "method": "MODEL_INFERENCE",
+          "model": {
+            "model_id": "scripted/hermes",
+            "prompt_version": "serene-hermes/2",
+            "provider": "hermes",
+            "runtime": "hermes-agent@v2026.9.24"
+          },
+          "schema_version": 1,
+          "source_ids": [
+            "evd_45998d2767838780126f1f2f372be570",
+            "evd_70b147d96ea817e3678782789e924614",
+            "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c"
+          ],
+          "supersedes": null,
+          "verification_status": "UNVERIFIED"
+        },
+        "raw_evidence": [
+          "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c",
+          "evd_45998d2767838780126f1f2f372be570",
+          "evd_70b147d96ea817e3678782789e924614"
+        ],
+        "relationship": "Hunger after a long day drives the distress",
+        "scope": {
+          "child_id": "chd_3e9fb7aa7f618635dd5b3d0efe3828da",
+          "contexts": [
+            "daycare_pickup"
+          ]
+        },
+        "status": "REFUTED",
+        "support": [
+          {
+            "entity_id": "obs_0a71bb472f7a6a9253446804e67af83b",
+            "kind": "OBSERVATIONAL"
+          },
+          {
+            "entity_id": "obs_32446e1702c128bff12f062e6d6b3f41",
+            "kind": "OBSERVATIONAL"
+          },
+          {
+            "entity_id": "obs_392318c8b95bcfca97d8991f12267adf",
+            "kind": "OBSERVATIONAL"
+          }
+        ],
+        "validity": null
+      },
+      {
+        "alternative_explanations": [
+          "hunger after daycare",
+          "end-of-day tiredness"
+        ],
+        "cause": "late_pickup",
+        "child_id": "chd_3e9fb7aa7f618635dd5b3d0efe3828da",
+        "competing_edges": [],
+        "confounders": [
+          "variable nap length"
+        ],
+        "contradicting_outcomes": [],
+        "counterevidence": [],
+        "edge_id": "hyp_6071150c3c9a22e0d76ae061088f01cc",
+        "effect": "pickup_distress",
+        "epistemic_level": 5,
+        "experiments": [
+          "exp_200e49075dbf5f70d7b4c1563b1f3662"
+        ],
+        "learning_status": "ACTIVE",
+        "provenance": {
+          "created_at": "2026-09-04T08:07:00Z",
+          "created_by": {
+            "actor_id": "act_882ccae6773c5129e561edf73a3d85af",
+            "kind": "AGENT"
+          },
+          "derived_from": [
+            "pat_c3a116036693a65b30facb58ee686d0d"
+          ],
+          "method": "MODEL_INFERENCE",
+          "model": {
+            "model_id": "scripted-proposer",
+            "prompt_version": "test/1",
+            "provider": "synthetic",
+            "runtime": "scripted"
+          },
+          "schema_version": 1,
+          "source_ids": [
+            "evd_4686b42b276dce2a3950ebccc70dfaa7",
+            "evd_86ce05d816acf24552b2df55bf7bdd84"
+          ],
+          "supersedes": null,
+          "verification_status": "UNVERIFIED"
+        },
+        "raw_evidence": [
+          "evd_4686b42b276dce2a3950ebccc70dfaa7",
+          "evd_86ce05d816acf24552b2df55bf7bdd84"
+        ],
+        "relationship": "Pickups after the posted pickup window drive the distress",
+        "scope": {
+          "child_id": "chd_3e9fb7aa7f618635dd5b3d0efe3828da",
+          "contexts": [
+            "daycare_pickup",
+            "weekday_evening"
+          ]
+        },
+        "status": "SUPPORTED",
+        "support": [
+          {
+            "entity_id": "obs_5a4a163991c3e4f33c247fa264203c1f",
+            "kind": "OBSERVATIONAL"
+          },
+          {
+            "entity_id": "obs_62ac58048536daa2be0d72d8e22df51c",
+            "kind": "OBSERVATIONAL"
+          },
+          {
+            "entity_id": "out_ac79d13b3706b67861b7eb0ce6bf16a6",
+            "kind": "EXPERIMENTAL"
+          }
+        ],
+        "validity": {
+          "review_after": "2026-11-03T08:22:00Z",
+          "valid_from": "2026-09-04T08:22:00Z"
+        }
+      },
+      {
+        "alternative_explanations": [
+          "Hunger after a long day drives the distress"
+        ],
+        "cause": "abrupt_transition",
+        "child_id": "chd_3e9fb7aa7f618635dd5b3d0efe3828da",
+        "competing_edges": [
+          "hyp_4a17d5837afc92074dd2845a2bdfc3d7"
+        ],
+        "confounders": [
+          "variable nap length"
+        ],
+        "contradicting_outcomes": [],
+        "counterevidence": [],
+        "edge_id": "hyp_ba2b0b777846bc222c2df87feb8ee21b",
+        "effect": "pickup_distress",
+        "epistemic_level": 3,
+        "experiments": [],
+        "learning_status": null,
+        "provenance": {
+          "created_at": "2026-09-04T08:00:00Z",
+          "created_by": {
+            "actor_id": "act_882ccae6773c5129e561edf73a3d85af",
+            "kind": "AGENT"
+          },
+          "derived_from": [
+            "pat_ec003518acb088083008da547ff9f321"
+          ],
+          "method": "MODEL_INFERENCE",
+          "model": {
+            "model_id": "scripted/hermes",
+            "prompt_version": "serene-hermes/2",
+            "provider": "hermes",
+            "runtime": "hermes-agent@v2026.9.24"
+          },
+          "schema_version": 1,
+          "source_ids": [
+            "evd_45998d2767838780126f1f2f372be570",
+            "evd_70b147d96ea817e3678782789e924614",
+            "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c"
+          ],
+          "supersedes": null,
+          "verification_status": "UNVERIFIED"
+        },
+        "raw_evidence": [
+          "evd_0c3fe3758ebfb0c8bc9119cecaa5ae0c",
+          "evd_45998d2767838780126f1f2f372be570",
+          "evd_70b147d96ea817e3678782789e924614"
+        ],
+        "relationship": "The abrupt transition at pickup drives the distress",
+        "scope": {
+          "child_id": "chd_3e9fb7aa7f618635dd5b3d0efe3828da",
+          "contexts": [
+            "daycare_pickup"
+          ]
+        },
+        "status": "SUPERSEDED",
+        "support": [
+          {
+            "entity_id": "obs_0a71bb472f7a6a9253446804e67af83b",
+            "kind": "OBSERVATIONAL"
+          },
+          {
+            "entity_id": "obs_32446e1702c128bff12f062e6d6b3f41",
+            "kind": "OBSERVATIONAL"
+          },
+          {
+            "entity_id": "obs_392318c8b95bcfca97d8991f12267adf",
+            "kind": "OBSERVATIONAL"
+          }
+        ],
+        "validity": null
+      }
+    ],
+    "ledger_head": "c1bfd79287eb8eb701025e29f1c7ee2a7296068891d7516c3e63e8d27965c30b",
+    "twin_version": "causal-twin/1"
+  }
+}

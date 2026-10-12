@@ -2,9 +2,22 @@ import { parseInvestigations } from "@/lib/investigations/model";
 import { parseExperimentsView } from "@/lib/experiments/model";
 import { parseMemoryDreamView } from "@/lib/memory/model";
 import { parseCausalTwin } from "@/lib/causal-twin/model";
+import { pairWithTwin, parseTwinProvenance } from "@/lib/causal-twin/provenance-model";
 import { wireReader } from "@/lib/wire";
 
 const r = wireReader((path, problem): never => { throw new Error(`${path}: ${problem}`); });
+
+/** Each twin with the provenance projection (#75) that explains exactly it. */
+function twins(v: Record<string, unknown>) {
+  const twinBefore = parseCausalTwin(v.twin_before);
+  const twinAfter = parseCausalTwin(v.twin_after);
+  return {
+    twinBefore,
+    twinAfter,
+    provenanceBefore: pairWithTwin(twinBefore, parseTwinProvenance(v.twin_provenance_before)),
+    provenanceAfter: pairWithTwin(twinAfter, parseTwinProvenance(v.twin_provenance_after)),
+  };
+}
 
 /** Validate the server adapter's views through the production UI parsers. */
 export function parseDemoState(value: unknown) {
@@ -21,8 +34,7 @@ export function parseDemoState(value: unknown) {
     }),
     experiments: parseExperimentsView(v.experiments),
     memory: parseMemoryDreamView(v.memory),
-    twinBefore: parseCausalTwin(v.twin_before),
-    twinAfter: parseCausalTwin(v.twin_after),
+    ...twins(v),
     promotions: r.array(v.promotions, "demo.promotions", 64).map((item) => {
       const p = r.object(item, "promotion");
       return {
