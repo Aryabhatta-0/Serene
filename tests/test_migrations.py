@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 from serene.domain.events import EventType
-from serene.projections import PROJECTIONS
+from serene.projections.views import PUBLISHED_PROJECTIONS
 
 ROOT = Path(__file__).resolve().parents[1]
 SQL = "\n".join(
@@ -34,7 +34,7 @@ def test_event_type_constraint_matches_taxonomy() -> None:
 
 
 def test_projection_constraint_matches_projections() -> None:
-    assert _check_list("projection") == set(PROJECTIONS)
+    assert _check_list("projection") == PUBLISHED_PROJECTIONS
 
 
 def test_ledger_has_append_only_triggers_and_rls() -> None:

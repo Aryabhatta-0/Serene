@@ -153,6 +153,15 @@ class GitMemoryRepository:
     def head(self) -> str:
         return self._git("rev-parse", "--verify", BRANCH).decode().strip()
 
+    def at_revision(self, revision: str) -> GitMemorySnapshot:
+        """Pin reads to a full commit id, including an unreferenced prepared commit.
+
+        Never resolve symbolic refs, abbreviated ids or HEAD during replay.
+        """
+        if not re.fullmatch(r"[0-9a-f]{40}", revision) or not self.has_commit(revision):
+            raise GitError("MEMORY_REVISION_UNAVAILABLE")
+        return GitMemorySnapshot(self, revision)
+
     def _exists(self, path: str) -> bool:
         return bool(self._git("ls-tree", "--name-only", BRANCH, "--", path).strip())
 
@@ -311,4 +320,35 @@ class GitMemoryRepository:
         return (
             self._run(self._root, "cat-file", "-e", f"{sha}^{{commit}}", check=False).returncode
             == 0
+        )
+
+
+class GitMemorySnapshot:
+    """Read capability over an immutable commit tree; no branch or worktree reads."""
+
+    def __init__(self, repo: GitMemoryRepository, revision: str) -> None:
+        self._repo = repo
+        self._revision = revision
+
+    def head(self) -> str:
+        return self._revision
+
+    def list_paths(self, prefix: str) -> Sequence[str]:
+        names = (
+            self._repo._git("ls-tree", "-r", "--name-only", self._revision).decode().splitlines()
+        )
+        return tuple(sorted(n for n in names if n.startswith(prefix)))
+
+    def read(self, path: str) -> MemoryDocument | None:
+        if path not in self.list_paths(""):
+            return None
+        content = self._repo._git("cat-file", "blob", f"{self._revision}:{path}").decode("utf-8")
+        revision = (
+            self._repo._git("log", "-1", "--format=%H", self._revision, "--", path).decode().strip()
+        )
+        return MemoryDocument(
+            path=path,
+            revision=revision,
+            content=content,
+            content_digest=sha256_hex(content.encode("utf-8")),
         )

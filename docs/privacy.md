@@ -236,6 +236,28 @@ shallow local clones need `git fetch --unshallow` before the full historical sui
 
 ## 6. Non-goals
 
+### Memory/Dream projection publication (#99)
+
+`memory_review` is a pure ledger fold (Dream stages, patch proposals, reviews,
+decisions, reasons and permitted opaque lineage references). `memory_dream`
+adds reviewed memory document text from the exact last `MEMORY_PATCH_COMMITTED`
+Git SHA in ledger order. `memory_head` identifies that snapshot; each item's
+`revision` identifies its last writing commit. Both rows use the existing
+parent-only projection RLS and Realtime publication. Caregiver learning grants
+do not expose either row. Child ids occur only in the RLS envelope, never in
+these payloads; actor ids, raw evidence content and channel metadata are omitted.
+
+Publication checks all derived text (including diffs) for family/actor ids,
+credential formats and private channel markers. A finding refuses publication
+with a code-only error; text is never logged or silently rewritten. This lexical
+check is not a general personal-data classifier. Parent-visible memory narratives
+are sensitive derived content, stored only in the authenticated projection row.
+Telemetry records error types/counts only, never memory text, Git contents or
+exception messages. No browser analytics or new external text sink is added.
+
+See [the deterministic publication rule](memory-publication.md) for retained
+Git objects, rebuild failure and deployment/backfill requirements.
+
 Serene is not a clinical or diagnostic product, and the MVP is not built for
 production child data at scale.
 
