@@ -1,6 +1,7 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useLayoutEffect } from "react";
+import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it } from "vitest";
 import { LiveInvestigations } from "@/components/investigations/LiveInvestigations";
 import recorded from "@/fixtures/synthetic-investigation.json";
@@ -64,6 +65,14 @@ const phase = () => document.querySelector("article[data-investigation-id]")?.ge
 afterEach(() => sessionStorage.clear());
 
 describe("signed out", () => {
+  it("does not server-render credential fields before the stored session is known", () => {
+    const backend = new FakeBackend(new FakeFeed(), [PARENT], {});
+    const html = renderToString(<FamilyRecordProvider backend={backend}><SignInForm /></FamilyRecordProvider>);
+    expect(html).toContain("Checking sign-in");
+    expect(html).not.toContain('name="email"');
+    expect(html).not.toContain('name="password"');
+  });
+
   it("shows the honest unconnected state, subscribes to nothing, and offers sign-in", async () => {
     const { feed, backend } = setup();
     expect(await screen.findByText("Not signed in")).toBeInTheDocument();

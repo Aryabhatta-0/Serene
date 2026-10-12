@@ -71,7 +71,8 @@ TEST-ONLY, DEMO-ONLY and PARTIAL respectively; no file's existence is treated as
 | P0 privacy | Owning parent's authenticated REST session could SELECT canonical ledger fields excluded from web projections. RLS scoped rows but grants still exposed raw payloads. | New migration revokes browser ledger SELECT; backend grants retained. | Four current-migration privilege-denial tests and real owning-parent REST 403/42501. Existing row-policy assertions remain tested independently in a disposable DB. |
 | P0 privacy | Change authenticated account; the first committed render could expose previous account's selected child before the clearing effect. | Associate the child list with the user who loaded it; suppress mismatched first render. | Layout-effect witness failed before fix, passes after. |
 | P1 reliability | Close Realtime then deliver a late row: status became live and approvals could re-enable; lagging reconnect snapshot could regress state. | Track connection separately, buffer disconnected rows and retain higher sequence for projections still present in resync. Omitted projections still clear. | Two regressions failed before fix; sync/Memory and full web suite pass. |
-| P0 security | Next 14.2.35 includes Windows unauthenticated RCE and other critical advisories; test toolchain also had critical audit findings. | Next 15.5.27, PostCSS override 8.5.29, Vitest 4.1.11; adapt async searchParams and JSX transform configuration. | Zero npm audit findings, production build, 262 unit tests and browser suites. No assertions weakened. |
+| P0 security | Next 14.2.35 includes Windows unauthenticated RCE and other critical advisories; test toolchain also had critical audit findings. | Next 15.5.27, PostCSS override 8.5.29, Vitest 4.1.11; adapt async searchParams and JSX transform configuration. | Zero npm audit findings, production build, 263 unit tests and browser suites. No runtime assertions weakened. |
+| P2 loading UI | Credential fields were server-rendered before Auth resolved; browser CI observed duplicate fields during hydration. | Render an explicit checking-sign-in state until the stored session is known. | Server-render regression failed before fix; full component suite passes. Strict browser field locators remain unchanged. |
 | P1 deployment | Hosted project had not applied the committed causal_twin constraint migration; current preparer refused. | Apply existing Twin migration. | Current hosted preparation and Twin Realtime test pass. |
 | P2 documentation | Current README/checklist still described connected surfaces and dependency findings as blocked/unconnected. | Update factual current claims, retain dated audit receipts and frozen evaluation limitations. | Documentation/link and privacy scans. |
 
@@ -152,12 +153,19 @@ mismatches. #67 remains unmerged; all 72 runs parked unresolved. Holdout was NOT
 run. Today's hardening tests do not satisfy or alter the frozen improvement gate.
 
 Release gates: Ruff, format, mypy, 1,473 pytest passes (one Windows symlink skip),
-Inspect, frozen scenarios, web typecheck, 262 frontend tests, production build,
+Inspect, frozen scenarios, web typecheck, 263 frontend tests, production build,
 139 default Playwright passes (three deliberate viewport skips), approvals/Memory
 lane 2/2, Twin lane 1/1, hosted lane 6/6 and richer hosted review lane 2/2.
 Independent hosted check: sequence 41, two decisions, verified chain/projections.
 A separate hosted canonical family proves pinned Memory and controlled publication
 failure/recovery. No concurrent test mutates the same Maya workspace.
+
+The first PR CI run caught the old documentation assertion requiring connected
+presentation to remain BLOCKED and a transient duplicate credential form in the
+tablet fixture. The documentation assertion now requires PASS with hosted receipt
+and production-route evidence links; the three independent evidence blockers remain
+asserted. The loading form was fixed in product code with a failing-before/passing-after
+regression. Final merge requires all four checks on the latest PR commit.
 
 ## Sponsor evidence
 
