@@ -9,7 +9,8 @@
     "names": "Names including Maya in test examples and historical narratives are fictional scenario labels. A name alone is neither evidence of real PII nor proof of synthetic origin; provenance is the generator and reviewed bytes.",
     "maya_demo": "Merged #56/#57 canonical Maya demo: fixed fictional seed maya-daycare-pickup-v1, SyntheticFamily, scripted model/browser I/O, synthetic report marker and temporary memory repository. Reset accepts only the canonical seed. Offline webhook stand-in is fingerprint-allowlisted, never used as a live credential. Implementation unchanged by #59.",
     "maya_web_demo": "docs/maya-demo.md adds local recording and verification instructions for the opt-in canonical report adapter. No scenario facts, generators, kernel behaviour or reviewed fixture bytes change. The web route reads only the existing synthetic report; it creates no additional result fixture. Production sign-in and web approval transport remain open.",
-    "controlled_dev_1": "eval/fixtures/controlled-dev-1.json and eval/reports/archive/2026-10-12-controlled-dev-1/ hold protocol parameters, tape digests, scorer/trust-scorer metrics, reason codes, token counts and NeatLogs receipt ids from the synthetic DEV scenarios; no model prose, parent text or family records (reviewed 2026-10-12)."
+    "controlled_dev_1": "eval/fixtures/controlled-dev-1.json and eval/reports/archive/2026-10-12-controlled-dev-1/ hold protocol parameters, tape digests, scorer/trust-scorer metrics, reason codes, token counts and NeatLogs receipt ids from the synthetic DEV scenarios; no model prose, parent text or family records (reviewed 2026-10-12).",
+    "core_scenarios": "Issue #44: eval/fixtures/core-scenarios-v1.json is hand-authored synthetic prose (no names, contact details or records; URLs are RFC 2606 example domains). eval/scenarios/core_scenarios.py builds every family with SyntheticFamily/build_full_ladder (seeds 'core-*', fixed clock) or the scripted runtime rig. eval/reports/archive/2026-10-12-core-scenarios-v1/results.json is kernel/runtime output of that code under mockllm/model."
   },
   "sha256": {
     "app/web/fixtures/approval-command.example.json": "257bc3605c83d03f94e17b82df85870ab0ad3c683bb207a4ad3d90bec94df0cf",
@@ -20,6 +21,7 @@
     "docs/maya-demo.md": "3712e900295971a2d6898e4ed455de9685f324c41f298cca09d2c56516b3a2dc",
     "eval/fixtures/cfoai_acquisition_decision.json": "22ce43a5f4308d28dff69da4981f30704053ade74877cdfb3995ecbec22bdc6a",
     "eval/fixtures/controlled-dev-1.json": "31e343b5f31dea0a7e3b0f7d870731cfa29e5d8ae10952441affeb822c2562f0",
+    "eval/fixtures/core-scenarios-v1.json": "bdbbc1ad63c727ecf0f17ebe98d33ce5b5ae85d4ac46e7adb489ddf9c335225b",
     "eval/fixtures/hermes-v4-config.json": "7f139ac000f9e99bf44cd5db05bf90c86ce7210711175acd04531010f26198e8",
     "eval/fixtures/hermes-v4-installation.json": "3853ede020636c0814d535e68451aff3b8a9b7a487549adcc42319200437900a",
     "eval/fixtures/hermes-v4-internal-bridges.json": "82b412d4ab499d382924bcfa06754e3ee662870a0a5ba71243f7a9fe1ea53d0d",
@@ -79,8 +81,11 @@
     "eval/reports/archive/2026-10-12-controlled-dev-1/report.md": "80eff13c3e1fa992d0720ea01d55afcb77b231b44468f18fe1986b2a02557082",
     "eval/reports/archive/2026-10-12-controlled-dev-1/summary.json": "4d20ad468134956199f96730d3bfc718d461275c301f37f57af6c2159cceafd1",
     "eval/reports/archive/2026-10-12-controlled-dev-1/verification.json": "d3b4f44a15e9a8b49a611ba0a9c899f3f8e0ee989e3200533a917276f2f18035",
+    "eval/reports/archive/2026-10-12-core-scenarios-v1/results.json": "2a9acd15639e8a425345aeb8d592e55b79d148efde30643177c3aaaffca7050d",
+    "eval/scenarios/core_scenarios.py": "33b39e0a76910f1b3ddcd0e73432517925b35d344f7f23a4b04262d0882c65d2",
     "eval/scenarios/runtime_live.py": "53ec44b5a5e645e5ca9264ce2447b5a00e9def65b6688675460ca355b3fb61e1",
     "eval/scenarios/runtime_scenarios.py": "370d2db1807febeda3f7fdc660b51c16a9ca67ab746e50135daac6568267d9f5",
+    "eval/tasks/core_scenarios.py": "e02e97a94c04914b1bc83d9325a30ffe50415df18366118433e1cd07346f1ca2",
     "eval/tasks/kernel_invariants.py": "8d606482ea2694c768170a72c0da3a3d069be8cfaa9777e84a0801a2457f5571",
     "eval/tasks/runtime_investigation.py": "87d00313665d97a4959ecde25c56017062481088226a1e27d9c9873648e4ea1f",
     "eval/tasks/trust_invariants.py": "665826620298eb1ddb75030ad0cdeff0140711c31d037880140abc1d3ae7df19",

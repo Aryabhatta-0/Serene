@@ -4,7 +4,7 @@ Inspect AI harness and deterministic scorers. See `docs/evaluation.md`.
 
 | Directory | Holds |
 | --- | --- |
-| `scenarios/` | Visible development scenarios (~6–7) |
+| `scenarios/` | Visible development scenarios (~6–7) and the ten frozen core failure-mode scenarios (`core_scenarios.py`, docs/core-scenarios.md) |
 | `holdout/` | Hidden holdouts (~2–3), never tuned against directly |
 | `fixtures/` | Synthetic child data and scenario fixtures |
 | `baselines/` | Baseline A (Plain Hermes) and Baseline B (Hermes + memory/RAG) |
