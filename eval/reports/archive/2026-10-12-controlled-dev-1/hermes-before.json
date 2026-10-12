@@ -1,0 +1,18 @@
+{
+  "api_mode": "chat_completions",
+  "config_file": "%LOCALAPPDATA%/hermes/config.yaml",
+  "config_sha256": "fc021c05311fe438394aa4ecfd615b303631e1f798088a2daa3a06a8fad2d55e",
+  "gateway": "http://127.0.0.1:8642/v1",
+  "gateway_model": "hermes-agent",
+  "hermes_cli_version": "Hermes Agent v0.21.6+509.gf925b01 (2026.9.24) \u00b7 stable \u00b7 local f925b01791fe",
+  "hermes_version": "0.21.6",
+  "http_timeout_s": 120,
+  "integration": "Serene normal: serene.adapters.hermes.transport.transport_from_env -> HttpHermesTransport -> Hermes API server POST /v1/responses",
+  "max_turns": 500,
+  "model": "deepseek-v4.1-flash",
+  "provider": "opencode-go",
+  "provider_base_url": "https://opencode.ai/zen/go/v1",
+  "reasoning_effort": "high",
+  "sampling": "server defaults; no client temperature or seed",
+  "session_binding": "stateless: X-Hermes-Session-Id only, store=false, no previous_response_id or X-Hermes-Session-Key"
+}
