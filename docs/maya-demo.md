@@ -28,10 +28,6 @@ recorded moment to see what was available then.
 
 ![The story page summarizes what was reported, tried and learned, with its four chapters below.](images/maya-story.png)
 
-![The recorded workflow shows the saved order, timestamps and reasons for the investigation steps.](images/maya-recorded-workflow.png)
-
-![The trial record shows the parent-approved change, its safeguards and the reported outcome.](images/maya-trial.png)
-
 This example demonstrates domain integration, not a live family service,
 clinical advice or a general result. The [architecture guide](architecture.md)
 shows which parts suggest, which parts decide, and what the UI reads.
@@ -150,7 +146,8 @@ npm run start -- --hostname 127.0.0.1 --port 3200
 Open **http://127.0.0.1:3200/demo/maya**. The page identifies the story as a
 made-up example with no real family data. It is a local, read-only demo adapter,
 not the production Supabase/Auth path. Without `SERENE_DEMO_MODE=1` on the
-server, the page shows Not Found and its state endpoint returns 404. Keep this
+server (or `SERENE_FIXTURE_ROUTES=1` in a fixture test build), the page shows
+Not Found and its state endpoint returns 404. Keep this
 recording server on localhost. The server needs uv and the repository's Python
 environment.
 

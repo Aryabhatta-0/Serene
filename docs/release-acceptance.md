@@ -5,14 +5,14 @@
 Product main after #108: **`6d680369c46232862c32596f79b684fe26fdce95`**.
 #108 was merged only after confirming its unchanged head
 `156a952b0c14fab35334e65c7b912006bd7355e5`, four successful required checks and
-mergeability. Resulting [main CI](https://github.com/Sathvikar01/morrow/actions/runs/38256189243)
+mergeability. Resulting [main CI](https://github.com/Sathvikar01/Serene/actions/runs/38256189243)
 also passed all four required jobs. Subsequent acceptance documentation is tracked
 by its PR/merge receipt; it changes no runtime, fixture or evaluator.
 
 The release owner explicitly narrowed acceptance to the hackathon evidence
 requirements: measured before/after evidence, NeatLogs traces, Entire checkpoints
 or graph/provenance evidence, cfo.ai business plan, public repo and a demo of at
-most three minutes. The [repository](https://github.com/Sathvikar01/morrow) is public.
+most three minutes. The [repository](https://github.com/Sathvikar01/Serene) is public.
 This is readiness to record; no completed video or public web deployment is claimed.
 
 Focused confirmation on clean merged product main:
@@ -40,13 +40,13 @@ findings. No production certification is implied.
 
 ## Issues
 
-- [#53](https://github.com/Sathvikar01/morrow/issues/53): the real failure,
+- [#53](https://github.com/Sathvikar01/Serene/issues/53): the real failure,
   trace diagnosis, reproducible bounded DEV metrics and regression evidence meet
   the clarified acceptance; completion is recorded in its final evidence comment.
-- [#54](https://github.com/Sathvikar01/morrow/issues/54): remains OPEN. Two
+- [#54](https://github.com/Sathvikar01/Serene/issues/54): remains OPEN. Two
   retrievable native records and code provenance prove genuine use, while its
   original all-eight-milestone acceptance remains unsatisfied.
-- [#61](https://github.com/Sathvikar01/morrow/issues/61): README sections,
+- [#61](https://github.com/Sathvikar01/Serene/issues/61): README sections,
   evidence links and reproducible setup satisfy its own acceptance under the
   clarified submission scope; completion is recorded after documentation/link checks.
 

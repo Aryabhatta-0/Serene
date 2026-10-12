@@ -26,14 +26,14 @@ FINAL_DOCS = (
     ROOT / "docs" / "final-demo-checklist.md",
     ROOT / "docs" / "final-docs-validation.md",
 )
-REPOSITORY = "Sathvikar01/morrow"
+REPOSITORY = "Sathvikar01/Serene"
 LINK = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 INLINE_PATH = re.compile(
     r"`((?:serene|docs|tests|scripts|eval|app|supabase|memory_repo|\.entire|\.github)/"
     r"[^`\s]+|\.env\.example)`"
 )
-GITHUB_REF = re.compile(r"https://github\.com/Sathvikar01/morrow/(issues|pull)/(\d+)")
-GITHUB_BLOB = re.compile(r"https://github\.com/Sathvikar01/morrow/blob/([^/]+)/([^#?\s)]+)")
+GITHUB_REF = re.compile(r"https://github\.com/Sathvikar01/Serene/(issues|pull)/(\d+)")
+GITHUB_BLOB = re.compile(r"https://github\.com/Sathvikar01/Serene/blob/([^/]+)/([^#?\s)]+)")
 
 
 def prose(path: Path) -> str:

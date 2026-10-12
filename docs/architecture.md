@@ -32,7 +32,7 @@ The [Maya story](maya-demo.md) walks through the flow and includes screenshots
 of the user interface. It is fictional and uses scripted external responses.
 
 Audited against merged `main` at `6b8207300271620e775d33879add3533d59ad992`
-on 2026-10-12 for [#60](https://github.com/Sathvikar01/morrow/issues/60).
+on 2026-10-12 for [#60](https://github.com/Sathvikar01/Serene/issues/60).
 Implementation, synthetic integration, live evaluation and production readiness
 are different claims. The [Maya demo](maya-demo.md) exercises real services with
 scripted external I/O; [evaluation.md](evaluation.md) records the limits of live results.
@@ -54,7 +54,7 @@ append-only event ledger           Git + Markdown               replayed ledger 
 Experience is never overwritten by a model's interpretation. Memory cannot
 promote belief, and Hermes conversation memory cannot become Serene memory.
 [ContextRetriever](../serene/investigation/context.py) retrieves all three
-separately; [#29](https://github.com/Sathvikar01/morrow/issues/29) and
+separately; [#29](https://github.com/Sathvikar01/Serene/issues/29) and
 [memory tests](../tests/test_memory_committer.py) cover their separation.
 
 ## Kernel and authority boundaries
@@ -62,7 +62,7 @@ separately; [#29](https://github.com/Sathvikar01/morrow/issues/29) and
 The Pydantic domain kernel uses ports for replaceable infrastructure. Kernel
 packages cannot import Hermes, adapters, database/model SDKs, NeatLogs or Inspect;
 [architecture tests](../tests/test_architecture_boundaries.py) enforce imports
-and kernel dependency direction ([#2](https://github.com/Sathvikar01/morrow/issues/2)).
+and kernel dependency direction ([#2](https://github.com/Sathvikar01/Serene/issues/2)).
 
 | Concern | Implemented owner and evidence | Boundary |
 | --- | --- | --- |
@@ -124,9 +124,9 @@ An empty plan, or candidates all filtered out, can lead `_evaluating` to COMPLET
 Admission checks an active hypothesis, no open request and no pending verification;
 it does not prove every competing pair was discriminated. An inventive planner
 can conversely keep requesting until budget exhaustion. Draft
-[PR #69](https://github.com/Sathvikar01/morrow/pull/69) proposes stronger sufficiency
+[PR #69](https://github.com/Sathvikar01/Serene/pull/69) proposes stronger sufficiency
 but is unmerged and unjudged. Do not describe that fix, or
-[PR #67](https://github.com/Sathvikar01/morrow/pull/67)'s single-field acquisition
+[PR #67](https://github.com/Sathvikar01/Serene/pull/67)'s single-field acquisition
 change, as current `main` behavior. #67's conditional DEV evaluation is now PASS
 ([merged report](controlled-dev-1.md)); its holdout has not run and the product
 change remains unmerged. COMPLETE does not itself promote a hypothesis.
@@ -159,7 +159,7 @@ deprecated, never silently deleted. Tests: [Dream](../tests/test_dream.py),
 
 The merged [Memory/Dream read view](../serene/memory/view.py) and
 [review surface](../app/web/components/memory/MemoryView.tsx) (#36,
-[PR #83](https://github.com/Sathvikar01/morrow/pull/83)) expose kept memory,
+[PR #83](https://github.com/Sathvikar01/Serene/pull/83)) expose kept memory,
 lineage, Dream stages, pending patches and explained refusals. They carry no
 edit, commit or approval authority. Memory text and diffs remain private data;
 the build-gated fixture is synthetic, not a live family connection.
@@ -210,7 +210,7 @@ synthetic-only eval access and backend-only ledger writes
 PostgREST for projection snapshots; schema exposure does not bypass RLS.
 See [privacy.md](privacy.md).
 
-Merged #33 ([PR #86](https://github.com/Sathvikar01/morrow/pull/86)) adds an
+Merged #33 ([PR #86](https://github.com/Sathvikar01/Serene/pull/86)) adds an
 optional `EventLedger(after_append=...)` projection publisher. Its monotonic
 upsert advances read rows after durable append; hook failure leaves the ledger
 committed and read state lagging until a later publish/rebuild. The
@@ -231,7 +231,7 @@ timeline in the browser. Older projection rows without history show the current
 stage and explain that earlier steps were not included.
 
 The web has React Flow rendering and an inspectable provenance panel (#34, #38,
-#39; [PR #74](https://github.com/Sathvikar01/morrow/pull/74)) with the complete
+#39; [PR #74](https://github.com/Sathvikar01/Serene/pull/74)) with the complete
 provenance projection of every edge (#75). `/causal-twin` reads the selected
 child's `causal_twin` projection row through the signed-in feed
 ([LiveCausalTwin](../app/web/components/causal-twin/LiveCausalTwin.tsx)), like
@@ -258,7 +258,7 @@ NeatLogs receives allow-listed, token-validated metadata via
 [sink](../serene/adapters/neatlogs_sink.py) redacts again, refuses redirects,
 bounds exports and reports fixed failure codes. Sink failure cannot change a
 kernel decision. #59's merged privacy audit
-([PR #80](https://github.com/Sathvikar01/morrow/pull/80)) covers secret/env/synthetic
+([PR #80](https://github.com/Sathvikar01/Serene/pull/80)) covers secret/env/synthetic
 scans and error boundaries; it does not certify third-party logging or production
 privacy. Traces diagnose behavior; they never supply belief or approval authority.
 
@@ -271,20 +271,20 @@ sends no messages. Default [runtime assembly](../serene/investigation/assembly.p
 uses unknown costs; the helper is not a globally enabled price-driven planner.
 See [economics.md](economics.md), [acceptance evidence](economics/acceptance-audit.json),
 [tests](../tests/test_cfoai_economics.py) and
-[PR #76](https://github.com/Sathvikar01/morrow/pull/76).
+[PR #76](https://github.com/Sathvikar01/Serene/pull/76).
 
 **Entire #54 is incomplete and remains open.** A verified eight-milestone
 repository-reference index exists on the local #54 work branch
 (`8b15e36befa96cea506344ffba310d0fcbdbad44`), not in this audited `main`.
-It maps ledger/projections to [PR #63](https://github.com/Sathvikar01/morrow/pull/63),
-Promotion Gate/Causal Twin/Dream to [PR #64](https://github.com/Sathvikar01/morrow/pull/64),
-ingestion/investigation/verifier to [PR #65](https://github.com/Sathvikar01/morrow/pull/65),
-and evaluation infrastructure correction to [PR #68](https://github.com/Sathvikar01/morrow/pull/68).
+It maps ledger/projections to [PR #63](https://github.com/Sathvikar01/Serene/pull/63),
+Promotion Gate/Causal Twin/Dream to [PR #64](https://github.com/Sathvikar01/Serene/pull/64),
+ingestion/investigation/verifier to [PR #65](https://github.com/Sathvikar01/Serene/pull/65),
+and evaluation infrastructure correction to [PR #68](https://github.com/Sathvikar01/Serene/pull/68).
 Verified commits and ordered references are not genuine historical checkpoints.
 The #54 audit reported only two directly retrievable local checkpoint records; several referenced records
 were unavailable and the evaluation milestone had no checkpoint asserted. Full
 ordered/retrievable coverage and native issue metadata are unestablished.
-[Issue #54](https://github.com/Sathvikar01/morrow/issues/54) still requires that
+[Issue #54](https://github.com/Sathvikar01/Serene/issues/54) still requires that
 coverage. This #60 audit revalidated the index's Git/GitHub references, not native
 checkpoint completeness. [Entire settings](../.entire/settings.json) keep session pushing and
 telemetry disabled; transcripts must not be published to manufacture completion.
@@ -301,7 +301,7 @@ agents cannot grade themselves or alter frozen gates; see [safety.md](safety.md)
 and [evaluation.md](evaluation.md).
 
 The following exclusions are recorded in the
-[original architecture decision table](https://github.com/Sathvikar01/morrow/blob/a0d198be1a4e55525bb3c993da690d1f78859518/docs/architecture.md).
+[original architecture decision table](https://github.com/Sathvikar01/Serene/blob/a0d198be1a4e55525bb3c993da690d1f78859518/docs/architecture.md).
 They describe MVP scope, not claims that these technologies are inherently unsafe.
 Current ownership is shown alongside the historical rationale.
 

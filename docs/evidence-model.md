@@ -50,7 +50,7 @@ useful observations. Current `Selection.sufficient` means no candidate selected;
 empty or fully excluded plans can lead to COMPLETE without decisive evidence.
 [Phase admission](../serene/policies/investigation.py) checks structural progress,
 not every competing hypothesis pair. The unmerged
-[PR #69](https://github.com/Sathvikar01/morrow/pull/69) is a proposed correction,
+[PR #69](https://github.com/Sathvikar01/Serene/pull/69) is a proposed correction,
 not implemented sufficiency on `main`. COMPLETE gives no promotion authority.
 
 ## Epistemic ladder and promotion
@@ -116,6 +116,6 @@ beliefs, diagnosis, private-parent-group scraping, cost-reduced verification or
 general causal-effect claim is permitted. Git memory/structured lineage and the
 custom deterministic ladder replace extra graph-memory or statistical causal
 stacks for this MVP; [architecture exclusions](architecture.md#non-goals-and-excluded-technologies)
-link the recorded technology rationale. [Entire #54](https://github.com/Sathvikar01/morrow/issues/54)
+link the recorded technology rationale. [Entire #54](https://github.com/Sathvikar01/Serene/issues/54)
 is development provenance only and remains incomplete; checkpoint references
 cannot substitute for child-evidence lineage.
