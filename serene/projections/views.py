@@ -99,6 +99,22 @@ def active_learnings(state: KernelState) -> dict[str, Any]:
     }
 
 
+def experiments(state: KernelState) -> dict[str, Any]:
+    """The Experiments surface's read view (issues #37, #84), as of the head event.
+
+    `build_experiments_view` needs a time; a projection must be a pure function
+    of the ledger, so it is the ledger's own time at its head. Whether a request
+    is still open is therefore as of the last recorded event: the kernel
+    re-checks expiry on every decision, and a timed-out request is parked by an
+    appended event, which republishes this view.
+    """
+    if state.last_recorded_at is None or not state.experiments:
+        return {}  # nothing proposed: the row does not change on unrelated events
+    from serene.experiments.view import build_experiments_view  # above the policies
+
+    return build_experiments_view(state, state.last_recorded_at).model_dump(mode="json")
+
+
 def effective_learning_status(record: LearningRecord, now: datetime) -> LearningStatus:
     """Time-aware status for presentation: a learning past review is never shown ACTIVE."""
     if record.status is LearningStatus.ACTIVE and now >= record.review_after:
@@ -114,6 +130,8 @@ PROJECTIONS: Final[dict[str, Callable[[KernelState], dict[str, Any]]]] = {
     "active_learnings": active_learnings,
     # issue #35: the investigation surface's read state, streamed by #33
     "investigations": investigations,
+    # issues #37/#84: the Experiments surface's read state
+    "experiments": experiments,
 }
 
 

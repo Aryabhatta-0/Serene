@@ -139,10 +139,14 @@ Main also includes #37's [Experiments view](../serene/experiments/view.py),
 shown intervention digest/safety class and a single-use request ID; channel and
 ledger admission reject RED and recheck parent, expiry, replay and deliberation.
 The channel trusts a principal resolved by an authenticated transport; it does
-not authenticate sessions itself. The shipped [page](../app/web/app/experiments/page.tsx)
-uses UNCONNECTED and `decide={null}`: no live approval transport is wired. A
-scripted fixture response is not a real parent approval. Tests:
-[web approvals](../tests/test_web_approvals.py), [read view](../tests/test_experiments_view.py).
+not authenticate sessions itself: the [HTTP boundary](../serene/adapters/web/http.py)
+(#84) does, behind the web app's same-origin `/api/approvals` relay. The
+[page](../app/web/app/experiments/page.tsx) reads the `experiments` projection
+(the same view, as of the head event; the kernel re-checks expiry on every
+decision) for the signed-in parent's chosen child (#87), and shows a new stage
+only when that projection changes. A scripted fixture response is not a real
+parent approval. Tests: [web approvals](../tests/test_web_approvals.py),
+[HTTP boundary](../tests/test_web_approval_http.py), [read view](../tests/test_experiments_view.py).
 
 ## Causal Twin, Supabase and projections
 
