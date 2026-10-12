@@ -1,6 +1,6 @@
 # Serene safety
 
-Audited against merged `main` at `8b0a3c7` on 2026-10-12.
+Audited against merged `main` at `6b82073` on 2026-10-12.
 **LLM proposes; deterministic code decides.** Models may propose explanations
 and experiments; they cannot change policy, verify their own evidence, grant
 parent approval, promote beliefs or publish durable memory.
@@ -42,8 +42,14 @@ conversation. [TelegramChannel](../serene/adapters/telegram/channel.py) checks
 webhook secret and private-sender binding; its callback must match an unused
 prompt token, parent, chat and message. Text saying “sure” is only a report.
 Only the authenticated channel adapter supplies the receipt; Hermes cannot mint
-approval by returning a proposal. WEB_APP is a supported policy source, not a
-claim that the current read-only web shell implements live approval UI.
+approval by returning a proposal. Main now includes a typed
+[WEB_APP approval channel](../serene/adapters/web/approvals.py) and
+[#37 decision surface](../app/web/components/experiments/DecisionPanel.tsx).
+The channel requires an already authenticated parent principal, exact shown
+digest/class and replay-protected request ID, then reuses ledger admission.
+Session authentication is the unwired transport's responsibility. The shipped
+[Experiments page](../app/web/app/experiments/page.tsx) passes no transport and
+offers no decision; the synthetic fixture is not live parent authorization.
 
 | Binding checked by policy | Effect |
 | --- | --- |

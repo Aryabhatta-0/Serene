@@ -1,6 +1,6 @@
-"""Validate #60's local links, anchors, path references and GitHub references.
+"""Validate final documentation links, anchors, paths and GitHub references.
 
-The five canonical docs use inline Markdown links and backtick repository paths.
+The canonical docs and final README/checklist use inline links and repository paths.
 External GitHub issue/PR and blob links are checked only with --github (read-only).
 No eval, provider, holdout or product code is executed.
 """
@@ -19,6 +19,12 @@ ROOT = Path(__file__).resolve().parents[1]
 CORE_DOCS = tuple(
     ROOT / "docs" / f"{name}.md"
     for name in ("architecture", "evidence-model", "safety", "privacy", "evaluation")
+)
+FINAL_DOCS = (
+    *CORE_DOCS,
+    ROOT / "README.md",
+    ROOT / "docs" / "final-demo-checklist.md",
+    ROOT / "docs" / "final-docs-validation.md",
 )
 REPOSITORY = "Sathvikar01/morrow"
 LINK = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
@@ -153,7 +159,7 @@ def main() -> int:
     parser.add_argument("paths", nargs="*", type=Path)
     parser.add_argument("--github", action="store_true", help="Read-only issue/PR/blob validation")
     args = parser.parse_args()
-    paths = tuple(p.resolve() for p in args.paths) or CORE_DOCS
+    paths = tuple(p.resolve() for p in args.paths) or FINAL_DOCS
     failures = check_links(paths)
     if not failures and args.github:
         failures.extend(github_check(paths))

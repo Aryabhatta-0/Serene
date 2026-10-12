@@ -1,6 +1,6 @@
 # Serene Privacy
 
-> **Status:** audited against merged `main` at `8b0a3c7` on 2026-10-12.
+> **Status:** audited against merged `main` at `6b82073` on 2026-10-12.
 > [#59](https://github.com/Sathvikar01/morrow/issues/59) is closed by merged
 > [PR #80](https://github.com/Sathvikar01/morrow/pull/80). Telemetry redaction,
 > synthetic-data provenance, secret/env scans and scoped RLS are implemented;
@@ -118,6 +118,13 @@ real family data. This audit does not certify third-party logging behavior.
   identifiers and evidence content, but includes memory text, patch rationale
   and diffs. It is private review data, not safe telemetry or a public export;
   a read-only UI does not remove its confidentiality requirements.
+- Main's #37 [Experiments read view](../serene/experiments/view.py) includes
+  intervention/outcome text and reasons, while omitting child/actor IDs. It is
+  private application data, not safe telemetry. Its
+  [web approval adapter](../serene/adapters/web/approvals.py) trusts a parent
+  principal supplied by authenticated transport; no session-authenticated
+  transport is wired and the shipped page offers no decisions. Synthetic
+  Experiments fixture routes do not establish deployed family authorization.
 - Model provenance stores provider/model/prompt-version identifiers, not full
   prompts or private reasoning. This does not mean runtime tasks contain no
   private content: [context retrieval](../serene/investigation/context.py) and

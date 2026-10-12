@@ -8,7 +8,21 @@ from scripts import docs_check
 
 
 def test_core_documentation_links_and_paths_resolve() -> None:
-    assert docs_check.check_links((*docs_check.CORE_DOCS, docs_check.ROOT / "README.md")) == []
+    assert docs_check.check_links(docs_check.FINAL_DOCS) == []
+
+
+def test_demo_release_checklist_has_evidence_and_visible_proof_for_every_beat() -> None:
+    contents = (docs_check.ROOT / "docs" / "final-demo-checklist.md").read_text(encoding="utf-8")
+    rows = [line.split("|")[1:-1] for line in contents.splitlines() if line.startswith("| ")]
+    data = rows[2:]
+    assert len(data) == 20
+    for beat, status, evidence, visible in data:
+        assert beat.strip() and status.strip() in {"PASS", "BLOCKED"}
+        assert docs_check.LINK.search(evidence), f"No evidence for {beat}"
+        assert visible.strip(), f"No visible proof for {beat}"
+    for required in ("Holdout:", "Entire:", "Full before/after", "Connected live"):
+        matches = [row for row in data if required in row[0]]
+        assert len(matches) == 1 and matches[0][1].strip() == "BLOCKED"
 
 
 def test_missing_document_is_reported(tmp_path: Path) -> None:

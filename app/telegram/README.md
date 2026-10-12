@@ -1,7 +1,9 @@
 # app/telegram
 
-Serene-side boundary for the Telegram surface (branch A). Hermes owns the bot
-transport, scheduling and model routing; Serene owns what an update *means*.
+Serene owns authenticated Telegram ingestion, exact callback receipts and the
+investigation controller. Hermes provides model/browser execution behind ports.
+Live webhook registration or a polling relay is separate operator wiring;
+neither grants the model approval or policy authority.
 
 | Piece | Where |
 | --- | --- |

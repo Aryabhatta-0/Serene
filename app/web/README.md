@@ -2,9 +2,11 @@
 
 The Next.js application shell for Serene (Issue #34): a landing page with the
 bloom, five primary surfaces (Today, Memory, Investigations, Experiments,
-Causal Twin), responsive navigation, and shared layout primitives. It has no backend connection yet
-and renders no family data; every surface shows an honest empty state until
-projection state is streamed in (Issue #33).
+Causal Twin), responsive navigation, Twin/Memory review views, an Experiments/Approval surface, and
+shared layout primitives. The #33 projection transport is implemented, but no
+page subscribes: web sign-in (#84) and full Twin provenance projection (#75)
+remain unfinished. Normal pages render no connected family data; fixture routes
+are synthetic previews, not a deployed family connection.
 
 ```sh
 npm ci
@@ -66,7 +68,7 @@ these commands.
   (`graph.ts`), the provenance panel's reading of an edge (`provenance.ts`:
   ids typed by prefix, support against counterevidence, lineage and
   supersession followed by id), and where the twin comes from (`source.ts`:
-  not connected until Issue #33).
+  UNCONNECTED; wiring still requires sign-in and full Twin projection).
 - `components/causal-twin/`: `CausalTwinSurface` (what pages render: the
   view with the provenance panel wired in), `CausalTwinView` (unconnected,
   loading, error, empty and map states), the map (`TwinCanvas`,
@@ -94,7 +96,7 @@ these commands.
   re-checks its invariants and fails closed: a refused change can never be
   shown without its reasons), how reason codes, steps and outcomes are
   worded (`present.ts`), and where the view comes from (`source.ts`: not
-  connected until Issue #33). `lib/wire.ts` holds the shared boundary readers.
+  connected to a signed-in family source). `lib/wire.ts` holds the shared boundary readers.
 - `components/memory/`: `MemoryView` (Issue #36: unconnected, loading, error,
   empty and review states), each kept memory with its evidence trail down to
   raw evidence, each Dream run with its steps and its kept, refused and
@@ -125,7 +127,7 @@ these commands.
 - `fixtures/synthetic-causal-twin.json`: a synthetic twin for tests only. It
   is in the kernel's wire format and validates against
   `CausalTwin.model_validate_json`.
-- `app/globals.css`: colour, type, space and motion tokens (light only),
+- [app/globals.css](app/globals.css): colour, type, space and motion tokens (light only),
   and the ruled grid. Palette: Warm Paper `#E0DFD8`, Sage Green `#A9B887`,
   Deep Olive `#2E3D28`. Motion respects `prefers-reduced-motion`. The full
   system is recorded in `DESIGN.md`, and the product context it serves in
@@ -146,5 +148,5 @@ npm run build && npm run start      # in one shell
 npm run brand:export                # in another
 ```
 
-This writes `app/icon.png`, `app/apple-icon.png`, `app/favicon.ico` (16px and
+This writes [app/icon.png](app/icon.png), [app/apple-icon.png](app/apple-icon.png), [app/favicon.ico](app/favicon.ico) (16px and
 32px), `public/brand/serene-mark.png` and `public/brand/serene-bloom.jpg`.
