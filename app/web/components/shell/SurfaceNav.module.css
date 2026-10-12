@@ -69,6 +69,10 @@
   gap: var(--space-6);
 }
 
+.bar .link[aria-current="page"] .label {
+  color: var(--ink);
+}
+
 /* The tracking adds trailing space after the last letter; trim the line. */
 .bar .link {
   --tracking-caps-trim: var(--tracking-caps);
@@ -101,8 +105,31 @@
 }
 
 .sheet .link {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  column-gap: var(--space-4);
+  row-gap: var(--space-1);
+  align-content: center;
   min-height: 5rem;
   padding-block: var(--space-4);
+}
+
+.sheet .link > * {
+  grid-column: 2;
+}
+
+.sheet .link > .icon {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  align-self: start;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.3rem;
+  color: var(--ink-muted);
+}
+
+.sheet .link[aria-current="page"] > .icon {
+  color: var(--ink);
 }
 
 .sheet .label {

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { usePathname } from "next/navigation";
+import { Icon, type IconName } from "@/components/system/Icon";
 import { SURFACES, isActive } from "@/lib/surfaces";
 import styles from "./SurfaceNav.module.css";
 
@@ -10,6 +11,14 @@ type SurfaceNavProps = {
   /** bar: the top bar. sheet: the menu sheet on narrower screens. */
   variant: "bar" | "sheet";
   onNavigate?: () => void;
+};
+
+const ICONS: Record<string, IconName> = {
+  "/today": "ring",
+  "/memory": "memory",
+  "/investigations": "branch",
+  "/experiments": "flask",
+  "/causal-twin": "twin",
 };
 
 export function SurfaceNav({ variant, onNavigate }: SurfaceNavProps) {
@@ -26,9 +35,10 @@ export function SurfaceNav({ variant, onNavigate }: SurfaceNavProps) {
               aria-current={isActive(pathname, surface.href) ? "page" : undefined}
               onClick={onNavigate}
             >
+              {variant === "sheet" ? <Icon name={ICONS[surface.href]} className={styles.icon} /> : null}
               <span className={styles.label}>{surface.label}</span>
               {variant === "sheet" ? (
-                <span className={styles.summary}>{surface.summary}</span>
+                <span className={styles.summary}>{surface.question}</span>
               ) : null}
             </Link>
           </li>

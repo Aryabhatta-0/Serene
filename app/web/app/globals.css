@@ -31,6 +31,31 @@
   --selection: #cbd5ae;
   --grid-line: rgb(46 61 40 / 0.05);
   --grid-dot: rgb(29 39 24 / 0.22);
+  /* A sheet lifted a little further off the paper: focus panels, side panels. */
+  --ground-lifted: #f1f0eb;
+  /* A sage-washed paper, for the one thing on a surface that matters most. */
+  --ground-wash: #e8ebdf;
+  /* Deep Olive as a ground, for the one action that leads a surface, and the
+   * paper tints that read on it. */
+  --deep-olive: #2e3d28;
+  --on-olive: #eceee4;
+  --on-olive-strong: #f4f5ee;
+  --on-olive-muted: #c9d3b1;
+  --on-red: #fbf3f0;
+
+  /* Safety is the one place hue carries meaning (GREEN, AMBER, RED are the
+   * kernel's own names). Each is always paired with its word and its mark,
+   * and each ink is at least 4.7:1 on its tint and on the paper. */
+  --safe-green: #4a6430;
+  --safe-green-tint: #e3e8d3;
+  --safe-amber: #865611;
+  --safe-amber-tint: #f0e3c8;
+  --safe-red: #8e2f22;
+  --safe-red-tint: #f1dcd4;
+
+  /* Depth: one soft, olive-tinted lift with a real offset. Used sparingly. */
+  --lift: 0 1px 2px rgb(29 39 24 / 0.05), 0 14px 32px -18px rgb(29 39 24 / 0.28);
+  --lift-strong: 0 1px 2px rgb(29 39 24 / 0.06), 0 22px 48px -22px rgb(29 39 24 / 0.38);
 
   /* Type: a wide geometric display face; a hyperlegible reading face. */
   --font-sans: var(--font-atkinson), ui-sans-serif, system-ui, -apple-system,
@@ -64,7 +89,10 @@
   --cell: 4rem;
 
   --measure: 64ch;
+  /* Soft geometry: petals, not boxes. Tiles, panels and sheets step up. */
   --radius: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
   --tap-target: 2.75rem;
   --mark-size: 10px;
   --topbar-height: 4.5rem;
@@ -244,6 +272,92 @@ ol {
 
 .button:active {
   background: var(--ink-muted);
+  color: var(--ground);
+}
+
+.button:disabled {
+  border-style: dashed;
+  color: var(--ink-faint);
+  cursor: not-allowed;
+}
+
+@media (hover: hover) {
+  .button:disabled:hover {
+    background: transparent;
+    color: var(--ink-faint);
+  }
+}
+
+a.button {
+  text-decoration: none;
+}
+
+/* The one filled action on a surface: the thing to do next. */
+.button-solid {
+  background: var(--ink);
+  color: var(--ground);
+}
+
+@media (hover: hover) {
+  .button-solid:hover {
+    background: var(--ink-muted);
+  }
+}
+
+/* A quiet text link that leads somewhere else in Serene. */
+.onward-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-target);
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  text-decoration-color: var(--rule-strong);
+  transition: text-decoration-color var(--dur-fast) ease;
+}
+
+.onward-link:hover {
+  text-decoration-color: currentColor;
+}
+
+.onward-link svg {
+  flex: none;
+  width: 0.875rem;
+  height: 0.875rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: translate var(--dur-base) var(--ease-out);
+}
+
+.onward-link:hover svg {
+  translate: 2px 0;
+}
+
+code {
+  /* Record ids only: the system monospace, so an id reads as a reference. */
+  font-family: ui-monospace, monospace;
+  font-size: 0.85em;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: var(--rule-strong) padding-box;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .visually-hidden {

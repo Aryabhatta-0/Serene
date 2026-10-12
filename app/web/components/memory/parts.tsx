@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { KIND_LABELS as ENTITY_LABELS, entityKind, formatDate } from "@/lib/causal-twin/provenance";
+import { Reasons as RecordedReasons } from "@/components/system/Record";
 import { explainReason } from "@/lib/memory/present";
 import styles from "./Memory.module.css";
 
@@ -57,20 +58,8 @@ export function Entries({
 }
 
 /** Recorded reasons, each in plain words with its code. */
-export function Reasons({ codes, label }: { codes: readonly string[]; label: string }) {
-  return (
-    <ul className={styles.reasons} aria-label={label}>
-      {codes.map((code, i) => {
-        const reason = explainReason(code);
-        return (
-          <li key={i} className={styles.reason} data-reason-code={code} data-known={reason.known}>
-            <span className={styles.reasonText}>{reason.text}</span>
-            <code className={styles.refId}>{code}</code>
-          </li>
-        );
-      })}
-    </ul>
-  );
+export function Reasons({ codes, label, tone }: { codes: readonly string[]; label: string; tone?: "plain" | "against" }) {
+  return <RecordedReasons codes={codes} label={label} explain={explainReason} tone={tone} />;
 }
 
 export function Pairs({ children }: { children: ReactNode }) {

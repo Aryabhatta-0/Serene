@@ -33,7 +33,7 @@ export function Section({
 }) {
   const id = useId();
   return (
-    <section className={styles.section} aria-labelledby={id} data-section={name}>
+    <section id={`provenance-${name}`} className={styles.section} aria-labelledby={id} data-section={name}>
       <h4 id={id} ref={headingRef} tabIndex={headingRef ? -1 : undefined} className={styles.heading}>
         {title}
       </h4>

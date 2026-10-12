@@ -7,7 +7,7 @@ import styles from "./TwinCanvas.module.css";
 export function VariableNode({ data }: NodeProps<VariableNodeType>) {
   const lr = data.direction === "LR";
   return (
-    <div className={styles.node} data-variable={data.tag}>
+    <div className={styles.node} data-variable={data.tag} data-focus={data.focus}>
       <Handle
         type="target"
         position={lr ? Position.Left : Position.Top}

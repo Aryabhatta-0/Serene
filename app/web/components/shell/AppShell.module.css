@@ -31,7 +31,18 @@
   gap: var(--space-7);
   height: var(--topbar-height);
   padding-inline: var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  /* The ruled sheet passes under the bar, lightly frosted, like the bloom's glass. */
+  background: rgb(224 223 216 / 0.86);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  backdrop-filter: blur(10px) saturate(1.1);
+}
+
+.topbar[data-landing] {
+  border-bottom: 0;
   background: var(--ground);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 .barNav {
@@ -45,8 +56,13 @@
 /* Content wider than the sheet is clipped, never scrolled sideways: no page
  * may widen the phone viewport, whatever its decorative art does mid-animation. */
 .main {
-  padding: var(--space-5) var(--gutter) var(--space-8);
+  padding: var(--space-3) var(--gutter) var(--space-8);
   overflow-x: clip;
+}
+
+/* The landing page keeps its own spacing exactly. */
+.main[data-landing] {
+  padding-top: var(--space-5);
 }
 
 .main:focus {
@@ -65,6 +81,10 @@
 
 @media (min-width: 64rem) {
   .main {
+    padding-top: var(--space-4);
+  }
+
+  .main[data-landing] {
     padding-top: 0;
   }
 }
