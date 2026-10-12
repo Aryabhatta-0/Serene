@@ -8,7 +8,9 @@ never computes hashes and never issues UPDATE/DELETE against the ledger.
 from __future__ import annotations
 
 import json
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
+from datetime import datetime
 from typing import Any
 
 import psycopg
@@ -17,7 +19,10 @@ from psycopg.types.json import Jsonb
 
 from serene.domain.canonical import canonical_json, format_timestamp, to_canonical_data
 from serene.domain.events import GENESIS_HASH, DomainEvent
-from serene.ledger.service import AfterAppend
+from serene.ledger.service import AfterAppend, EventLedger
+from serene.lineage.chain import LedgerIntegrityError
+from serene.observability.telemetry import SafeTelemetry
+from serene.ports.clock import Clock
 from serene.ports.event_store import ConcurrencyConflict
 from serene.projections.state import KernelState
 from serene.projections.views import project
@@ -99,6 +104,14 @@ class PostgresEventStore:
                 (child_id,),
             ).fetchall()
         return tuple(_row_to_event(r) for r in rows)
+
+    def child_ids(self) -> tuple[str, ...]:
+        """Every child with at least one event (operator backfill only)."""
+        with self._connect() as conn:
+            rows = conn.execute(
+                "select distinct child_id from serene.domain_events order by child_id"
+            ).fetchall()
+        return tuple(r[0] for r in rows)
 
 
 class PostgresProjectionStore:
@@ -184,3 +197,72 @@ def projection_publisher(store: PostgresProjectionStore) -> AfterAppend:
         )
 
     return advance
+
+
+def postgres_ledger(
+    conninfo: str, clock: Clock, *, telemetry: SafeTelemetry | None = None
+) -> EventLedger:
+    """The production ledger (issue #87): Postgres, with projection_state kept live.
+
+    Every admitted append is followed by a monotonic projection publish, so the
+    web app's Realtime subscription (#33) sees it. A publish failure is reported
+    and never undoes the append; `backfill_projections` repairs the read side.
+    """
+    return EventLedger(
+        PostgresEventStore(conninfo),
+        clock,
+        telemetry=telemetry,
+        after_append=projection_publisher(PostgresProjectionStore(conninfo)),
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class BackfillResult:
+    written: int  # children whose projection rows were (re)published
+    empty: int  # children with no events: nothing to publish
+    refused: int  # children whose hash chain does not verify: left untouched
+
+
+def backfill_projections(
+    conninfo: str,
+    child_ids: Iterable[str] | None = None,
+    *,
+    replace: bool = False,
+) -> BackfillResult:
+    """Rebuild projection_state from a verified replay of each child's ledger.
+
+    The default publishes with `advance`, which is monotonic and idempotent:
+    safe while the kernel is running, and it never moves read state backwards.
+    `replace=True` deletes and rewrites each child's rows; use it only after a
+    projection definition changed, with the kernel quiet. A child whose chain
+    does not verify is refused and left as it is. The ledger is only read.
+    """
+    events = PostgresEventStore(conninfo)
+    store = PostgresProjectionStore(conninfo)
+    written = empty = refused = 0
+    for child_id in events.child_ids() if child_ids is None else child_ids:
+        stream = list(events.read_stream(child_id))
+        if not stream:
+            empty += 1
+            continue
+        try:
+            state = EventLedger(events, _NoClock()).replay_events(child_id)
+        except LedgerIntegrityError:
+            refused += 1
+            continue
+        publish = store.replace if replace else store.advance
+        publish(
+            child_id,
+            project(state),
+            last_sequence=state.last_sequence,
+            last_event_hash=state.last_event_hash,
+        )
+        written += 1
+    return BackfillResult(written, empty, refused)
+
+
+class _NoClock:
+    """Backfill only replays; it never appends, so it never asks the time."""
+
+    def now(self) -> datetime:
+        raise RuntimeError("backfill does not append")

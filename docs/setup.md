@@ -56,7 +56,48 @@ applies `supabase/migrations/`.
    telemetry is a no-op. The sink speaks HTTP to `/v1/trace` itself; the SDK extra
    is not needed for it.
 5. **Supabase hosted project** (when one exists): `supabase login`,
-   `supabase link --project-ref …`, `supabase db push`.
+   `supabase link --project-ref …`, `supabase db push`. Then see
+   [activating the live web app](#activating-the-live-web-app-87).
+
+### Activating the live web app (#87)
+
+Today and Investigations read the signed-in parent's child's projection state
+over Supabase Realtime. Nothing below is committed; values live in `.env` and
+the hosting environment.
+
+1. **Schema exposure.** In the hosted project's *API settings*, add `serene`
+   to the exposed schemas (local: already in `supabase/config.toml`). RLS stays
+   on for every `serene` table; nothing here changes a grant or a policy.
+2. **Realtime publication.** `supabase db push` applies
+   `20261012150000_projection_realtime.sql`, which adds only
+   `serene.projection_state` to `supabase_realtime`. Check with
+   `select tablename from pg_publication_tables where pubname = 'supabase_realtime'`:
+   `projection_state` is listed and `domain_events` is not.
+3. **Auth.** Email + password sign-in must be enabled (*Authentication →
+   Providers → Email*). Parents are Supabase Auth users; Serene keeps only the
+   opaque user id.
+4. **Guardianship.** The backend (service role) records each parent:
+   `insert into serene.children (child_id, data_class) values ('chd_…', 'REAL')` and
+   `insert into serene.child_guardians (child_id, user_id, role) values ('chd_…', '<auth user uuid>', 'PARENT')`.
+   The web app lists only the signed-in user's own `PARENT` rows (RLS:
+   `child_guardians_self_read`), and reads projection rows only for those
+   children (`projection_state_parent_read`). A caregiver is never listed: their
+   grant covers `active_learnings` only.
+5. **Web environment.** `NEXT_PUBLIC_SUPABASE_URL` and
+   `NEXT_PUBLIC_SUPABASE_ANON_KEY` (public by design; RLS decides what a
+   signed-in user sees) must be set when `npm run build` runs, because Next.js
+   inlines them. Without them the app builds and every surface says plainly
+   that no record is connected.
+6. **Kernel environment.** `SUPABASE_DB_URL` is the service-role Postgres
+   connection. Every production entry point builds its ledger with
+   `serene.adapters.postgres.postgres_ledger`, which publishes
+   `projection_state` after each admitted append. A failed publish never undoes
+   the append; it is reported as `ledger.after_append_failed`.
+7. **Backfill existing ledgers once** (and after any projection definition
+   change, with `--replace` while the kernel is quiet):
+   `uv run python scripts/rebuild_projections.py`. It verifies each child's
+   hash chain first, refuses a child whose chain does not verify, only reads
+   the ledger, and prints counts only.
 
 ## 4. Roles of the external tools
 

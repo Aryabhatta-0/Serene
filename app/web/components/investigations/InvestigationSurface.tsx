@@ -11,7 +11,7 @@ import { InvestigationDetail, investigationAnchor } from "./InvestigationDetail"
 import styles from "./Investigations.module.css";
 
 type Props = {
-  /** The live projection feed (#33); null until the web app is connected. */
+  /** The live projection feed (#33); null unless a parent is signed in with a child chosen (#87). */
   feed: ProjectionFeed | null;
   childId: string | null;
   /** "today": the current investigation only. "all": every investigation. */

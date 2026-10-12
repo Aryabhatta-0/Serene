@@ -50,8 +50,10 @@ remain inspectable. Cost cannot override safety or evidence quality.
 
 Implemented services include Telegram, investigation/recovery, verification,
 experiments, promotion, Dream, Git memory, Causal Twin and Supabase projections.
-The web has Twin/Memory review views, an Experiments/Approval surface and projection transport, but pages remain
-unconnected: web sign-in and full Twin provenance projection are unfinished.
+The web has Twin/Memory review views, an Experiments/Approval surface and the Realtime projection
+transport (#33). Today and Investigations connect after Supabase sign-in and child selection (#87);
+Memory, Experiments and the Causal Twin pages still render unconnected, and full Twin provenance
+projection (#75) is unfinished.
 Current investigation sufficiency can also mistake an empty/filtered plan for
 completion; [the architecture records that limitation](docs/architecture.md#telegram-hermes-and-investigation).
 The web approval command/channel exists, but its authenticated transport is unwired;
