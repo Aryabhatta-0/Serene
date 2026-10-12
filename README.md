@@ -4,6 +4,8 @@
 
 LLM proposes; deterministic code decides.
 
+We used NeatLogs to diagnose evidence-request failures, cfo.ai to model assumed operating costs, and Entire to trace code changes to development checkpoints.
+
 ![Animated preview of the Serene landing page](docs/videos/hero-landing.gif)
 
 ## The problem
