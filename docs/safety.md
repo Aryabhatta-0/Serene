@@ -54,6 +54,8 @@ is refused there and again at admission. The
 [Experiments page](../app/web/app/experiments/page.tsx) offers a decision only
 to a signed-in parent for their chosen child; fixture routes are synthetic and
 are not live parent authorization.
+The [browser proof](web-e2e-proof.md) covers test-kernel decisions without
+optimistic stage changes; real Supabase Auth/Realtime acceptance remains pending.
 
 | Binding checked by policy | Effect |
 | --- | --- |
