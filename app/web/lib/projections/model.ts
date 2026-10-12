@@ -2,8 +2,10 @@ import { wireReader } from "@/lib/wire";
 
 // One row of serene.projection_state (supabase/migrations): disposable read
 // state rebuilt by replaying the ledger, with the ledger position it reflects.
-// This is the only Serene table the web app reads (Issue #33); the immutable
-// event ledger is never the UI's view model.
+// This is the only Serene table the web app reads for record content (Issue
+// #33); the only other is serene.child_guardians, to list a parent's children
+// (#87, lib/auth/backend.ts). The immutable event ledger is never the UI's
+// view model.
 
 export const PROJECTION_NAMES = [
   "current_child_state",
