@@ -1,8 +1,9 @@
 """GREEN / AMBER / RED intervention classification (issues #22, #23).
 
 Deterministic and fail-closed:
-- forbidden categories, forbidden terms, irreversibility, excessive duration
-  and anything unclassifiable are RED;
+- forbidden categories, forbidden terms, a child left unsupervised in a
+  vehicle, irreversibility, excessive duration and anything unclassifiable
+  are RED, whatever category the model chose;
 - RED never enters experimentation, regardless of approvals or model output;
 - lexical screening can only *escalate* a class, never lower it.
 """
@@ -17,7 +18,7 @@ from serene.domain.canonical import canonical_digest
 from serene.domain.entities import Burden, Intervention, InterventionCategory
 from serene.domain.events import SafetyClass
 
-POLICY_VERSION: Final = "safety/1"
+POLICY_VERSION: Final = "safety/2"
 
 _C = InterventionCategory
 
@@ -54,6 +55,40 @@ _FORBIDDEN_TERMS: Final = re.compile(
     re.IGNORECASE,
 )
 
+# Supervision hazard: a child left without an adult in a vehicle. Matched per
+# sentence as a co-occurrence of an unsupervised phrase and a vehicle, so the
+# model's category, burden or reversibility can never hide it, while a sentence
+# that merely mentions a car ("a heads-up in the car") is untouched.
+_UNSUPERVISED: Final = re.compile(
+    r"\b(alone|unattended|unsupervised|unaccompanied|unwatched|solo|"
+    r"by\s+(?:them|him|her|it)sel(?:f|ves)|on\s+(?:their|his|her|its)\s+own|"
+    r"without\s+(?:a\s+|an\s+|any\s+)?(?:adult|grown[\s-]?up|parent|caregiver|supervision)|"
+    r"(?:no\s*one|nobody)\s+(?:with|watching|supervising))\b",
+    re.IGNORECASE,
+)
+_VEHICLE: Final = (
+    r"(?<!toy\s)(?<!toy-)\b(?:cars?|vehicles?|vans?|minivans?|trucks?|suvs?|automobiles?|"
+    r"back\s*seat)\b"
+)
+# Unattended even without the word "alone": "leave the child in the parked car".
+_LEFT_IN_VEHICLE: Final = re.compile(
+    r"\b(?:leave|leaves|leaving|left)\s+(?:\w+\s+){0,3}?(?:in|inside)\s+"
+    r"(?:the\s+|a\s+|their\s+|our\s+|his\s+|her\s+)?(?:parked\s+|locked\s+)?" + _VEHICLE,
+    re.IGNORECASE,
+)
+_IN_VEHICLE: Final = re.compile(_VEHICLE, re.IGNORECASE)
+_SENTENCE: Final = re.compile(r"[.;!?\n]+")
+
+
+def supervision_hazards(text: str) -> tuple[str, ...]:
+    """RED reason codes for a child left unsupervised in a vehicle. Pure and deterministic."""
+    for sentence in _SENTENCE.split(text):
+        if _LEFT_IN_VEHICLE.search(sentence) or (
+            _IN_VEHICLE.search(sentence) and _UNSUPERVISED.search(sentence)
+        ):
+            return ("UNSUPERVISED_IN_VEHICLE",)
+    return ()
+
 
 @dataclass(frozen=True, slots=True)
 class SafetyDecision:
@@ -79,6 +114,7 @@ def classify_intervention(intervention: Intervention) -> SafetyDecision:
     term = _FORBIDDEN_TERMS.search(intervention.description)
     if term is not None:
         red.append("FORBIDDEN_TERM")
+    red += supervision_hazards(intervention.description)
     if not intervention.reversible:
         red.append("IRREVERSIBLE")
     if intervention.max_duration_days > MAX_EXPERIMENT_DAYS:

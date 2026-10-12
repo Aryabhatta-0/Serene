@@ -1,7 +1,7 @@
 {
   "version": "memory-dream-view/1",
-  "ledger_head": "b6a4907bbd23419bbd8dcd72fab2f0b3d82adcc19f65ea7763a1ea639ec46a7b",
-  "memory_head": "84ee32f88951e6015dd3e8d1c9e83fcea4db2fa4",
+  "ledger_head": "7386790524d514b0262a7b4d3164c7e0926df242797c1140e6df858ef0582643",
+  "memory_head": "fc18135328d9962705fce3b8d2187ec444c2ebb5",
   "memories": [
     {
       "path": "learnings/pickup-heads-up.md",
@@ -25,7 +25,7 @@
         "evd_d469c0c8b7fe63cef6c00b71055505b7"
       ],
       "counterevidence": [],
-      "revision": "84ee32f88951e6015dd3e8d1c9e83fcea4db2fa4",
+      "revision": "fc18135328d9962705fce3b8d2187ec444c2ebb5",
       "written_by": "mpt_c5d094788c63e4d2e84f36115c0feac4",
       "lineage": {
         "root": "lrn_b6d4a9c4748c3f763f5f71c6c2c5386a",
@@ -160,7 +160,7 @@
   "unreadable": [],
   "dream_runs": [
     {
-      "run_id": "3f86d309012fe06c6ec2836997e8a24d5a369437bf2f7b7f9103bdfeb263b93e",
+      "run_id": "041dd88a6ab7cb69b4e2ef076dbd34a0cc409db4ebfe6df96ef666cf3ee0604c",
       "started_at": "2026-09-02T08:25:00Z",
       "stages": [
         {
@@ -207,7 +207,7 @@
       ]
     },
     {
-      "run_id": "369ab48310174600b63cc263864a0a6bca8fb60652f356115c85d6140898fdf6",
+      "run_id": "595adae1379420a1becd953c8a7d0177943b6cc5808c73238ddee082d962d13a",
       "started_at": "2026-09-01T08:25:00Z",
       "stages": [
         {
@@ -260,7 +260,7 @@
       "target_path": "learnings/pickup-heads-up.md",
       "operation": "CREATE",
       "required_level": 5,
-      "rationale": "Dream 369ab4831017: consolidate lrn_b6d4a9c4748c3f763f5f71c6c2c5386a",
+      "rationale": "Dream 595adae13794: consolidate lrn_b6d4a9c4748c3f763f5f71c6c2c5386a",
       "diff": "--- /dev/null\n+++ b/learnings/pickup-heads-up.md\n@@ -0,0 +1,16 @@\n+---\n+serene_memory: 1\n+kind: learning\n+subject: lrn_b6d4a9c4748c3f763f5f71c6c2c5386a\n+level: CONTEXTUAL_LEARNING\n+status: ACTIVE\n+scope: daycare_pickup, weekday_evening\n+valid_from: 2026-09-01T08:24:00.000000Z\n+review_after: 2026-10-31T08:24:00.000000Z\n+sources: evd_0aaee220a89128339b7bb55561319f73, evd_7d1cb5af81f92a0ae8348cc6c19692bc, evd_7f121d21908c90bf32a41919262b5d09, evd_cc6cb4433b95eabbbc3e3a45be82d83f, evd_d469c0c8b7fe63cef6c00b71055505b7\n+counterevidence:\n+---\n+\n+# A five-minute heads-up helps weekday pickups\n+\n+On weekday daycare pickups, a five-minute heads-up before leaving went calmly.\n",
       "origin": {
         "actor_kind": "AGENT",
@@ -284,7 +284,7 @@
         ]
       },
       "status": "COMMITTED",
-      "dream_run_id": "369ab48310174600b63cc263864a0a6bca8fb60652f356115c85d6140898fdf6",
+      "dream_run_id": "595adae1379420a1becd953c8a7d0177943b6cc5808c73238ddee082d962d13a",
       "review": {
         "passed": true,
         "checks_passed": [
@@ -300,14 +300,14 @@
       },
       "decided_at": "2026-09-01T08:25:00Z",
       "rejection_reasons": [],
-      "commit_sha": "84ee32f88951e6015dd3e8d1c9e83fcea4db2fa4"
+      "commit_sha": "fc18135328d9962705fce3b8d2187ec444c2ebb5"
     },
     {
       "patch_id": "mpt_6e723733908a2e6acb4474adb382f31e",
       "target_path": "child/needs-warning-before-every-transition.md",
       "operation": "CREATE",
       "required_level": 2,
-      "rationale": "Dream 369ab4831017: consolidate obs_3650f07c5cab69212c84c47af0df15e5",
+      "rationale": "Dream 595adae13794: consolidate obs_3650f07c5cab69212c84c47af0df15e5",
       "diff": "--- /dev/null\n+++ b/child/needs-warning-before-every-transition.md\n@@ -0,0 +1,16 @@\n+---\n+serene_memory: 1\n+kind: child_fact\n+subject: obs_3650f07c5cab69212c84c47af0df15e5\n+level: OBSERVATION\n+status: ACTIVE\n+scope: daycare_pickup, weekday_evening\n+valid_from:\n+review_after:\n+sources: evd_d469c0c8b7fe63cef6c00b71055505b7\n+counterevidence:\n+---\n+\n+# Needs a warning before every transition\n+\n+The child always needs a warning before any transition, everywhere.\n",
       "origin": {
         "actor_kind": "AGENT",
@@ -327,7 +327,7 @@
         ]
       },
       "status": "REJECTED",
-      "dream_run_id": "369ab48310174600b63cc263864a0a6bca8fb60652f356115c85d6140898fdf6",
+      "dream_run_id": "595adae1379420a1becd953c8a7d0177943b6cc5808c73238ddee082d962d13a",
       "review": {
         "passed": false,
         "checks_passed": [
@@ -351,7 +351,7 @@
       "target_path": "learnings/a-five-minute-heads-up-helps-b6d4a9c4.md",
       "operation": "CREATE",
       "required_level": 5,
-      "rationale": "Dream 3f86d309012f: consolidate lrn_b6d4a9c4748c3f763f5f71c6c2c5386a",
+      "rationale": "Dream 041dd88a6ab7: consolidate lrn_b6d4a9c4748c3f763f5f71c6c2c5386a",
       "diff": "--- /dev/null\n+++ b/learnings/a-five-minute-heads-up-helps-b6d4a9c4.md\n@@ -0,0 +1,19 @@\n+---\n+serene_memory: 1\n+kind: learning\n+subject: lrn_b6d4a9c4748c3f763f5f71c6c2c5386a\n+level: CONTEXTUAL_LEARNING\n+status: ACTIVE\n+scope: daycare_pickup, weekday_evening\n+valid_from: 2026-09-01T08:24:00.000000Z\n+review_after: 2026-10-31T08:24:00.000000Z\n+sources: evd_0aaee220a89128339b7bb55561319f73, evd_7d1cb5af81f92a0ae8348cc6c19692bc, evd_7f121d21908c90bf32a41919262b5d09, evd_cc6cb4433b95eabbbc3e3a45be82d83f, evd_d469c0c8b7fe63cef6c00b71055505b7\n+counterevidence:\n+---\n+\n+# A five-minute heads-up helps weekday daycare pickups go calmly\n+\n+A five-minute heads-up helps weekday daycare pickups go calmly\n+\n+Applies only in: daycare_pickup, weekday_evening.\n+Review with the parent at the review date or when the context changes.\n",
       "origin": {
         "actor_kind": "SYSTEM",
@@ -370,7 +370,7 @@
         ]
       },
       "status": "PROPOSED",
-      "dream_run_id": "3f86d309012fe06c6ec2836997e8a24d5a369437bf2f7b7f9103bdfeb263b93e",
+      "dream_run_id": "041dd88a6ab7cb69b4e2ef076dbd34a0cc409db4ebfe6df96ef666cf3ee0604c",
       "review": null,
       "decided_at": null,
       "rejection_reasons": [],
@@ -381,7 +381,7 @@
       "target_path": "patterns/weekday-pickups-are-frequently-tearful-bd568b1b.md",
       "operation": "CREATE",
       "required_level": 2,
-      "rationale": "Dream 3f86d309012f: consolidate pat_bd568b1b9dea66004b6c4d495c49b001",
+      "rationale": "Dream 041dd88a6ab7: consolidate pat_bd568b1b9dea66004b6c4d495c49b001",
       "diff": "--- /dev/null\n+++ b/patterns/weekday-pickups-are-frequently-tearful-bd568b1b.md\n@@ -0,0 +1,18 @@\n+---\n+serene_memory: 1\n+kind: pattern\n+subject: pat_bd568b1b9dea66004b6c4d495c49b001\n+level: PATTERN\n+status: ACTIVE\n+scope: daycare_pickup, weekday_evening\n+valid_from:\n+review_after:\n+sources: evd_7d1cb5af81f92a0ae8348cc6c19692bc, evd_cc6cb4433b95eabbbc3e3a45be82d83f, evd_d469c0c8b7fe63cef6c00b71055505b7\n+counterevidence:\n+---\n+\n+# Weekday pickups are frequently tearful\n+\n+Weekday pickups are frequently tearful\n+\n+A regularity across observations, not a cause.\n",
       "origin": {
         "actor_kind": "SYSTEM",
@@ -398,7 +398,7 @@
         ]
       },
       "status": "PROPOSED",
-      "dream_run_id": "3f86d309012fe06c6ec2836997e8a24d5a369437bf2f7b7f9103bdfeb263b93e",
+      "dream_run_id": "041dd88a6ab7cb69b4e2ef076dbd34a0cc409db4ebfe6df96ef666cf3ee0604c",
       "review": null,
       "decided_at": null,
       "rejection_reasons": [],

@@ -12,8 +12,10 @@ decide. Model rationale text is never consulted.
 
 Level 5 additionally requires complete verified provenance, counterevidence
 consideration (no contradicting outcome anywhere, every cited experiment's
-outcomes cited, confounders listed, no equally-tested rival), scope bounded by
-the contexts actually tested, and validity/review metadata.
+outcomes cited, confounders listed, no equally-tested rival, and no verified
+parent/caregiver observation in a supporting pattern's scope left out of the
+patterns' accounting), scope bounded by the contexts actually tested, and
+validity/review metadata.
 """
 
 from __future__ import annotations
@@ -26,6 +28,7 @@ from serene.domain.base import EntityId, KernelModel, ShortText, id_prefix
 from serene.domain.canonical import canonical_digest
 from serene.domain.entities import (
     TERMINAL_INVESTIGATION_STATUSES,
+    EvidenceKind,
     Hypothesis,
     Learning,
     Observation,
@@ -36,6 +39,7 @@ from serene.domain.entities import (
 )
 from serene.domain.events import EventType, PromotionDecisionRecord, SafetyClass
 from serene.domain.values import (
+    HUMAN_ACTORS,
     ActorRef,
     DerivationMethod,
     EpistemicLevel,
@@ -54,7 +58,7 @@ from serene.projections.state import (
     LifecycleStatus,
 )
 
-POLICY_VERSION: Final = "promotion/2"
+POLICY_VERSION: Final = "promotion/3"
 MAX_LEARNING_VALIDITY: Final = timedelta(days=180)
 DEFAULT_LEARNING_REVIEW: Final = timedelta(days=60)
 
@@ -257,6 +261,64 @@ def counterevidence_for(hypothesis_id: str, state: KernelState) -> Countereviden
     )
 
 
+_HUMAN_REPORTS: Final = frozenset({EvidenceKind.PARENT_REPORT, EvidenceKind.CAREGIVER_REPORT})
+
+
+def _is_verified_human_observation(record: Any, state: KernelState) -> bool:
+    """An active, unrejected observation read from verified parent/caregiver reports."""
+    observation = record.entity
+    if record.status is not LifecycleStatus.ACTIVE:
+        return False
+    if record.verification_status is VerificationStatus.REJECTED:
+        return False
+    evidence = [state.entities.get(e) for e in observation.evidence_ids]
+    if any(e is None or e.verification_status is not VerificationStatus.VERIFIED for e in evidence):
+        return False
+    # Human if either the structured observer or any raw report says so: the
+    # model-extracted observer field alone cannot hide a parent's report.
+    return observation.observer.kind in HUMAN_ACTORS or any(
+        e is not None and e.entity.kind in _HUMAN_REPORTS for e in evidence
+    )
+
+
+def unaccounted_observations(hypothesis_id: str, state: KernelState) -> tuple[str, ...]:
+    """Verified human observations in a supporting pattern's scope that no pattern accounts for.
+
+    Relevance is structural, never semantic: the same child, an overlapping context
+    (an observation or pattern with no declared context is in scope) and an
+    observation time inside the pattern's own observation span. Whether the omitted
+    report agrees or disagrees is not judged; it must appear in some supporting
+    pattern's `observation_ids` or `counter_observation_ids`.
+    """
+    record = state.entities.get(hypothesis_id)
+    if record is None:
+        return ()
+    patterns = [state.entities[p].entity for p in record.entity.pattern_ids if p in state.entities]
+    accounted = {o for p in patterns for o in (*p.observation_ids, *p.counter_observation_ids)}
+    observations = [
+        r
+        for r in state.entities.values()
+        if isinstance(r.entity, Observation) and r.entity_id not in accounted
+    ]
+    missing: set[str] = set()
+    for pattern in patterns:
+        members = [state.entities[o].entity for o in pattern.observation_ids if o in state.entities]
+        if not members:
+            continue
+        start = min(m.observed_at for m in members)
+        end = max(m.observed_at for m in members)
+        contexts = set(pattern.contexts) or {c for m in members for c in m.contexts}
+        for r in observations:
+            obs = r.entity
+            if obs.child_id != pattern.child_id or not start <= obs.observed_at <= end:
+                continue
+            if contexts and obs.contexts and not contexts & set(obs.contexts):
+                continue
+            if _is_verified_human_observation(r, state):
+                missing.add(r.entity_id)
+    return tuple(sorted(missing))
+
+
 def _counterevidence_reasons(
     hypothesis_id: str, to_level: EpistemicLevel, state: KernelState
 ) -> list[str]:
@@ -269,6 +331,10 @@ def _counterevidence_reasons(
         if not hypothesis.known_confounders:
             reasons.append("NO_CONFOUNDERS_CONSIDERED")
         reasons += [f"UNRESOLVED_COMPETITOR:{c}" for c in counter.unresolved_competitors]
+        reasons += [
+            f"UNACCOUNTED_RELEVANT_OBSERVATION:{o}"
+            for o in unaccounted_observations(hypothesis_id, state)
+        ]
     return reasons
 
 
