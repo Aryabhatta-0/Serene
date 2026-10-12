@@ -43,6 +43,10 @@ export class FakeBackend implements FamilyBackend {
     this.set(null);
   }
 
+  async accessToken(): Promise<string | null> {
+    return this.session ? `fake-access.${this.session.userId}.token` : null;
+  }
+
   /** The session ends without a sign-out (its refresh was refused). */
   expire(): void {
     this.set(null);

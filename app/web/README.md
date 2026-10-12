@@ -134,14 +134,21 @@ these commands.
   rejects any RED experiment that arrives open for a decision), the decision
   command (`approval.ts`: the exact `WebApprovalCommand` the kernel's
   `serene/adapters/web` channel accepts; it refuses to build an approval for
-  RED and reads the kernel's answer strictly), wording (`present.ts`) and the
-  source (`source.ts`).
+  RED and reads the kernel's answer strictly), wording (`present.ts`), the
+  source (`source.ts`), and the real transport (Issue #84): `transport.ts`
+  posts the command with the chosen child and the session's access token to
+  the same-origin `/api/approvals`, and `relay.ts` (that route's body) refuses
+  cross-site, oversized, non-JSON and unauthenticated requests and relays the
+  rest to the kernel's `POST /web/approvals` (`SERENE_KERNEL_URL`, server
+  only), passing back only the kernel's known answer shapes.
 - `components/experiments/`: `ExperimentsView` (Issue #37) groups experiments
   by what needs the parent, with intervention, risk, reversibility, approval,
   stage, outcomes and promotion result for each. `DecisionPanel` asks for
   confirmation, sends the command through an injected transport and shows
   only the kernel's answer; the stage changes only when the projection does.
-  The shipped page passes no transport, so it offers no decision.
+  `LiveExperiments` passes the real transport once a parent is signed in
+  with a child chosen. The shipped page has no live experiments yet (no
+  `experiments` projection), so it still offers no decision.
 - `fixtures/synthetic-experiments.json` and `approval-command.example.json`:
   kernel output (`uv run python -m tests.experiments_view_fixture`), pinned by
   `tests/test_experiments_view.py` and `tests/test_web_approvals.py`. Drawn

@@ -42,8 +42,8 @@ from .trust_helpers import C, awaiting_approval, event_types, intervention
 ORIGIN = "https://serene.example.org"
 PARENT_USER = str(uuid.UUID(int=1))
 OTHER_USER = str(uuid.UUID(int=2))
-PARENT_TOKEN = "parent-token.a.b"
-TOKENS = {PARENT_TOKEN: PARENT_USER, "other-token.a.b": OTHER_USER}
+PARENT_TOKEN = "fake-parent.a.b"
+TOKENS = {PARENT_TOKEN: PARENT_USER, "fake-other.a.b": OTHER_USER}
 
 
 class Verifier:
@@ -136,13 +136,13 @@ def test_a_non_guardian_or_unbound_user_is_403(green: tuple[Rig, Any, str]) -> N
     rig, exp, apr = green
     cmd = command(rig.fam, exp, WebDecision.APPROVE, _rid(1))
     # Signed in, but the parent of a different child.
-    assert rig.decide(cmd, token="other-token.a.b") == (403, {"error": "NOT_THIS_CHILDS_PARENT"})
+    assert rig.decide(cmd, token="fake-other.a.b") == (403, {"error": "NOT_THIS_CHILDS_PARENT"})
     # Guardianship removed from the registry: the binding alone is not enough.
     rig.guardians.rows.clear()
     assert rig.decide(cmd)[0] == 403
     # The registry alone is not enough either: no bound actor for this user.
     rig.guardians.rows.add((OTHER_USER, rig.fam.child_id))
-    assert rig.decide(cmd, token="other-token.a.b")[0] == 403
+    assert rig.decide(cmd, token="fake-other.a.b")[0] == 403
     # Another child's id in the body.
     other = {"child_id": "chd_" + "f" * 32, "command": cmd.model_dump(mode="json")}
     assert rig.call(other)[0] == 403
@@ -195,7 +195,7 @@ def test_requests_are_rate_limited_per_user(green: tuple[Rig, Any, str]) -> None
     for _ in range(3):
         assert limited.call({"child_id": rig.fam.child_id})[0] == 400  # counted, then malformed
     assert limited.call({}) == (429, {"error": "RATE_LIMITED"})
-    assert limited.call({}, token="other-token.a.b")[0] == 400  # another user is unaffected
+    assert limited.call({}, token="fake-other.a.b")[0] == 400  # another user is unaffected
     clock[0] = 61.0
     assert limited.decide(command(rig.fam, exp, WebDecision.APPROVE, _rid(9)))[0] == 200
 
@@ -283,11 +283,11 @@ def test_no_user_or_child_id_is_logged_or_echoed(
     caplog.set_level(logging.DEBUG)
     replies = [
         rig.decide(command(rig.fam, exp, WebDecision.APPROVE, _rid(1))),
-        rig.decide(command(rig.fam, exp, WebDecision.APPROVE, _rid(2)), token="other-token.a.b"),
+        rig.decide(command(rig.fam, exp, WebDecision.APPROVE, _rid(2)), token="fake-other.a.b"),
         rig.call({"child_id": rig.fam.child_id, "command": {"bad": True}}),
     ]
     text = caplog.text + json.dumps(replies)
-    for secret in (PARENT_USER, OTHER_USER, rig.fam.child_id, "parent-token"):
+    for secret in (PARENT_USER, OTHER_USER, rig.fam.child_id, "fake-parent"):
         assert secret not in text
 
 
