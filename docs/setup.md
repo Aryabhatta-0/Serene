@@ -26,7 +26,7 @@ tools; run `scripts/bootstrap.ps1` (Windows) or `scripts/bootstrap.sh`
 
 ```bash
 uv sync --locked --all-extras --group dev
-uv run pytest                                   # 144 tests, incl. real Postgres via pgserver
+uv run pytest                                   # full suite, incl. real Postgres via pgserver
 uv run python scripts/ledger_selfcheck.py       # replay + hash-chain + tamper self-check
 uv run inspect eval eval/tasks/kernel_invariants.py --model mockllm/model
 ```

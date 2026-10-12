@@ -8,7 +8,7 @@ from scripts import docs_check
 
 
 def test_core_documentation_links_and_paths_resolve() -> None:
-    assert docs_check.check_links(docs_check.CORE_DOCS) == []
+    assert docs_check.check_links((*docs_check.CORE_DOCS, docs_check.ROOT / "README.md")) == []
 
 
 def test_missing_document_is_reported(tmp_path: Path) -> None:
