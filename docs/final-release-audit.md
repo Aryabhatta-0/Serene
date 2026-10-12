@@ -1,5 +1,12 @@
 # Final release audit — 12 October 2026
 
+Release acceptance update: #108 is merged and its resulting main
+`6d680369c46232862c32596f79b684fe26fdce95` passed all four required CI jobs.
+The release owner clarified the hackathon scope after this audit: holdout and
+complete historical Entire coverage do not block submission. The
+[final acceptance note](release-acceptance.md) and [verified sponsor evidence](release-evidence.md)
+record the current decision; the technical audit findings below remain applicable.
+
 ## Release candidate
 
 Fetched main: `cc7d0afb5c0adf377003d9a3290ad700c0488347`. #105, #106 and
@@ -7,7 +14,7 @@ Fetched main: `cc7d0afb5c0adf377003d9a3290ad700c0488347`. #105, #106 and
 This report covers the final hardening branch based on that SHA. The final
 tested commit and its CI checks are recorded in the hardening PR and handoff.
 Open PRs at audit start: #67 (open), #69 and #93 (draft). They were not included.
-Open issues: #61, #53 and #54. The original main checkout has nine pre-existing
+Open issues at audit start: #61, #53 and #54. The original main checkout has eight pre-existing
 modified web/demo files; they were preserved. The fresh audit worktree began clean.
 
 Graphify was rebuilt first, AST-only with `--code-only --force --no-cluster`:
@@ -178,6 +185,11 @@ Entire: CLI commands execute, current branch checkpoint list is empty. Retrieval
 of the #106 checkpoint trailer `01M4QQAZVG7SQ4Z945Y79916TM` returned checkpoint
 not found. Git/PR history remains inspectable; complete native coverage is absent.
 Do not fabricate replacement historical checkpoints or publish private transcripts.
+Acceptance review directly retrieved two older local native records and verified
+code → commit → checkpoint → session/model with `entire blame`; exact receipts are
+in [release evidence](release-evidence.md).
+
+Entire was genuinely used during development. Retrievable historical checkpoint coverage is incomplete; no missing checkpoints were fabricated or retroactively reconstructed.
 
 cfo.ai: real saved readback has 71 nonempty cells, zero formula errors; assumed
 cost 2,725,256 micro-USD/family-month, 7,728 margin basis points and 524-day runway
@@ -187,18 +199,20 @@ match the local model. These are assumed operating inputs, not production costs.
 
 | Gap | Submission impact |
 | --- | --- |
-| Hardening PR must have all four checks green and merge before recording final main. | BLOCKS SUBMISSION |
-| Existing manual gate requires an independent frozen holdout/full-improvement result; it is absent. | BLOCKS SUBMISSION under the unchanged checklist. No holdout run is authorized by this audit. |
-| Existing manual gate requires all eight ordered genuine Entire checkpoints; coverage/retrieval is incomplete. | BLOCKS SUBMISSION under the unchanged checklist. |
+| #108 merged unchanged after four green checks; resulting main CI also passed four checks. | RESOLVED |
+| Holdout/full research regression result is absent; bounded DEV improvement is independently reproduced. | DOES NOT BLOCK SUBMISSION under the release owner's clarified hackathon acceptance. |
+| All-eight-milestone native Entire coverage is incomplete; two genuine local records and code provenance are retrievable. | DOES NOT BLOCK SUBMISSION; #54 remains open for its stricter internal criterion. |
 | New live Telegram/provider smoke unavailable without an audit-owned safe runtime/key. | DOES NOT BLOCK SUBMISSION for the explicitly synthetic Maya/local web narrative; live Telegram claim remains unproven here. |
 | Empty-plan completion limitation (#69), raw-evidence content endpoint absent, unnamed Twin variables. | DOES NOT BLOCK SUBMISSION for the bounded canonical narrative; do not claim general resolution, raw text browsing or a fully labeled live graph. |
 | No public deployment, production auth hardening, load test or screen-reader certification. | DOES NOT BLOCK SUBMISSION for user-requested local synthetic recording. |
 
 ## FINAL VERDICT
 
-**NO-GO — FIX THESE BLOCKERS FIRST**
+**GO — READY TO RECORD**
 
-Merge the hardening PR only after its four checks pass. Fulfill the existing
-holdout/improvement and native Entire evidence requirements through their approved
-protocols, or have the release owner explicitly change the submission acceptance
-scope. This audit does not waive those requirements or authorize running holdout.
+The release owner explicitly changed submission acceptance scope. This does not
+change the frozen research gate, authorize holdout, merge #67 or claim full native
+Entire history. Focused confirmation passed on merged main; see the
+[final acceptance note](release-acceptance.md).
+
+Holdout was not run. Controlled DEV evidence is reported only as DEV evidence and is not claimed as a holdout/generalization result.

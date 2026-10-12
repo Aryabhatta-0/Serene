@@ -64,6 +64,12 @@ and [final audit](docs/final-release-audit.md) distinguish real Auth/Realtime tr
 from scripted model/browser I/O and a public deployment.
 [Implemented UI boundary](docs/architecture.md#experiments-promotion-and-dream).
 
+The final local presentation proves **Today LIVE, Investigations LIVE,
+Experiments LIVE, Memory/Dream LIVE, Causal Twin LIVE, approval LIVE and
+reconnect/resync LIVE** against real hosted Supabase Auth/RLS/Realtime with
+synthetic records. LIVE describes that transport proof; the canonical Maya
+external I/O and full 18-beat scenario remain scripted/deterministic.
+
 ## See the canonical Maya story
 
 Use Python 3.11–3.13, Git and uv. From a fresh clone:
@@ -102,8 +108,13 @@ uv run python scripts/docs_check.py --github
 Reset restores only the fixed synthetic workspace, preserves unknown files and
 refuses linked paths. Each demo uses a fresh in-memory ledger and temporary Git
 repository. [Setup](docs/setup.md) covers optional live services; the offline path
-needs no `.env`. [Web commands](app/web/README.md) preview separate synthetic UI
-fixtures, not a connected family dashboard.
+needs no `.env`. [Web commands](app/web/README.md) run the production routes;
+synthetic UI fixtures require an explicit opt-in build flag. Connected web
+presentation requires the documented Supabase configuration.
+
+Canonical validation: **Maya 18/18, 63 events**, domain SHA-256
+`4000dac552cca6086d39e352795c2a2c79a0bedc69c823247a08c47173e12c7e`;
+the separate frozen handcrafted safety scenarios pass **10/10**.
 
 ## Measured evaluation and the NeatLogs correction story
 
@@ -135,11 +146,21 @@ Measured tokens are not measured dollar spend: no provider price was configured.
 [trace receipts](eval/reports/archive/2026-10-12-controlled-dev-1/neatlogs-sessions.csv),
 [verification](eval/reports/archive/2026-10-12-controlled-dev-1/verification.json).
 
+The concrete failure/recovery pair `controlled-dev-1-07-A` / `-07-B` shows
+five-field requests and two rejected captures before, then a one-field request
+and one VERIFIED capture after. Both trace exports were accepted with no dropped
+spans/errors. The [release evidence receipt](docs/release-evidence.md) records
+the trace diagnosis, sequence references, reproducible metrics and regression
+checks. This proves measured evidence-verification improvement, not general task
+superiority. The real Telegram run is not claimed to have NeatLogs tracing.
+
 Historical truth remains: original DEV **FAIL**, paired replay **INCONCLUSIVE**,
 live-gate/3, /4 and /5 **INVALID**. The full regression gate requires holdout.
 Plain Hermes and Hermes + ordinary memory/RAG are implemented comparators, but
 this DEV result does not establish superiority over them.
 [Methodology and historical reports](docs/evaluation.md).
+
+Holdout was not run. Controlled DEV evidence is reported only as DEV evidence and is not claimed as a holdout/generalization result.
 
 The separate [historical six-run comparison](docs/live-eval-2026-10-11.md) is:
 
@@ -166,7 +187,18 @@ no messages. Default runtime costs remain unknown.
 [cfo.ai readback](docs/economics/cfo-readback.json),
 [acceptance evidence](docs/economics/acceptance-audit.json).
 
-**Entire:** the evolution runs through ledger/projections
+**Entire:** CLI 0.11.4 retrieves checkpoint `01M4JMP49DYR5MABPHPD1RPT0J`,
+mapped to real runtime commit `91b4401584e61dfde06956678399aad24d06134f`
+and session `37110e9a-2a6c-4ced-8ef1-fcb81c3c1b2b` (Claude Code,
+`claude-opus-5-5`). `entire blame serene/evidence/ingestion.py:1-20 --json`
+resolves code → commit → checkpoint → session/model. A second foundation
+checkpoint is also retrievable; [sanitized command receipts and exact commands](docs/release-evidence.md)
+preserve the evidence without transcripts. These are local native records,
+not a claim that missing remote records can be retrieved.
+
+Entire was genuinely used during development. Retrievable historical checkpoint coverage is incomplete; no missing checkpoints were fabricated or retroactively reconstructed.
+
+The evolution runs through ledger/projections
 ([#63](https://github.com/Sathvikar01/morrow/pull/63)), policy/Dream/Twin
 ([#64](https://github.com/Sathvikar01/morrow/pull/64)), investigation/verifier
 ([#65](https://github.com/Sathvikar01/morrow/pull/65)) and evaluation correction
@@ -189,12 +221,21 @@ tampering but do not notarize history against a host administrator.
 The final hardening audit updates Next.js/PostCSS and the test runner; the current
 lockfile passes `npm audit` with zero findings.
 
+Merged [#108](https://github.com/Sathvikar01/morrow/pull/108) also denies browser
+SELECT on canonical ledger payloads, protects cross-account/child state and
+rejects stale/out-of-order Realtime state. Current secret/PII gates are clean.
+These are tested boundaries, not security certification.
+
 Four required CI checks cover kernel/types/tests/secrets, deterministic Inspect
-gates, web build/unit tests and Playwright. **The final release gate remains BLOCKED**
-by incomplete Entire checkpoints and the unrun holdout/full improvement gate;
-the connected UI is now proven locally against hosted Supabase with synthetic data.
-The offline Maya path is also available. There is no public deployment.
-[Checklist and exact submission narrative](docs/final-demo-checklist.md).
+gates, web build/unit tests and Playwright. [Final release acceptance](docs/release-acceptance.md)
+uses the release owner's hackathon scope: bounded before/after DEV improvement,
+genuine sponsor evidence, a public repo and a recording of at most three minutes.
+Holdout and complete historical Entire coverage are accepted non-blocking
+limitations. The full research regression gate remains unchanged and unpassed.
+There is no public deployment or production-readiness claim. Hosted web transport,
+NeatLogs, Entire and cfo.ai evidence are real; Maya external I/O is scripted.
+The [earlier checklist](docs/final-demo-checklist.md) preserves the stricter audit
+snapshot and is superseded for submission acceptance.
 
 Canonical references: [architecture](docs/architecture.md),
 [evidence](docs/evidence-model.md), [safety](docs/safety.md),
