@@ -128,10 +128,11 @@ The other eight observations are unchanged from the BEFORE run.
    both at the promotion and when the learning is recorded. The gate never judges
    whether the report agrees or disagrees with the pattern. Level 4 is unchanged.
 
-Policy version strings (`safety/1`, `promotion/2`) were deliberately not bumped.
-The new rules only add RED or deny reasons. Bumping the strings would change the
-verified canonical Maya demo hash (`3752477f…`) just before the demo freeze, and
-with the strings unchanged the demo's output is byte-identical.
+Both deterministic decisions changed, so the policy versions were bumped:
+`safety/1` → `safety/2` and `promotion/2` → `promotion/3`. The versions are
+recorded as provenance, so the canonical Maya domain report hash changed from
+`3752477f…` to `4000dac5…`; all 18 beats still pass and the regenerated hash is
+identical across reset → demo runs.
 
 ### Remaining limitations
 

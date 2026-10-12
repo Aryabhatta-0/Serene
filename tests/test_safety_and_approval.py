@@ -180,7 +180,7 @@ def test_policy_actor_cannot_misclassify_red_as_green(family: SyntheticFamily) -
         safety_class=SafetyClass.GREEN,
         intervention_digest=intervention_digest(exp.intervention),
         reason_codes=("LOW_RISK_REVERSIBLE",),
-        policy_version="safety/1",
+        policy_version="safety/2",
     )
     with pytest.raises(AdmissionRejected, match="CLASSIFICATION_MISMATCH"):
         family.append(family.draft(EventType.EXPERIMENT_CLASSIFIED, family.policy, forged))

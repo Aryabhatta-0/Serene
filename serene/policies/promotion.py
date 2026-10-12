@@ -58,7 +58,7 @@ from serene.projections.state import (
     LifecycleStatus,
 )
 
-POLICY_VERSION: Final = "promotion/2"
+POLICY_VERSION: Final = "promotion/3"
 MAX_LEARNING_VALIDITY: Final = timedelta(days=180)
 DEFAULT_LEARNING_REVIEW: Final = timedelta(days=60)
 

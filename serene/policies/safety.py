@@ -18,7 +18,7 @@ from serene.domain.canonical import canonical_digest
 from serene.domain.entities import Burden, Intervention, InterventionCategory
 from serene.domain.events import SafetyClass
 
-POLICY_VERSION: Final = "safety/1"
+POLICY_VERSION: Final = "safety/2"
 
 _C = InterventionCategory
 

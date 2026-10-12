@@ -44,13 +44,17 @@ Executed on Windows with Python 3.11.9:
   time. Baseline SHA-256:
   `41836ad96c19ec844870b7e185bd8ad548ad3beab90318350e07c93b15488681`.
   Both canonical domain report hashes:
-  `3752477f9a66d039ba6002c72cfe9dc2e03c8e1332ccf0fe3ab728df6db9dbb9`.
+  `4000dac552cca6086d39e352795c2a2c79a0bedc69c823247a08c47173e12c7e`.
   Both report-file hashes (including final newline):
-  `71d1d036277cb894a0f692f55ee795f16eb8d31b2aa5cd35fd9db1589de515a2`.
+  `0b26ae8379ed333a7cade5019648b6b3f93d5a24ba3e1deb62b6989276b13c26`.
   The visible HTML/JSON contains 63 events, scoped memory
   `learnings/maya-pickup.md`, commit
-  `a4d97b94438d00d4a45b4d4ca3c0c6f7411c1849`, one SUPPORTED Twin edge and two
-  CANDIDATE alternatives. All generated files remain ignored.
+  `a811431e499a46cceb1ba8217c114c78e34e0c68`, one SUPPORTED Twin edge and two
+  CANDIDATE alternatives. These three values were regenerated after the policy
+  version bump to `safety/2` and `promotion/3` (#97); the versions are recorded
+  in the demo's events, so the hashes changed while all 18 beats, the baseline
+  hash and the event count did not. Before that bump they were `3752477f…`,
+  `71d1d036…` and `a4d97b94…`. All generated files remain ignored.
 - Fresh-clone README Maya/reset tests: **5 passed, 1 skipped** in 130.98s.
   The skip is Windows symlink permission; Linux CI exercises that path.
   Focused documentation/Maya/reset/controlled-decision suite in the primary
