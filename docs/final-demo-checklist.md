@@ -1,7 +1,8 @@
 # Final demo acceptance checklist (#62)
 
-Source: fresh `main` at `42c82b58c8966f0aada9c382575c811cd93176d1`
-(2026-10-12, including #89 and #90). **Release verdict: BLOCKED.**
+Source: refreshed `main` at `7dffc95b453a1e0995175024c5c55a963397e938`
+(2026-10-12, including #89, #90 and the #37 Experiments/Approval surface).
+**Release verdict: BLOCKED.**
 This is a release checklist, not permission to run holdout or deploy a family service.
 
 PASS means the named, bounded proof exists and was checked. It does not imply
@@ -40,7 +41,7 @@ files remain ignored and contain only synthetic data.
 | Reset/reproducibility: same seed and canonical report bytes | PASS | [reset tests](../tests/test_demo_reset.py), [Maya E2E](../tests/test_maya_demo.py), [reset command](../scripts/demo_reset.py) | Run reset→demo twice: identical baseline and domain SHA-256; fresh in-memory ledger/temp Git per run; unknown files preserved |
 | CI: all four required jobs for audited main | PASS | [PR #90 checks](https://github.com/Sathvikar01/morrow/pull/90/checks), [workflow](../.github/workflows/ci.yml), [ruleset contract](setup.md#5-merge-gates-58) | Open four green required jobs on main's documentation baseline; this docs PR must separately pass the same four before merge; CI is not a live-model/holdout result |
 | Privacy: public artifacts synthetic, secrets absent, scoped reads | PASS | [#59 / PR #80](https://github.com/Sathvikar01/morrow/pull/80), [privacy tests](../tests/test_privacy_audit.py), [RLS tests](../tests/test_rls.py), [secret scanner](../scripts/secret_scan.py) | Show zero scan findings and synthetic Maya label; explain HMAC/token-filtered metadata, backend ledger writes, inference-provider boundary and no production privacy certification |
-| Connected live presentation: signed-in child → Twin/Memory UI | BLOCKED | [#84](https://github.com/Sathvikar01/morrow/issues/84), [#75](https://github.com/Sathvikar01/morrow/issues/75), [Twin source](../app/web/lib/causal-twin/source.ts), [Memory source](../app/web/lib/memory/source.ts), [known hosting advisories](privacy.md#6-non-goals) | Normal pages show UNCONNECTED; fixture routes are synthetic build-gated previews. Show Maya HTML/JSON as the domain demo, not a deployed dashboard; known Next.js/PostCSS advisories also require remediation before public hosting |
+| Connected live presentation: signed-in child → Twin/Memory/Experiments UI | BLOCKED | [#84](https://github.com/Sathvikar01/morrow/issues/84), [#75](https://github.com/Sathvikar01/morrow/issues/75), [Twin source](../app/web/lib/causal-twin/source.ts), [Memory source](../app/web/lib/memory/source.ts), [Experiments page](../app/web/app/experiments/page.tsx), [web channel tests](../tests/test_web_approvals.py), [known hosting advisories](privacy.md#6-non-goals) | Normal pages show UNCONNECTED; Experiments passes no approval transport; fixture routes are scripted build-gated previews. Show Maya HTML/JSON as the domain demo, not a deployed dashboard; known Next.js/PostCSS advisories also require remediation before public hosting |
 
 ## Dry-run using this checklist only
 

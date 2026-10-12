@@ -50,10 +50,13 @@ remain inspectable. Cost cannot override safety or evidence quality.
 
 Implemented services include Telegram, investigation/recovery, verification,
 experiments, promotion, Dream, Git memory, Causal Twin and Supabase projections.
-The web has read-only Twin/Memory views and projection transport, but pages remain
+The web has Twin/Memory review views, an Experiments/Approval surface and projection transport, but pages remain
 unconnected: web sign-in and full Twin provenance projection are unfinished.
 Current investigation sufficiency can also mistake an empty/filtered plan for
 completion; [the architecture records that limitation](docs/architecture.md#telegram-hermes-and-investigation).
+The web approval command/channel exists, but its authenticated transport is unwired;
+the shipped Experiments page offers no decisions.
+[Implemented UI boundary](docs/architecture.md#experiments-promotion-and-dream).
 
 ## See the canonical Maya story
 

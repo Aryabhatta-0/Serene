@@ -1,6 +1,6 @@
 # Serene architecture
 
-Audited against merged `main` at `8b0a3c766f04a6fe953819cbb188069baa633743`
+Audited against merged `main` at `7dffc95b453a1e0995175024c5c55a963397e938`
 on 2026-10-12 for [#60](https://github.com/Sathvikar01/morrow/issues/60).
 Implementation, synthetic integration, live evaluation and production readiness
 are different claims. The [Maya demo](maya-demo.md) exercises real services with
@@ -132,6 +132,17 @@ The merged [Memory/Dream read view](../serene/memory/view.py) and
 lineage, Dream stages, pending patches and explained refusals. They carry no
 edit, commit or approval authority. Memory text and diffs remain private data;
 the build-gated fixture is synthetic, not a live family connection.
+
+Main also includes #37's [Experiments view](../serene/experiments/view.py),
+[decision surface](../app/web/components/experiments/DecisionPanel.tsx) and
+[WebApprovalChannel](../serene/adapters/web/approvals.py). Commands quote the
+shown intervention digest/safety class and a single-use request ID; channel and
+ledger admission reject RED and recheck parent, expiry, replay and deliberation.
+The channel trusts a principal resolved by an authenticated transport; it does
+not authenticate sessions itself. The shipped [page](../app/web/app/experiments/page.tsx)
+uses UNCONNECTED and `decide={null}`: no live approval transport is wired. A
+scripted fixture response is not a real parent approval. Tests:
+[web approvals](../tests/test_web_approvals.py), [read view](../tests/test_experiments_view.py).
 
 ## Causal Twin, Supabase and projections
 
