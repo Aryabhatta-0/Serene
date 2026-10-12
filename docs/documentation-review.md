@@ -53,7 +53,18 @@ using read-only `gh` API calls. CI runs the offline documentation test as part o
 pytest; no account or provider key is needed. This is not a general Markdown
 parser, arbitrary external-site crawler or automatic proof of prose accuracy.
 
-Validation results are recorded after final checks below.
+Recorded local results:
+
+- Five canonical docs: 214 link/path references checked, zero failures;
+  64 referenced GitHub issue/PR numbers and two pinned remote source files validated.
+- Supporting review document also passes the link/reference check.
+- Documentation regression tests: seven passed, including missing paths/anchors,
+  wrong issue-versus-PR URL kinds and numeric-heading fragments.
+- Repository Ruff lint/format and strict mypy: passed (96 product source files).
+- Secret/history scan, environment coverage and synthetic-data audit: zero
+  findings; all 76 reviewed synthetic assets/generators retain their bytes.
+- Economics report reproduction and ledger replay/hash/tamper self-check: passed.
+- Full backend-suite and required CI results are reported in the documentation PR.
 
 ## Exact remaining #60 item
 
