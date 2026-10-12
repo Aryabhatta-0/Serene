@@ -29,9 +29,45 @@ checklist, this receipt and all five canonical docs. It validates local links,
 heading anchors, repository paths/reports, referenced GitHub issues/PRs and
 pinned GitHub files. It does not prove prose claims or crawl arbitrary websites.
 
-Fresh-clone setup and checklist dry-run results: pending execution in this docs branch.
-Documentation checks and secret scan: pending execution in this docs branch.
-Four required PR checks: must all pass before merge.
+Executed on Windows with Python 3.11.9:
+
+- Fresh **local clone** of documentation commit
+  `753b44a5100d749bc990b47bffb808b0c12a481a` into an ignored workspace, with a
+  new virtualenv and no `.env`; `uv sync --locked --all-extras --group dev`
+  installed the locked dependencies. The smoke uses current tracked source,
+  not copied local credentials or an existing installation. Git/uv were already
+  installed on the host; this is not a hosted deployment or clean-OS test.
+- Checklist commands reset → demo → reset → demo succeeded, all 18 beats each
+  time. Baseline SHA-256:
+  `41836ad96c19ec844870b7e185bd8ad548ad3beab90318350e07c93b15488681`.
+  Both canonical domain report hashes:
+  `3752477f9a66d039ba6002c72cfe9dc2e03c8e1332ccf0fe3ab728df6db9dbb9`.
+  Both report-file hashes (including final newline):
+  `71d1d036277cb894a0f692f55ee795f16eb8d31b2aa5cd35fd9db1589de515a2`.
+  The visible HTML/JSON contains 63 events, scoped memory
+  `learnings/maya-pickup.md`, commit
+  `a4d97b94438d00d4a45b4d4ca3c0c6f7411c1849`, one SUPPORTED Twin edge and two
+  CANDIDATE alternatives. All generated files remain ignored.
+- Fresh-clone README Maya/reset tests: **5 passed, 1 skipped** in 130.98s.
+  The skip is Windows symlink permission; Linux CI exercises that path.
+  Focused documentation/Maya/reset/controlled-decision suite in the primary
+  checkout: **27 passed, 1 skipped** in 79.75s (same host-permission skip).
+- Default checker: **8 documents, 343 link/path references, 72 GitHub issue/PR
+  numbers, two pinned remote files, zero failures**. Supporting setup/web/Telegram
+  notes: **3 documents, 21 references, nine issue/PR numbers, zero failures**.
+- Archived `decide()` over all 36 saved pairs reproduces the exact PASS summary
+  (excluding only the manifest hash added by the runner), with
+  `holdout_executed=False`. No private raw state was recounted and no live call
+  was made. Trace CSV and cfo.ai readback were inspected, not regenerated.
+- Ledger self-check: 25 events, hash chain OK, replay identical, tamper detected.
+  Economics report reproduction: identical. Ruff lint/format and strict mypy
+  (97 product files): pass. Secret/history scan and env audit: zero findings;
+  synthetic audit: all 87 reviewed assets unchanged. Final diff passes whitespace
+  checks and contains documentation/reference tests only.
+
+Four required PR checks must all pass before merge; their final run is linked
+from the PR and issue completion evidence. A green docs merge does not change
+the four BLOCKED checklist rows or accept the complete demo build.
 
 Issue disposition: #60 remains closed after recheck; #61 stays open because
 #53/#54 strict completion is outstanding. #62 can close when its checklist,
