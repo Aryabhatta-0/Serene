@@ -31,6 +31,7 @@ def test_the_initial_projections_and_the_investigation_view_exist() -> None:
         "active_learnings",
         "investigations",  # issue #35
         "experiments",  # issues #37/#84
+        "memory_review",
     }
 
 

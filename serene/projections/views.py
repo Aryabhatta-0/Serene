@@ -19,6 +19,7 @@ from serene.domain.entities import (
 from serene.domain.events import DomainEvent
 from serene.domain.values import VerificationStatus
 from serene.projections.investigations import investigations
+from serene.projections.memory import memory_review
 from serene.projections.state import (
     OPEN_APPROVAL_STATES,
     KernelState,
@@ -132,6 +133,7 @@ PROJECTIONS: Final[dict[str, Callable[[KernelState], dict[str, Any]]]] = {
     "investigations": investigations,
     # issues #37/#84: the Experiments surface's read state
     "experiments": experiments,
+    "memory_review": memory_review,
 }
 
 

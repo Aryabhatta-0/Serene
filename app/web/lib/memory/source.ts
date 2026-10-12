@@ -1,16 +1,14 @@
 import { MemoryValidationError, parseMemoryDreamView, type MemoryDreamView } from "./model";
 
-// Where the Memory surface gets its view from, as a state it can draw
-// honestly. The Realtime projection transport (#33) is implemented, but the
-// memory view is not a published projection yet (#99); until it is, the
-// surface says so instead of drawing anything.
+// Validated Memory/Dream projection state, delivered through the parent-only
+// projection feed. No fixture or direct Git/ledger access on the live route.
 export type MemorySource =
   | { status: "unconnected" }
   | { status: "loading" }
   | { status: "error"; reason: string }
   | { status: "ready"; view: MemoryDreamView };
 
-/** The live source today: no family record is connected. */
+/** No session or selected child. */
 export const UNCONNECTED: MemorySource = { status: "unconnected" };
 
 /** Validate a payload from the kernel. Anything that does not pass is an error state. */

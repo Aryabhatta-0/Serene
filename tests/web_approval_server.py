@@ -16,6 +16,7 @@ import tempfile
 import time
 import uuid
 from collections.abc import Iterable
+from pathlib import Path
 from socketserver import ThreadingMixIn
 from typing import Any
 from urllib.parse import parse_qs
@@ -38,6 +39,7 @@ from serene.adapters.web.session import SupabaseSessionVerifier
 from serene.testing import SyntheticFamily
 
 from .conftest import MIGRATIONS
+from .memory_helpers import ScriptedModelDreamer, memory_stack
 from .trust_helpers import C, awaiting_approval, hypothesis, intervention, service
 
 HOST = "http://127.0.0.1:8806"
@@ -70,7 +72,7 @@ class QuietHandler(WSGIRequestHandler):
 
 
 class BrowserKernel:
-    def __init__(self, dsn: str) -> None:
+    def __init__(self, dsn: str, memory_root: Path) -> None:
         self.dsn = dsn
         self.tokens = {token(u): u for u in (PARENT, OTHER, CAREGIVER)}
         self.fam = SyntheticFamily(seed="browser-http-kernel")
@@ -88,7 +90,15 @@ class BrowserKernel:
         for event in self.fam.store.read_stream(self.fam.child_id):
             store.append(event, expected_prev_hash=event.prev_event_hash)
         self.fam.store = store
-        self.fam.ledger = postgres_ledger(dsn, self.fam.clock)
+        # Real Git snapshot input and publisher; all bytes remain synthetic.
+        self.memory = memory_stack(self.fam, memory_root)
+        self.fam.ledger = postgres_ledger(
+            dsn,
+            self.fam.clock,
+            memory_snapshot=lambda child, sha: self.memory.repo.at_revision(sha),
+        )
+        # Rebind the committer to the publishing ledger.
+        self.memory = memory_stack(self.fam, memory_root)
         with psycopg.connect(dsn) as conn:
             conn.execute(
                 "insert into serene.children values (%s, 'SYNTHETIC', now())", (self.fam.child_id,)
@@ -182,6 +192,34 @@ class BrowserKernel:
             }
         elif path == "/__test/check":
             body = {"verified": self.fam.ledger.verify_hash_chain(self.fam.child_id).ok}
+        elif path == "/__test/memory" and env["REQUEST_METHOD"] == "POST":
+            from serene.memory.consolidation import run_consolidation
+            from serene.memory.dream import DreamDraft
+
+            state = self.fam.state()
+            pattern = next(r.entity_id for r in state.entities.values() if r.kind == "pat")
+            observation = next(r.entity_id for r in state.entities.values() if r.kind == "obs")
+            dreamer = ScriptedModelDreamer(
+                self.fam.agent,
+                [
+                    DreamDraft(
+                        pattern,
+                        "patterns/browser-kept.md",
+                        "Synthetic browser memory",
+                        "Synthetic regularity across pickups.",
+                    ),
+                    DreamDraft(
+                        observation,
+                        "child/browser-refused.md",
+                        "Synthetic refused proposal",
+                        "Synthetic unsupported generalisation.",
+                    ),
+                ],
+            )
+            run_consolidation(
+                self.memory.pipeline(dreamer), self.memory.committer, self.fam.child_id
+            )
+            body = {"published": True}
         elif path == "/auth/v1/logout":
             pass
         else:
@@ -222,7 +260,7 @@ def main() -> None:
             with psycopg.connect(dsn, autocommit=True) as conn:
                 for migration in MIGRATIONS:
                     conn.execute(migration.read_text("utf-8"))
-            kernel = BrowserKernel(dsn)
+            kernel = BrowserKernel(dsn, Path(temp) / "memory")
             with make_server(
                 "127.0.0.1", 8806, kernel, server_class=ThreadedServer, handler_class=QuietHandler
             ) as http:

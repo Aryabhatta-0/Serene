@@ -34,7 +34,7 @@ def test_event_type_constraint_matches_taxonomy() -> None:
 
 
 def test_projection_constraint_matches_projections() -> None:
-    assert _check_list("projection") == set(PROJECTIONS)
+    assert _check_list("projection") == set(PROJECTIONS) | {"memory_dream"}
 
 
 def test_ledger_has_append_only_triggers_and_rls() -> None:

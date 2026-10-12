@@ -24,8 +24,8 @@ from serene.lineage.chain import LedgerIntegrityError
 from serene.observability.telemetry import SafeTelemetry
 from serene.ports.clock import Clock
 from serene.ports.event_store import ConcurrencyConflict
+from serene.projections.memory import MemorySnapshot, configured_snapshot, publishable_projections
 from serene.projections.state import KernelState
-from serene.projections.views import project
 
 _COLUMNS = (
     "event_id, child_id, sequence, event_type, schema_version, hash_version, source, actor, "
@@ -185,13 +185,15 @@ class PostgresProjectionStore:
             conn.execute("delete from serene.projection_state where child_id = %s", (child_id,))
 
 
-def projection_publisher(store: PostgresProjectionStore) -> AfterAppend:
+def projection_publisher(
+    store: PostgresProjectionStore, snapshot: MemorySnapshot = configured_snapshot
+) -> AfterAppend:
     """An `EventLedger(after_append=...)` hook that keeps projection_state in step."""
 
     def advance(event: DomainEvent, state: KernelState) -> None:
         store.advance(
             event.child_id,
-            project(state),
+            publishable_projections(state, snapshot),
             last_sequence=event.sequence,
             last_event_hash=event.event_hash,
         )
@@ -200,7 +202,11 @@ def projection_publisher(store: PostgresProjectionStore) -> AfterAppend:
 
 
 def postgres_ledger(
-    conninfo: str, clock: Clock, *, telemetry: SafeTelemetry | None = None
+    conninfo: str,
+    clock: Clock,
+    *,
+    telemetry: SafeTelemetry | None = None,
+    memory_snapshot: MemorySnapshot = configured_snapshot,
 ) -> EventLedger:
     """The production ledger (issue #87): Postgres, with projection_state kept live.
 
@@ -212,7 +218,7 @@ def postgres_ledger(
         PostgresEventStore(conninfo),
         clock,
         telemetry=telemetry,
-        after_append=projection_publisher(PostgresProjectionStore(conninfo)),
+        after_append=projection_publisher(PostgresProjectionStore(conninfo), memory_snapshot),
     )
 
 
@@ -228,6 +234,7 @@ def backfill_projections(
     child_ids: Iterable[str] | None = None,
     *,
     replace: bool = False,
+    memory_snapshot: MemorySnapshot = configured_snapshot,
 ) -> BackfillResult:
     """Rebuild projection_state from a verified replay of each child's ledger.
 
@@ -253,7 +260,7 @@ def backfill_projections(
         publish = store.replace if replace else store.advance
         publish(
             child_id,
-            project(state),
+            publishable_projections(state, memory_snapshot),
             last_sequence=state.last_sequence,
             last_event_hash=state.last_event_hash,
         )
