@@ -16,7 +16,7 @@
     "app/web/fixtures/approval-command.example.json": "257bc3605c83d03f94e17b82df85870ab0ad3c683bb207a4ad3d90bec94df0cf",
     "app/web/fixtures/synthetic-causal-twin.json": "c5ad435e0c64d17ce7f75c09a6155f2d8983a4e720019ccca8e00906316c6ce7",
     "app/web/fixtures/synthetic-experiments.json": "94ced17b3cce798982231707a82bc6be082cc7d214d2088973173011790b6803",
-    "app/web/fixtures/synthetic-investigation.json": "28e99b8935141a1d9fca369af0142fd261fbb4a1f222d935cb4afacd20226a84",
+    "app/web/fixtures/synthetic-investigation.json": "0f02d1291af80106babb7c6fef9203fcbb3f44a2dfe41f3ff4ab63c2d48c8e6f",
     "app/web/fixtures/synthetic-twin-provenance.json": "bb9468848b278147578d31911edabd8e99e6bdd8a85e0da8fa460be1b5237fa2",
     "app/web/fixtures/synthetic-memory-dream.json": "3a256a0fa489850c4b9c90ffece6442bbaf613f6076fc2f51b40581706440f53",
     "docs/maya-demo.md": "3712e900295971a2d6898e4ed455de9685f324c41f298cca09d2c56516b3a2dc",

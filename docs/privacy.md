@@ -122,8 +122,11 @@ real family data. This audit does not certify third-party logging behavior.
   intervention/outcome text and reasons, while omitting child/actor IDs. It is
   private application data, not safe telemetry. Its
   [web approval adapter](../serene/adapters/web/approvals.py) trusts a parent
-  principal supplied by authenticated transport; no session-authenticated
-  transport is wired and the shipped page offers no decisions. Synthetic
+  principal supplied by authenticated transport. That transport (#84) verifies
+  the Supabase session with Supabase Auth, keeps only the opaque user id,
+  resolves the bound `act_` PARENT actor (never writing Supabase ids to the
+  ledger) and logs no user or child id. The `experiments` projection carries
+  the same read view, parent-only under RLS. Synthetic
   Experiments fixture routes do not establish deployed family authorization.
 - The #75 [Causal Twin provenance view](../serene/causal/provenance.py) omits
   child, actor and `src_` source ids (actors appear only by kind) and never

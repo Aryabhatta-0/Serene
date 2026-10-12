@@ -230,6 +230,7 @@ class KernelState:
     child_id: str | None = None
     last_sequence: int = 0
     last_event_hash: str = GENESIS_HASH
+    last_recorded_at: datetime | None = None  # ledger time of the head event
     event_ids: dict[str, EventType] = field(default_factory=dict)
     entities: dict[str, EntityRecord] = field(default_factory=dict)
     hypothesis_levels: dict[str, EpistemicLevel] = field(default_factory=dict)
@@ -296,6 +297,7 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
     state.child_id = event.child_id
     state.last_sequence = event.sequence
     state.last_event_hash = event.event_hash
+    state.last_recorded_at = event.recorded_at
     state.event_ids[event.event_id] = event.event_type
 
     match payload:
