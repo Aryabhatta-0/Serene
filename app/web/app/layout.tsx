@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import type { ReactNode } from "react";
 import { BLOOM_SCRIPT, BloomDirector } from "@/components/brand/BloomDirector";
 import { PETAL_SRC } from "@/components/brand/Hellebore";
+import { FamilyRecordProvider } from "@/components/session/FamilyRecord";
 import { AppShell } from "@/components/shell/AppShell";
 
 // Self-hosted and preloaded, with a metric-matched fallback so the swap does
@@ -51,7 +52,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body>
         <BloomDirector />
-        <AppShell>{children}</AppShell>
+        <FamilyRecordProvider>
+          <AppShell>{children}</AppShell>
+        </FamilyRecordProvider>
       </body>
     </html>
   );

@@ -7,6 +7,8 @@ type PageProps = {
   lead: string;
   /** "wide" gives the sheet room for a map; text-only surfaces stay at reading width. */
   width?: "reading" | "wide";
+  /** The record status. Surfaces on the signed-in family record pass their own (#87). */
+  status?: ReactNode;
   children?: ReactNode;
 };
 
@@ -22,7 +24,7 @@ function titleMeasure(title: string): number {
 // the ruled sheet, what it is for in the left margin, Serene's promise in the
 // right, and the record status where a survey sheet keeps its legend. The
 // bloom belongs to the landing page alone.
-export function Page({ title, lead, width = "reading", children }: PageProps) {
+export function Page({ title, lead, width = "reading", status, children }: PageProps) {
   return (
     <div className={styles.page}>
       <header
@@ -36,7 +38,7 @@ export function Page({ title, lead, width = "reading", children }: PageProps) {
           apart.
         </p>
         <div className={styles.status}>
-          <RecordStatus />
+          {status ?? <RecordStatus />}
         </div>
         <a href="#surface-body" className={styles.onward}>
           <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">

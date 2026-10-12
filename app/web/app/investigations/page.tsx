@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
-import { InvestigationSurface } from "@/components/investigations/InvestigationSurface";
+import { LiveInvestigations } from "@/components/investigations/LiveInvestigations";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { Page } from "@/components/layout/Page";
+import { RecordControl } from "@/components/session/RecordControl";
 
 export const metadata: Metadata = { title: "Investigations" };
 
 // Read from the `investigations` projection over the Realtime projection path
-// (#33). Web sign-in is not built yet (#84), so no feed is passed and the
-// surface shows the honest unconnected state.
+// (#33), for the signed-in parent's chosen child (#87). Signed out,
+// unconfigured or with no child, the surface shows the honest unconnected state.
 export default function InvestigationsPage() {
   return (
     <Page
       title="Investigations"
       lead="Questions Serene is looking into, the explanations it is weighing, and the evidence it still needs."
+      status={<RecordControl next="/investigations" />}
     >
-      <InvestigationSurface
-        feed={null}
-        childId={null}
+      <LiveInvestigations
         mode="all"
         unconnected={
           <EmptyState title="No open investigations">

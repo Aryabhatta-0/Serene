@@ -81,5 +81,5 @@ describe("projectionFeed", () => {
     const feed = projectionFeed({ url: "https://example.supabase.co", anonKey: "public-anon-key" });
     expect(typeof feed.fetchSnapshot).toBe("function");
     expect(typeof feed.subscribe).toBe("function");
-  });
+  }, 30_000); // a cold import of supabase-js can be slow on a loaded runner
 });

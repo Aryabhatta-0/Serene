@@ -3,10 +3,12 @@
 The Next.js application shell for Serene (Issue #34): a landing page with the
 bloom, five primary surfaces (Today, Memory, Investigations, Experiments,
 Causal Twin), responsive navigation, Twin/Memory review views, an Experiments/Approval surface, and
-shared layout primitives. The #33 projection transport is implemented, but no
-page subscribes: web sign-in (#84) and full Twin provenance projection (#75)
-remain unfinished. Normal pages render no connected family data; fixture routes
-are synthetic previews, not a deployed family connection.
+shared layout primitives. The #33 Realtime projection transport is
+implemented, and Today and Investigations subscribe to it once a parent signs
+in and chooses a child (#87). Memory, Experiments and the Causal Twin still
+render unconnected; full Twin provenance projection (#75) is unfinished.
+Without `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` every
+page renders no family data; fixture routes are synthetic previews.
 
 ```sh
 npm ci
@@ -91,8 +93,20 @@ these commands.
   it from `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY`
   (`config.ts`), and `useProjections` is the hook surfaces use.
   `components/projections/ProjectionStatus` says in words how current the
-  state is. Web sign-in is not built yet (#84), so no page subscribes and
-  surfaces stay unconnected.
+  state is.
+- `lib/auth/` and `components/session/`: web sign-in and child selection
+  (Issue #87). `client.ts` is the one browser Supabase client (session kept
+  in this browser and refreshed by supabase-js); `backend.ts` signs in with
+  email and password and lists the signed-in user's own `PARENT` children
+  from `serene.child_guardians` under RLS; `session.ts` tells a sign-out from
+  an expired session; `selection.ts` remembers the chosen child for this tab
+  only, and restores it only for the same user and only if RLS still lists
+  it. `FamilyRecordProvider` hands surfaces a feed and a child id only when
+  someone is signed in with a child chosen; `RecordControl` is the record
+  status with the child picker and sign-out; `/sign-in` is the form.
+  `/fixtures/session` (test builds only) drives the real components with a
+  synthetic stand-in for Supabase: sign in, pick a child, kernel append,
+  drop and restore the network, switch child, expire the session.
 - `lib/investigations/` and `components/investigations/`: Today and
   Investigations (Issue #35), read from the kernel's `investigations`
   projection over the Realtime projection path (`useProjections`). They show
