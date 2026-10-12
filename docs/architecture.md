@@ -1,5 +1,36 @@
 # Serene architecture
 
+## One-minute picture
+
+Serene helps a parent move from a concern to a careful next step. It records
+what the family reported, keeps plausible explanations visible, checks outside
+evidence separately, and asks the parent before a trial. The web screen is a
+window into that saved record; it does not decide what to believe or do.
+
+```mermaid
+flowchart TD
+  Parent[Parent reports a concern] --> Record[Serene records the report]
+  Record --> Ideas[Keep competing explanations open]
+  Ideas --> Question[Ask for one useful observation]
+  Question --> Check[Check outside evidence independently]
+  Check --> Kernel[Deterministic kernel checks policy and records each step]
+  Kernel --> Review[Parent reviews and decides about a proposed trial]
+  Review --> Outcome[Record the parent-reported outcome]
+  Outcome --> Learning[Keep a narrow, reviewed lesson]
+  Learning --> Web[Web shows timeline, evidence and uncertainty]
+  AI[AI suggests wording and explanations] -. proposes .-> Ideas
+  AI -. cannot approve or promote .-> Kernel
+```
+
+**Reading the diagram:** the AI offers suggestions. Deterministic code applies
+the rules, and the parent retains authority over a trial. Each timeline entry
+comes from the saved record, including repeated checks and pauses. A verified
+web source confirms what that source contained; it does not prove what happened
+to a child.
+
+The [Maya story](maya-demo.md) walks through the flow and includes screenshots
+of the user interface. It is fictional and uses scripted external responses.
+
 Audited against merged `main` at `6b8207300271620e775d33879add3533d59ad992`
 on 2026-10-12 for [#60](https://github.com/Sathvikar01/morrow/issues/60).
 Implementation, synthetic integration, live evaluation and production readiness
@@ -191,6 +222,13 @@ PostgREST snapshot and subscribes under the signed-in user's RLS. Its
 resnapshots on reconnect and labels connection state explicitly
 ([publisher tests](../tests/test_projection_realtime.py)). The hook is opt-in;
 the default application assembly does not wire it into a deployed service.
+
+The investigations projection carries an optional `phase_history`: each saved
+visit includes its ledger sequence, phase, timestamp and reason codes. The web
+validates ascending sequence order and that the final visit matches the current
+phase, then displays repeats and pauses as recorded. It never rebuilds this
+timeline in the browser. Older projection rows without history show the current
+stage and explain that earlier steps were not included.
 
 The web has React Flow rendering and an inspectable provenance panel (#34, #38,
 #39; [PR #74](https://github.com/Sathvikar01/morrow/pull/74)) with the complete

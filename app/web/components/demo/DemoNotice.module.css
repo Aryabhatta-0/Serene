@@ -1,0 +1,8 @@
+.notice {
+  max-width: var(--measure);
+  margin: 0 0 var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border: 1px dashed var(--ink);
+  background: color-mix(in srgb, var(--paper) 88%, var(--sage));
+  font-weight: 600;
+}

@@ -226,6 +226,16 @@ class EvidenceRequestRecord:
 
 
 @dataclass(slots=True)
+class InvestigationPhaseRecord:
+    """A recorded workflow step, retained in ledger order for parent read views."""
+
+    sequence: int
+    phase: InvestigationPhase
+    recorded_at: datetime
+    reason_codes: tuple[str, ...] = ()
+
+
+@dataclass(slots=True)
 class KernelState:
     child_id: str | None = None
     last_sequence: int = 0
@@ -253,6 +263,9 @@ class KernelState:
     investigation_phases: dict[str, InvestigationPhase] = field(default_factory=dict)
     # read-view detail for the investigation surface (issue #35)
     investigation_phase_reasons: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    investigation_phase_history: dict[str, list[InvestigationPhaseRecord]] = field(
+        default_factory=dict
+    )
     evidence_checks: dict[str, tuple[str, ...]] = field(default_factory=dict)
     evidence_rejections: dict[str, tuple[str, ...]] = field(default_factory=dict)
     evidence_requests: dict[str, EvidenceRequestRecord] = field(default_factory=dict)
@@ -364,9 +377,24 @@ def apply_event(state: KernelState, event: DomainEvent) -> None:
             state.investigation_phases[investigation.investigation_id] = (
                 InvestigationPhase.UNDERSTANDING
             )
+            state.investigation_phase_history[investigation.investigation_id] = [
+                InvestigationPhaseRecord(
+                    sequence=event.sequence,
+                    phase=InvestigationPhase.UNDERSTANDING,
+                    recorded_at=event.recorded_at,
+                )
+            ]
         case InvestigationPhaseChanged(investigation_id=inv_id, to_phase=to_phase):
             state.investigation_phases[inv_id] = to_phase
             state.investigation_phase_reasons[inv_id] = payload.reason_codes
+            state.investigation_phase_history.setdefault(inv_id, []).append(
+                InvestigationPhaseRecord(
+                    sequence=event.sequence,
+                    phase=to_phase,
+                    recorded_at=event.recorded_at,
+                    reason_codes=payload.reason_codes,
+                )
+            )
         case InvestigationStatusChanged(investigation_id=inv_id, to_status=to_status):
             state.investigations[inv_id] = to_status
         case ExperimentProposed(experiment=experiment):

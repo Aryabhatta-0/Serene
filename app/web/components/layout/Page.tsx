@@ -37,7 +37,7 @@ export function Page({ title, question, lead, width = "standard", status, childr
         {children}
       </div>
       <p className={styles.colophon}>
-        What happened, what Serene remembers and what it believes are kept apart.
+        Serene keeps reports, possible explanations and lessons learned separate.
       </p>
     </div>
   );

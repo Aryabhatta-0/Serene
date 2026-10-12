@@ -1,4 +1,4 @@
-import type { EvidenceItem, EvidenceRequest, Hypothesis, LevelName, NextAction, NextActionKind, Phase, Uncertainty } from "./model";
+import type { EvidenceItem, EvidenceRequest, Hypothesis, Investigation, LevelName, NextAction, NextActionKind, Phase, Uncertainty } from "./model";
 
 // How the Today and Investigations surfaces word the kernel's projection.
 // What Serene does next is never decided here: the kind comes from
@@ -131,6 +131,16 @@ export function nextActionText(action: NextAction): { title: string; detail: str
 }
 
 const REASONS: Record<string, string> = {
+  QUESTION_UNDERSTOOD: "Serene found recorded observations to investigate.",
+  CONTEXT_RETRIEVED: "Relevant context was gathered from the family’s record.",
+  CONTEXT_DIGEST: "The context used for this step was recorded for traceability.",
+  HYPOTHESES_FORMED: "Competing explanations were formed for this question.",
+  RESEARCH_SELECTED: "An external source was selected to answer the evidence request.",
+  EVIDENCE_ACQUIRED: "Evidence arrived and is ready to be checked.",
+  ACQUISITION_EXHAUSTED: "The evidence could not be obtained within the allowed attempts.",
+  MORE_EVIDENCE_USEFUL: "More evidence could help distinguish the explanations, so Serene returned to gathering it.",
+  EXPERIMENT_PROPOSED: "A trial was proposed for safety review and a parent’s decision.",
+  APPROVAL_DECIDED: "The trial decision was recorded; Serene returned to reviewing the evidence.",
   PARENT_NO_RESPONSE: "No answer came in time.",
   EVIDENCE_BUDGET_EXHAUSTED: "Serene reached its limit on how much evidence to gather.",
   PLANNER_UNAVAILABLE: "Serene could not plan its next step.",
@@ -166,7 +176,7 @@ export const LEVEL_NUMBERS: Record<LevelName, 0 | 1 | 2 | 3 | 4 | 5> = {
 export type InvestigationStage = {
   key: string;
   label: string;
-  state: "done" | "current" | "upcoming" | "stopped";
+  state: "done" | "current" | "upcoming" | "unrecorded" | "stopped";
 };
 
 const STAGES: readonly { key: string; label: string; phases: readonly Phase[] }[] = [
@@ -179,33 +189,20 @@ const STAGES: readonly { key: string; label: string; phases: readonly Phase[] }[
 ];
 
 /**
- * Where an investigation stands, as stages of the kernel's own phases. Only
- * the phase moves the track. A paused investigation does not record where it
- * paused, so a stage before it is marked passed only when the record shows it
- * (explanations formed, evidence asked for, evidence received).
+ * The overview groups recorded phases; it is not a linear execution history.
+ * A phase later in the diagram never implies that earlier stages happened.
+ * Repeated visits appear individually in the recorded workflow below it.
  */
-export function investigationStages(inv: {
-  phase: Phase;
-  hypotheses: readonly unknown[];
-  evidence_requests: readonly { evidence: readonly unknown[] }[];
-}): InvestigationStage[] {
-  if (inv.phase === "PARKED_UNRESOLVED") {
-    const reached: Record<string, boolean> = {
-      understand: true,
-      explain: inv.hypotheses.length > 0,
-      gather: inv.evidence_requests.length > 0,
-      verify: inv.evidence_requests.some((r) => r.evidence.length > 0),
-      weigh: false,
+export function investigationStages(inv: Pick<Investigation, "phase" | "phase_history">): InvestigationStage[] {
+  const visited = new Set(inv.phase_history?.map((step) => step.phase));
+  return STAGES.map((s) => {
+    if (s.key === "end" && inv.phase === "PARKED_UNRESOLVED") {
+      return { key: s.key, label: "Paused without an answer", state: "stopped" };
+    }
+    return {
+      key: s.key,
+      label: s.label,
+      state: s.phases.includes(inv.phase) ? "current" : s.phases.some((p) => visited.has(p)) ? "done" : "unrecorded",
     };
-    return [
-      ...STAGES.slice(0, -1).map((s) => ({ key: s.key, label: s.label, state: reached[s.key] ? ("done" as const) : ("upcoming" as const) })),
-      { key: "end", label: "Paused without an answer", state: "stopped" },
-    ];
-  }
-  const at = STAGES.findIndex((s) => s.phases.includes(inv.phase));
-  return STAGES.map((s, i) => ({
-    key: s.key,
-    label: s.label,
-    state: i < at ? "done" : i === at ? "current" : "upcoming",
-  }));
+  });
 }

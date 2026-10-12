@@ -25,7 +25,7 @@ for (const path of ["/today", "/investigations"]) {
   });
 }
 
-test("Today shows every element of the current investigation, cleanly", async ({ page }) => {
+test("Today shows every element of the current investigation, cleanly", async ({ page }, testInfo) => {
   const errors: string[] = [];
   page.on("console", (m) => {
     if (m.type() === "error" || m.type() === "warning") errors.push(m.text());
@@ -35,13 +35,24 @@ test("Today shows every element of the current investigation, cleanly", async ({
   await expect(page.locator("h1")).toHaveCount(1);
   await expect(page.getByRole("status").filter({ hasText: "Live" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: first.question })).toBeVisible();
-  for (const name of ["next-action", "uncertainty", "hypotheses", "missing-evidence", "verification"]) {
+  for (const name of ["workflow", "next-action", "uncertainty", "hypotheses", "missing-evidence", "verification"]) {
     await expect(page.locator(`[data-block="${name}"]`)).toBeVisible();
   }
   await expect(nextAction(page)).toHaveAttribute("data-next-action", first.next_action.kind);
   await expect(page.locator('[data-block="next-action"]')).toContainText(first.next_action.question);
   await expect(page.locator("[data-selected-source]")).toHaveText("Asking you one yes-or-no question");
   await expect(page.locator("[data-uncertainty]")).toHaveCount(first.uncertainty.length);
+  const workflow = page.locator('[data-block="workflow"]');
+  await expect(workflow.getByRole("status")).toContainText("Waiting for you");
+  await expect(workflow.locator("[data-workflow-sequence]")).toHaveCount(first.phase_history.length);
+  await expect(workflow.locator("[data-workflow-sequence]").first()).toBeVisible();
+  // The default is expanded; keyboard users can collapse and reopen the history.
+  await workflow.getByText("Steps Serene actually took", { exact: true }).focus();
+  await page.keyboard.press("Enter");
+  await expect(workflow.locator("[data-workflow-sequence]").first()).not.toBeVisible();
+  await page.keyboard.press("Enter");
+  await expect(workflow.locator("[data-workflow-sequence]").first()).toBeVisible();
+  await workflow.screenshot({ path: testInfo.outputPath("recorded-workflow.png") });
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   expect(errors).toEqual([]);
 });
@@ -56,10 +67,12 @@ test("changes arrive live, by keyboard, and the next action follows the policy",
     if (change.projection === "investigations") {
       await expect(nextAction(page)).toHaveAttribute("data-next-action", kernel(change).next_action.kind);
       await expect(page.locator("article[data-investigation-id]")).toHaveAttribute("data-phase", kernel(change).phase);
+      await expect(page.locator("[data-workflow-sequence]")).toHaveCount(kernel(change).phase_history.length);
     }
   }
   await expect(deliver).toBeDisabled();
   await expect(nextAction(page)).toHaveAttribute("data-next-action", last.next_action.kind);
+  await expect(page.locator('[data-block="workflow"] [data-latest]')).toHaveAttribute("data-workflow-phase", last.phase);
 });
 
 test("a dropped connection is flagged, and reconnecting resyncs to the current state", async ({ page }) => {

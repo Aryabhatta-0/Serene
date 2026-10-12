@@ -16,6 +16,50 @@ explicit parent authorization before a trial starts.
 This is the design motivation, not a measured claim that Serene outperforms other
 parenting assistants. It provides no clinical diagnosis or autonomous intervention.
 
+## See Serene through one family story
+
+Maya’s parent reports difficult daycare pickups. Serene keeps tiredness, hunger
+and transition difficulty open as possible explanations, asks for one useful
+observation, checks any outside source, and shows each recorded step. Her parent
+chooses whether to try a reversible five-minute warning. After the parent reports
+calmer pickups, Serene keeps only a lesson scoped to this family and this setting;
+fatigue and hunger remain possible. This fictional example is a conversation aid,
+not a diagnosis or a promise about another child.
+
+The web demo presents the story in four short chapters: **follow the clues**,
+**try one small change**, **keep a useful lesson**, and **compare the explanations**.
+The investigation view also shows the saved workflow, with its order, times and
+reasons, so readers can follow how the system reached its current view.
+
+![Maya’s fictional story opens with a plain-language summary and four chapters.](docs/images/maya-story.png)
+
+![The investigation shows the saved steps in order, including repeated evidence checks.](docs/images/maya-recorded-workflow.png)
+
+## How the parts fit together
+
+Parents share observations through Telegram or the web. The AI can propose
+questions and explanations; Serene’s deterministic kernel checks what may be
+recorded, verified or acted on. The web reads saved views of that record and
+shows the family what is known, what is still uncertain and what needs a parent.
+
+```mermaid
+flowchart TD
+  P[Parent shares an observation] --> I[Keep several explanations open]
+  I --> Q[Ask one useful question or check a source]
+  Q --> V[Verify outside evidence independently]
+  V --> R[Record each step and its reason]
+  R --> A[Parent decides whether to try a small change]
+  A --> O[Record the parent’s reported outcome]
+  O --> L[Keep a lesson only within the tested setting]
+  L --> W[Web shows the record and remaining uncertainty]
+  H[AI proposes wording and ideas] -. proposals only .-> I
+  K[Deterministic kernel checks rules and authority] -. governs .-> R
+  K -. governs .-> A
+```
+
+The [architecture guide](docs/architecture.md) explains these boundaries in
+plain language first, then documents implementation details and limitations.
+
 ## The architecture and trust boundary
 
 ```mermaid
@@ -110,7 +154,9 @@ refuses linked paths. Each demo uses a fresh in-memory ledger and temporary Git
 repository. [Setup](docs/setup.md) covers optional live services; the offline path
 needs no `.env`. [Web commands](app/web/README.md) run the production routes;
 synthetic UI fixtures require an explicit opt-in build flag. Connected web
-presentation requires the documented Supabase configuration.
+presentation requires the documented Supabase configuration. For a read-only
+local preview, set `SERENE_DEMO_MODE=1` to fill Today, Investigations,
+Experiments, Memory and Causal Twin with fictional sample data.
 
 Canonical validation: **Maya 18/18, 63 events**, domain SHA-256
 `4000dac552cca6086d39e352795c2a2c79a0bedc69c823247a08c47173e12c7e`;

@@ -26,6 +26,11 @@ describe("parseInvestigations", () => {
     }
   });
 
+  it("accepts older projections without inventing a history", () => {
+    const [inv] = parseInvestigations(variant((v) => delete v.phase_history));
+    expect(inv.phase_history).toBeUndefined();
+  });
+
   it.each([
     ["a missing next action", (v: any) => delete v.next_action],
     ["an unknown next action", (v: any) => (v.next_action.kind = "DO_WHATEVER")],
@@ -36,6 +41,11 @@ describe("parseInvestigations", () => {
     ["repeated uncertainty", (v: any) => v.uncertainty.push(v.uncertainty[0])],
     ["an unknown phase", (v: any) => (v.phase = "DONE")],
     ["a malformed source domain", (v: any) => (v.evidence_requests[0].allowed_domains = ["not a host"])],
+    ["a history ending in a different phase", (v: any) => (v.phase_history.at(-1).phase = "COMPLETE")],
+    ["a history starting after opening", (v: any) => v.phase_history.shift()],
+    ["a history in reverse order", (v: any) => v.phase_history.reverse()],
+    ["duplicate history sequences", (v: any) => (v.phase_history[1].sequence = v.phase_history[0].sequence)],
+    ["an invalid history timestamp", (v: any) => (v.phase_history[0].recorded_at = "yesterday")],
   ])("fails closed on %s", (_name, edit) => {
     expect(() => parseInvestigations(variant(edit))).toThrow(InvestigationValidationError);
   });

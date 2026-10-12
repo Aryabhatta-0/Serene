@@ -65,6 +65,47 @@ def test_every_phase_has_a_next_action() -> None:
     )
 
 
+def test_workflow_history_matches_admitted_events_and_survives_replay(
+    built: InvestigationFixture,
+) -> None:
+    from serene.domain.events import EventType
+    from serene.projections.state import replay
+
+    inv = built.investigation_id
+    events = built.rig.stack.ledger.get_events_for_child(built.rig.family.child_id)
+    expected = []
+    for event in events:
+        if event.event_type is EventType.INVESTIGATION_OPENED:
+            if event.payload["investigation"]["investigation_id"] != inv:
+                continue
+            phase, reasons = "UNDERSTANDING", []
+        elif event.event_type is EventType.INVESTIGATION_PHASE_CHANGED:
+            if event.payload["investigation_id"] != inv:
+                continue
+            phase, reasons = event.payload["to_phase"], event.payload["reason_codes"]
+        else:
+            continue
+        expected.append(
+            {
+                "sequence": event.sequence,
+                "phase": phase,
+                "recorded_at": event.recorded_at,
+                "reason_codes": reasons,
+            }
+        )
+    from serene.domain.canonical import to_canonical_data
+
+    history = project(replay(events))["investigations"][inv]["phase_history"]
+    assert history == to_canonical_data(expected)
+    assert history[0]["phase"] == "UNDERSTANDING"
+    assert history[-1]["phase"] == "COMPLETE"
+    assert len(history) > 5
+    for row in [*built.snapshot, *built.changes]:
+        if row["projection"] == "investigations":
+            view = row["state"][inv]
+            assert view["phase_history"][-1]["phase"] == view["phase"]
+
+
 def test_next_action_is_what_the_controller_does_next(built: InvestigationFixture) -> None:
     inv = built.investigation_id
     kinds = []

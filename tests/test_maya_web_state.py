@@ -21,6 +21,12 @@ def test_adapter_uses_real_canonical_views_without_mutating_report(report: dict[
     assert len(inv["hypotheses"]) == 3
     assert "COMPETING_EXPLANATIONS" in inv["uncertainty"]
     assert inv["next_action"]["kind"] == "NONE_COMPLETE"
+    history = inv["phase_history"]
+    assert history[0]["phase"] == "UNDERSTANDING"
+    assert history[-1]["phase"] == "COMPLETE"
+    # The real workflow revisits evidence gathering; the UI must preserve the loop.
+    assert sum(step["phase"] == "NEEDS_EVIDENCE" for step in history) > 1
+    assert [s["sequence"] for s in history] == sorted(s["sequence"] for s in history)
     assert any(
         r["status"] == "OPEN"
         for snapshot in view["snapshots"]

@@ -1,0 +1,22 @@
+.workflow { min-width: 0; border-bottom: 1px solid var(--rule); padding-bottom: var(--space-5); }
+.heading { font-family: var(--font-display); font-size: var(--text-base); font-weight: 600; }
+.current { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) var(--space-3); margin-block: var(--space-3); border-left: 3px solid var(--ink); padding-left: var(--space-3); }
+.current > strong { color: var(--ink); }
+.current > span, .current > p { color: var(--ink-muted); }
+.current > p { flex-basis: 100%; }
+.history > summary { min-height: 2.75rem; width: fit-content; padding-block: var(--space-2); font-weight: 600; cursor: pointer; }
+.history > summary:focus-visible { outline: 2px solid var(--ink); outline-offset: var(--space-1); }
+.note { max-width: 68ch; font-size: var(--text-sm); color: var(--ink-muted); }
+.steps { list-style: none; padding: 0; margin-top: var(--space-4); }
+.steps > li { position: relative; display: grid; grid-template-columns: 1rem minmax(0, 1fr); gap: var(--space-3); }
+.steps > li:not(:last-child)::before { content: ""; position: absolute; top: var(--space-3); bottom: 0; left: calc(var(--space-2) - 1px); border-left: 1px solid var(--rule-strong); }
+.marker { z-index: 1; width: var(--space-2); height: var(--space-2); margin: var(--space-2) auto 0; border-radius: 50%; background: var(--ink-muted); }
+.steps > li[data-latest] .marker { background: var(--ground-lifted); outline: 2px solid var(--ink); outline-offset: 2px; }
+.body { min-width: 0; padding-bottom: var(--space-4); overflow-wrap: anywhere; }
+.stepHead { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) var(--space-3); margin-bottom: var(--space-2); }
+.stepHead > strong { font-weight: 600; }
+.state, .stepHead > time { font-size: var(--text-xs); color: var(--ink-faint); }
+.stepHead > time { margin-left: auto; }
+@media (max-width: 40rem) {
+  .stepHead > time { flex-basis: 100%; margin-left: 0; }
+}

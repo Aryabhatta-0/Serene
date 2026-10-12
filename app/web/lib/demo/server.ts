@@ -6,8 +6,14 @@ import { parseDemoState } from "./model";
 
 const run = promisify(execFile);
 
+export function mayaDemoEnabled() {
+  // The broader flag powers the local sample-data tour. Fixture builds also
+  // enable this one story for its browser test without filling every surface.
+  return process.env.SERENE_DEMO_MODE === "1" || process.env.SERENE_FIXTURE_ROUTES === "1";
+}
+
 export async function readDemoState() {
-  if (process.env.SERENE_DEMO_MODE !== "1") throw new Error("Demo mode is disabled");
+  if (!mayaDemoEnabled()) throw new Error("Demo mode is disabled");
   // Fixed local script and artifact; never accept a path, command or child id from a request.
   const { stdout } = await run("uv", ["run", "--no-sync", "python", "scripts/maya_web_state.py"], {
     cwd: resolve(process.cwd(), "../.."),
