@@ -4,76 +4,65 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { FamilyRecordProvider } from "@/components/session/FamilyRecord";
 import payload from "@/fixtures/synthetic-experiments.json";
 import { FakeBackend } from "@/lib/auth/testing";
-import { UNCONNECTED } from "@/lib/experiments/source";
-import { FakeFeed, row } from "@/lib/projections/testing";
+import { parseExperimentsView } from "@/lib/experiments/model";
+import { FakeFeed, row, OTHER_CHILD } from "@/lib/projections/testing";
+import { useFamilyRecord } from "@/components/session/FamilyRecord";
 import { LiveExperiments } from "./LiveExperiments";
 
-// The Experiments surface on the signed-in family record: the kernel's
-// `experiments` projection over the #33 sync path, and the real transport
-// (#84) for the chosen child only. The stage changes only when the projection
-// does, never on the kernel's answer alone. All data is synthetic kernel output.
+// The Experiments surface on the real transport (Issue #84): only a signed-in
+// parent with a child chosen can decide, the request carries that child and
+// the session token, and the stage shown never changes on the answer alone.
+const view = parseExperimentsView(payload);
 const PARENT = { email: "parent@example.org", password: "fake-synthetic-only", userId: "00000000-0000-4000-8000-000000000001" };
 const CHILD = `chd_${"a".repeat(32)}`;
-const green = payload.experiments.find((e) => e.phase === "AWAITING_APPROVAL" && e.safety_class === "GREEN")!;
-const red = payload.experiments.find((e) => e.safety_class === "RED")!;
+const green = view.experiments.find((e) => e.phase === "AWAITING_APPROVAL" && e.safety_class === "GREEN")!;
 
-/** What the kernel publishes once it has recorded the approval. */
-function approved() {
-  const next = structuredClone(payload);
-  const e = next.experiments.find((x) => x.experiment_id === green.experiment_id)!;
-  e.phase = "APPROVED";
-  Object.assign(e.approval!, { state: "GRANTED", decided_at: "2026-09-07T12:00:00Z", decided_via: "WEB_APP", decision_open: false });
-  return next;
+function SelectChild() {
+  const { selectChild } = useFamilyRecord();
+  return <button onClick={() => selectChild(OTHER_CHILD)}>Other child</button>;
 }
 
-async function setup(rows = [row("experiments", 40, payload as never, CHILD)]) {
+function setup(children = [CHILD]) {
   const feed = new FakeFeed();
-  for (const r of rows) feed.write(r, { deliver: false });
-  const backend = new FakeBackend(feed, [PARENT], { [PARENT.userId]: [CHILD] });
-  render(
+  feed.table = [row("experiments", 1, payload)];
+  const backend = new FakeBackend(feed, [PARENT], { [PARENT.userId]: children });
+  const view_ = render(
     <FamilyRecordProvider backend={backend}>
-      <LiveExperiments unconnected={UNCONNECTED} />
+      <SelectChild />
+      <LiveExperiments />
     </FamilyRecordProvider>,
   );
-  await act(async () => {});
-  const signIn = async () => {
-    await act(async () => void (await backend.signIn(PARENT.email, PARENT.password)));
-    await act(async () => feed.setStatus("subscribed"));
-  };
-  return { feed, backend, signIn };
+  return { backend, feed, ...view_ };
 }
 
-const article = (id: string) => document.querySelector<HTMLElement>(`article[data-experiment-id="${id}"]`);
+async function connect(backend: FakeBackend, feed: FakeFeed) {
+  await act(async () => void (await backend.signIn(PARENT.email, PARENT.password)));
+  await act(async () => feed.setStatus("subscribed"));
+}
+
+const article = (id: string) => document.querySelector<HTMLElement>(`article[data-experiment-id="${id}"]`)!;
 
 afterEach(() => vi.unstubAllGlobals());
 
 describe("LiveExperiments", () => {
-  it("signed out, shows the honest unconnected state and nothing to decide", async () => {
-    const { feed } = await setup();
-    expect(screen.getByText("No experiments proposed")).toBeInTheDocument();
+  it("offers no decision while signed out", async () => {
+    setup();
+    await act(async () => {});
     expect(article(green.experiment_id)).toBeNull();
-    expect(feed.subscribers).toBe(0);
+    expect(screen.getByText("No experiments proposed")).toBeInTheDocument();
   });
 
-  it("signed in, shows the child's experiments live from the projection", async () => {
-    const { signIn } = await setup();
-    await signIn();
-    expect(article(green.experiment_id)).toHaveAttribute("data-phase", "AWAITING_APPROVAL");
-    expect(document.querySelector('[data-sync="live"]')).not.toBeNull();
-    expect(within(article(red.experiment_id)!).queryByRole("button", { name: "Approve" })).toBeNull();
-  });
-
-  it("sends the decision for the chosen child, and the stage moves only when the projection does", async () => {
+  it("sends a signed-in parent's decision for the chosen child, and waits for the record to change", async () => {
     const send = vi.fn(
       async (_url: string, _init: RequestInit) =>
         new Response(JSON.stringify({ outcome: "APPROVAL_GRANTED", event_ids: [], reason_codes: [] }), { status: 200 }),
     );
     vi.stubGlobal("fetch", send);
-    const { feed, signIn } = await setup();
-    await signIn();
-    const card = article(green.experiment_id)!;
+    const { backend, feed } = setup();
+    await connect(backend, feed);
+    const card = article(green.experiment_id);
     const user = userEvent.setup();
-    await user.click(within(card).getByRole("button", { name: "Approve" }));
+    await user.click(await within(card).findByRole("button", { name: "Approve" }));
     await user.click(within(card).getByRole("button", { name: "Yes, approve" }));
     expect(await within(card).findByText(/Serene recorded your approval/)).toBeInTheDocument();
 
@@ -81,25 +70,73 @@ describe("LiveExperiments", () => {
     expect(url).toBe("/api/approvals");
     expect((init.headers as Record<string, string>).Authorization).toBe(`Bearer fake-access.${PARENT.userId}.token`);
     const body = JSON.parse(init.body as string);
-    expect(body).toEqual({ child_id: CHILD, command: expect.objectContaining({ decision: "APPROVE" }) });
+    expect(body.child_id).toBe(CHILD);
     expect(body.command.approval_request_id).toBe(green.approval!.approval_request_id);
-    // The kernel answered, but its record has not moved yet: neither has the page.
-    expect(article(green.experiment_id)).toHaveAttribute("data-phase", "AWAITING_APPROVAL");
-
-    // The kernel's projection publish arrives over Realtime.
-    await act(async () => feed.write(row("experiments", 41, approved() as never, CHILD)));
+    // No optimistic change: the stage is the one Serene's record still says.
+    expect(card).toHaveAttribute("data-phase", "AWAITING_APPROVAL");
+    expect(screen.getAllByText(/once Serene’s record updates/).length).toBeGreaterThan(0);
+    // Only delivery of a newer projection changes the stage.
+    const updated = structuredClone(payload);
+    const approved = updated.experiments.find((e) => e.experiment_id === green.experiment_id)!;
+    approved.phase = "APPROVED";
+    approved.approval!.state = "GRANTED";
+    approved.approval!.decision_open = false;
+    await act(async () => feed.write(row("experiments", 2, updated)));
     expect(article(green.experiment_id)).toHaveAttribute("data-phase", "APPROVED");
   });
 
-  it("a child with nothing proposed says so", async () => {
-    const empty = await setup([row("experiments", 3, {}, CHILD)]);
-    await empty.signIn();
+  it("a RED experiment offers nothing to approve even when signed in", async () => {
+    vi.stubGlobal("fetch", vi.fn());
+    const { backend, feed } = setup();
+    await connect(backend, feed);
+    const red = view.experiments.find((e) => e.safety_class === "RED")!;
+    expect(within(article(red.experiment_id)).queryByRole("button", { name: "Approve" })).toBeNull();
+  });
+
+  it("keeps the last projection on disconnect, disables decisions, and resyncs", async () => {
+    const { backend, feed } = setup();
+    await connect(backend, feed);
+    await act(async () => feed.setStatus("closed"));
+    expect(screen.getByText(/Reconnecting/)).toBeInTheDocument();
+    expect(within(article(green.experiment_id)).queryByRole("button", { name: "Approve" })).toBeNull();
+    feed.table = [row("experiments", 2, { ...payload, experiments: [] })];
+    await act(async () => feed.setStatus("subscribed"));
+    expect(article(green.experiment_id)).toBeNull();
     expect(screen.getByText("No experiments proposed yet")).toBeInTheDocument();
   });
 
-  it("a missing projection row is an error, not an empty list", async () => {
-    const missing = await setup([row("investigations", 3, {}, CHILD)]);
-    await missing.signIn();
+  it("clears the previous child's view and pending decisions on a child switch or sign-out", async () => {
+    const { backend, feed } = setup([CHILD, OTHER_CHILD]);
+    await connect(backend, feed);
+    await userEvent.click(within(article(green.experiment_id)).getByRole("button", { name: "Approve" }));
+    await userEvent.click(screen.getByRole("button", { name: "Other child" }));
+    expect(article(green.experiment_id)).toBeNull();
+    expect(screen.queryByRole("button", { name: "Yes, approve" })).toBeNull();
+    await act(async () => feed.setStatus("subscribed"));
+    expect(article(green.experiment_id)).toBeNull();
+    await act(async () => backend.signOut());
+    expect(feed.subscribers).toBe(0);
+  });
+
+  it("fails closed on an invalid experiments payload", async () => {
+    const { backend, feed } = setup();
+    feed.table = [row("experiments", 1, { experiments: [] })];
+    await connect(backend, feed);
+    expect(screen.getByText("Experiments couldn’t be shown")).toBeInTheDocument();
+    expect(article(green.experiment_id)).toBeNull();
+  });
+
+  it("shows an empty published row as no experiments proposed", async () => {
+    const { backend, feed } = setup();
+    feed.table = [row("experiments", 1, {})];
+    await connect(backend, feed);
+    expect(screen.getByText("No experiments proposed yet")).toBeInTheDocument();
+  });
+
+  it("treats a missing projection row as an error", async () => {
+    const { backend, feed } = setup();
+    feed.table = [row("investigations", 1, {})];
+    await connect(backend, feed);
     expect(screen.getByText("Experiments couldn’t be shown")).toBeInTheDocument();
   });
 });

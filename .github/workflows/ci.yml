@@ -136,6 +136,8 @@ jobs:
       # (`next build && next start`); every configured project runs.
       - name: Run the shell acceptance suite against a production build
         run: npm run test:e2e
+      - name: Browser to test-kernel approvals (synthetic Auth, real PostgreSQL)
+        run: npm run test:e2e:approvals
       - name: Upload Playwright traces on failure
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

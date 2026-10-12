@@ -61,7 +61,7 @@ applies `supabase/migrations/`.
 
 ### Activating the live web app (#87)
 
-Today and Investigations read the signed-in parent's child's projection state
+Today, Investigations and Experiments read the signed-in parent's child's projection state
 over Supabase Realtime. Nothing below is committed; values live in `.env` and
 the hosting environment.
 
@@ -114,6 +114,18 @@ the hosting environment.
    get the new row). It verifies each child's
    hash chain first, refuses a child whose chain does not verify, only reads
    the ledger, and prints counts only.
+
+The `experiments` projection reuses the existing privacy-filtered experiment
+view: intervention, safety/reasons, reversibility, lifecycle, approval binding,
+outcomes and promotion result. No actor or child ids are in its view payload.
+It uses the last event's recorded time so replay and backfill are identical;
+the kernel checks the current clock on every decision. After deploying
+`20261012180000_experiments_projection.sql`, backfill existing children before
+expecting experiments to appear. The UI updates stages only from this
+projection, and offers no decisions while reconnecting.
+
+See [the final web proof](web-e2e-proof.md) for the test-kernel evidence,
+the real Supabase blocker, and the opt-in real Supabase procedure.
 
 ## 4. Roles of the external tools
 

@@ -147,6 +147,9 @@ decision) for the signed-in parent's chosen child (#87), and shows a new stage
 only when that projection changes. A scripted fixture response is not a real
 parent approval. Tests: [web approvals](../tests/test_web_approvals.py),
 [HTTP boundary](../tests/test_web_approval_http.py), [read view](../tests/test_experiments_view.py).
+The [shipped-page browser proof](web-e2e-proof.md) exercises the production
+transport with a test kernel and PostgreSQL; real Supabase Auth/Realtime
+acceptance remains pending.
 
 ## Causal Twin, Supabase and projections
 

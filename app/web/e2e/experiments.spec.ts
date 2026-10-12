@@ -4,7 +4,8 @@ import payload from "../fixtures/synthetic-experiments.json";
 
 // Experiments are shown from the synthetic fixture on a test-build-only
 // route, with a scripted stand-in for the kernel transport (?answer=...).
-// The shipped surface (/experiments) has no record and no transport.
+// This suite builds without Supabase config, so the shipped surface has no
+// record. e2e-kernel separately proves the authenticated shipped page.
 const FIXTURE = "/fixtures/experiments";
 const PHASES = [
   "PROPOSED",

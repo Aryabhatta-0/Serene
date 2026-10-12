@@ -111,7 +111,7 @@ real family data. This audit does not certify third-party logging behavior.
 - Actor identity uses opaque IDs. Raw reports and other free-text application
   fields can contain personal information; the schema is not a PII detector.
 - Raw evidence and structured interpretations are private ledger payloads.
-  The five presentation projections omit raw content, but in-process
+  The core presentation projections omit raw evidence content, but in-process
   `KernelState` retains entities for policy decisions. Replaying or serializing
   internal state is not a privacy-safe export.
 - The merged #36 [Memory/Dream view](../serene/memory/view.py) omits child/actor
@@ -128,6 +128,7 @@ real family data. This audit does not certify third-party logging behavior.
   ledger) and logs no user or child id. The `experiments` projection carries
   the same read view, parent-only under RLS. Synthetic
   Experiments fixture routes do not establish deployed family authorization.
+  [Real Supabase acceptance remains pending](web-e2e-proof.md).
 - Model provenance stores provider/model/prompt-version identifiers, not full
   prompts or private reasoning. This does not mean runtime tasks contain no
   private content: [context retrieval](../serene/investigation/context.py) and
