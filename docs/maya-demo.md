@@ -94,3 +94,82 @@ scorers are not part of this fixture and are unchanged.
 
 Each command uses a new in-memory ledger and temporary Git memory repository.
 Only the JSON and HTML evidence persist in the ignored `.demo/maya/` directory.
+
+## Web recording: canonical demo mode
+
+From the repository root in PowerShell, with Node.js 20+, Python 3.11–3.13,
+Git and uv installed:
+
+```powershell
+uv sync --locked --all-extras --group dev
+uv run python scripts/demo_reset.py
+uv run python scripts/maya_demo.py
+Set-Location app/web
+npm ci
+npm run build
+$env:SERENE_DEMO_MODE = "1"
+npm run start -- --hostname 127.0.0.1 --port 3200
+```
+
+Open **http://127.0.0.1:3200/demo/maya**. The page explicitly displays
+`DEMO MODE — synthetic Maya scenario`. This is a local, read-only demo adapter,
+not the production Supabase/Auth path. Without `SERENE_DEMO_MODE=1` on the
+server, the page shows Not Found and its state endpoint returns 404. Keep this recording
+server on localhost. The server needs uv and the repository's Python environment.
+
+The page reuses `InvestigationDetail`, `ExperimentsView`, `MemoryView` and
+`CausalTwinSurface`. `/demo/maya/state` invokes `scripts/maya_web_state.py`, which
+reads only the fixed `.demo/maya/report.json`, validates the canonical report and
+its hash chain, and replays its events through the existing read-only projection
+and view builders. No extra result fixture, database connection, kernel drive,
+model call, or memory write is involved. Browser responses contain validated
+views, not the raw report's evidence/actor data. No kernel or demo behaviour changes.
+
+Today shows the final investigation status, the competing explanations,
+remaining uncertainty and the policy's next action. Choose an earlier **Recorded
+investigation checkpoint** to show missing evidence and its selected source;
+these are actual ledger prefixes. The final view retains rejected and verified
+evidence with checks and reasons. Experiment shows GREEN classification, the
+recorded Telegram parent approval, outcome and both adjacent Gate promotions.
+Memory shows the scoped learning, all Dream stages, the committed patch, and the
+rejected universal patch with its reason. Causal Twin switches between the
+report's before and after snapshots; links open the existing provenance panel.
+
+To regenerate while the server stays running, open another terminal at the
+repository root and run:
+
+```powershell
+uv run python scripts/demo_reset.py
+uv run python scripts/maya_demo.py
+```
+
+Click **Reload generated report** (or refresh the page). The artifact modification
+receipt changes; the domain SHA-256 remains identical because the canonical
+scenario is deterministic. Reload after reset alone shows an unavailable report
+and clears previous domain results. Missing, malformed or invalid reports fail
+closed. The endpoint and browser fetch both disable caching.
+
+Without authentication, production `/today`, `/investigations`, `/experiments`,
+`/memory` and `/causal-twin` retain their honest unconnected state. This demo makes
+no authentication or RLS changes.
+**#87 (production sign-in/child selection) and #84 (authenticated WEB_APP approval
+transport) remain open.** This page cannot submit approval decisions.
+
+Verification:
+
+```powershell
+uv run pytest tests/test_maya_web_state.py -q
+Set-Location app/web
+npm run typecheck
+npm test
+npm run build
+npx playwright install chromium
+npm run test:e2e
+```
+
+The dedicated `maya-demo` Playwright project runs reset → demo → artifact →
+server adapter → rendered components, then reset → unavailable → regenerate →
+fresh receipt with the same canonical hash, without restarting the web server.
+It also checks desktop/tablet/mobile widths and the unconnected production Today.
+CI installs the locked Python runtime for this project and runs all existing
+kernel, Inspect eval, web and Playwright gates.

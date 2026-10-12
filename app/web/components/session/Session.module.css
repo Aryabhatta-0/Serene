@@ -1,0 +1,83 @@
+/* The record control (Issue #87): the record status plus the few controls a
+ * parent needs to choose what it shows. Same hairlines and label type as the
+ * rest of the sheet; the controls sit under the status, indented to its text. */
+
+.record {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.connected {
+  stroke-dasharray: none;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding-left: calc(1rem + var(--space-3));
+}
+
+.field {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+.select,
+.input {
+  min-height: var(--tap-target);
+  padding-inline: var(--space-3);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--ground-raised);
+  color: var(--ink);
+  font: inherit;
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/* Sign-in */
+
+.form {
+  display: grid;
+  gap: var(--space-5);
+  max-width: 26rem;
+}
+
+.form label {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.label {
+  font-family: var(--font-display);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+.input {
+  width: 100%;
+}
+
+.form :global(.button) {
+  justify-self: start;
+}
+
+.message {
+  margin: 0;
+}
+
+.actions :global(a.button) {
+  text-decoration: none;
+}

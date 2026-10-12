@@ -32,7 +32,7 @@ def main() -> int:
     from serene.adapters.clock import SystemClock
     from serene.adapters.hermes import HermesAgentRuntime, transport_from_env
     from serene.adapters.neatlogs_sink import build_telemetry
-    from serene.adapters.postgres import PostgresEventStore
+    from serene.adapters.postgres import postgres_ledger
     from serene.adapters.telegram import (
         BotApiOutbox,
         InMemoryPromptRegistry,
@@ -43,7 +43,6 @@ def main() -> int:
     from serene.evidence.service import EvidenceService
     from serene.evidence.verifier import IndependentEvidenceVerifier
     from serene.investigation.assembly import KernelActors, build_stack
-    from serene.ledger.service import EventLedger
 
     missing = [
         name
@@ -59,9 +58,9 @@ def main() -> int:
 
     clock = SystemClock()
     telemetry = build_telemetry("serene-telegram")
-    ledger = EventLedger(
-        PostgresEventStore(os.environ["SUPABASE_DB_URL"]), clock, telemetry=telemetry
-    )
+    # Every admitted append also publishes serene.projection_state, which the
+    # web app follows over Realtime (#33, #87).
+    ledger = postgres_ledger(os.environ["SUPABASE_DB_URL"], clock, telemetry=telemetry)
 
     def runtime_factory(retriever, actors):  # type: ignore[no-untyped-def]
         return HermesAgentRuntime(
