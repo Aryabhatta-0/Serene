@@ -63,12 +63,30 @@ def test_a_new_event_changes_exactly_the_expected_projection(family: SyntheticFa
     family.open_investigation("Why is pickup hard?")
     after = family.ledger.projections(family.child_id)
     changed = {name for name in PROJECTIONS if before[name] != after[name]}
-    assert changed == {
-        "active_investigations",
-        "current_child_state",
-        "investigations",
-        "experiments",
-    }
+    assert changed == {"active_investigations", "current_child_state", "investigations"}
+
+
+def test_the_experiments_projection_is_the_view_as_of_the_head_event(
+    family: SyntheticFamily,
+) -> None:
+    from serene.experiments.view import build_experiments_view
+
+    o1 = family.observe("tearful pickup", day=0)
+    assert family.ledger.projections(family.child_id)["experiments"] == {}  # nothing proposed
+    o2 = family.observe("tearful pickup again", day=1)
+    pattern = family.pattern((o1, o2), "pickups are tearful")
+    inv = family.open_investigation("why?")
+    exp = family.propose_experiment(family.hypothesis(inv, (pattern,), "abrupt transitions"))
+    family.classify(exp)
+    family.request_approval(exp)
+    state = family.state()
+    head = family.ledger.get_events_for_child(family.child_id)[-1]
+    assert state.last_recorded_at == head.recorded_at
+    projected = family.ledger.projections(family.child_id)["experiments"]
+    expected = build_experiments_view(state, head.recorded_at).model_dump(mode="json")
+    assert projected == expected
+    assert [e["phase"] for e in projected["experiments"]] == ["AWAITING_APPROVAL"]
+    assert projected["experiments"][0]["approval"]["decision_open"] is True
 
 
 def test_pending_approvals_track_the_lifecycle(family: SyntheticFamily) -> None:

@@ -7,7 +7,7 @@ JSON-compatible data. Ledger = truth; projections = disposable read state.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import Any, Final
 
 from serene.domain.canonical import canonical_digest, format_timestamp, to_canonical_data
@@ -18,7 +18,6 @@ from serene.domain.entities import (
 )
 from serene.domain.events import DomainEvent
 from serene.domain.values import VerificationStatus
-from serene.experiments.view import build_experiments_view
 from serene.projections.investigations import investigations
 from serene.projections.state import (
     OPEN_APPROVAL_STATES,
@@ -100,22 +99,27 @@ def active_learnings(state: KernelState) -> dict[str, Any]:
     }
 
 
+def experiments(state: KernelState) -> dict[str, Any]:
+    """The Experiments surface's read view (issues #37, #84), as of the head event.
+
+    `build_experiments_view` needs a time; a projection must be a pure function
+    of the ledger, so it is the ledger's own time at its head. Whether a request
+    is still open is therefore as of the last recorded event: the kernel
+    re-checks expiry on every decision, and a timed-out request is parked by an
+    appended event, which republishes this view.
+    """
+    if state.last_recorded_at is None or not state.experiments:
+        return {}  # nothing proposed: the row does not change on unrelated events
+    from serene.experiments.view import build_experiments_view  # above the policies
+
+    return build_experiments_view(state, state.last_recorded_at).model_dump(mode="json")
+
+
 def effective_learning_status(record: LearningRecord, now: datetime) -> LearningStatus:
     """Time-aware status for presentation: a learning past review is never shown ACTIVE."""
     if record.status is LearningStatus.ACTIVE and now >= record.review_after:
         return LearningStatus.NEEDS_REVIEW
     return record.status
-
-
-def experiments(state: KernelState) -> dict[str, Any]:
-    """Existing privacy-filtered UI contract, as of the last admitted event.
-
-    Replay/backfill must be byte-identical and never consult a wall clock.
-    Expiry shown here is as of this ledger position; admission always checks
-    the current clock again when a parent attempts a decision.
-    """
-    as_of = state.last_recorded_at or datetime(1970, 1, 1, tzinfo=UTC)
-    return build_experiments_view(state, as_of).model_dump(mode="json")
 
 
 PROJECTIONS: Final[dict[str, Callable[[KernelState], dict[str, Any]]]] = {
@@ -126,6 +130,7 @@ PROJECTIONS: Final[dict[str, Callable[[KernelState], dict[str, Any]]]] = {
     "active_learnings": active_learnings,
     # issue #35: the investigation surface's read state, streamed by #33
     "investigations": investigations,
+    # issues #37/#84: the Experiments surface's read state
     "experiments": experiments,
 }
 

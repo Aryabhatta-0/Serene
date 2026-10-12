@@ -27,18 +27,6 @@
       "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
       "last_event_hash": "7839ccde93b5e8c0c31c0d5e366eecb689b66b35f67dda3d2c1268ff428fac0f",
       "last_sequence": 16,
-      "projection": "experiments",
-      "state": {
-        "as_of": "2026-09-04T08:00:00Z",
-        "experiments": [],
-        "ledger_head": "7839ccde93b5e8c0c31c0d5e366eecb689b66b35f67dda3d2c1268ff428fac0f",
-        "version": "experiments-view/1"
-      }
-    },
-    {
-      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
-      "last_event_hash": "7839ccde93b5e8c0c31c0d5e366eecb689b66b35f67dda3d2c1268ff428fac0f",
-      "last_sequence": 16,
       "projection": "investigations",
       "state": {
         "inv_1ffc3f5de0bef0a3ae3fc6e0952dd9df": {
@@ -181,18 +169,6 @@
         },
         "last_event_hash": "2f9bb4b5a66a298dfdbd8a92c380afd543c0026d6fe72e759e4ed62f506f526a",
         "last_sequence": 17
-      }
-    },
-    {
-      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
-      "last_event_hash": "2f9bb4b5a66a298dfdbd8a92c380afd543c0026d6fe72e759e4ed62f506f526a",
-      "last_sequence": 17,
-      "projection": "experiments",
-      "state": {
-        "as_of": "2026-09-04T08:00:00Z",
-        "experiments": [],
-        "ledger_head": "2f9bb4b5a66a298dfdbd8a92c380afd543c0026d6fe72e759e4ed62f506f526a",
-        "version": "experiments-view/1"
       }
     },
     {
@@ -347,18 +323,6 @@
       "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
       "last_event_hash": "1b58242ceeabf32bd97c1613b07f008311f92c2bc04a209b236a5b69a0fec9eb",
       "last_sequence": 18,
-      "projection": "experiments",
-      "state": {
-        "as_of": "2026-09-04T08:00:00Z",
-        "experiments": [],
-        "ledger_head": "1b58242ceeabf32bd97c1613b07f008311f92c2bc04a209b236a5b69a0fec9eb",
-        "version": "experiments-view/1"
-      }
-    },
-    {
-      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
-      "last_event_hash": "1b58242ceeabf32bd97c1613b07f008311f92c2bc04a209b236a5b69a0fec9eb",
-      "last_sequence": 18,
       "projection": "investigations",
       "state": {
         "inv_1ffc3f5de0bef0a3ae3fc6e0952dd9df": {
@@ -492,18 +456,6 @@
         },
         "last_event_hash": "da3342e3e499cee409a35e3461c08ac1342f576206111a54e5b8ce69c2cfc8e4",
         "last_sequence": 19
-      }
-    },
-    {
-      "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",
-      "last_event_hash": "da3342e3e499cee409a35e3461c08ac1342f576206111a54e5b8ce69c2cfc8e4",
-      "last_sequence": 19,
-      "projection": "experiments",
-      "state": {
-        "as_of": "2026-09-04T08:00:00Z",
-        "experiments": [],
-        "ledger_head": "da3342e3e499cee409a35e3461c08ac1342f576206111a54e5b8ce69c2cfc8e4",
-        "version": "experiments-view/1"
       }
     },
     {
@@ -688,12 +640,7 @@
       "last_event_hash": "ebd2b306a49697e55730a7f5fc677d508693f439a777d20b268e3a995ac11b87",
       "last_sequence": 15,
       "projection": "experiments",
-      "state": {
-        "as_of": "2026-09-04T08:00:00Z",
-        "experiments": [],
-        "ledger_head": "ebd2b306a49697e55730a7f5fc677d508693f439a777d20b268e3a995ac11b87",
-        "version": "experiments-view/1"
-      }
+      "state": {}
     },
     {
       "child_id": "chd_eb857ff5661f5bc13903a1e5b74b5151",

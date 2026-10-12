@@ -47,12 +47,15 @@ approval by returning a proposal. Main now includes a typed
 [#37 decision surface](../app/web/components/experiments/DecisionPanel.tsx).
 The channel requires an already authenticated parent principal, exact shown
 digest/class and replay-protected request ID, then reuses ledger admission.
-The kernel HTTP transport verifies the Supabase session, guardianship and web
-binding before invoking the channel. The shipped
-[Experiments page](../app/web/app/experiments/page.tsx) reads the parent-only
-projection and sends decisions through the same-origin relay, without optimistic
-stage changes. [Real Supabase acceptance remains pending](web-e2e-proof.md);
-synthetic fixture responses do not establish live parent authorization.
+Session authentication is the transport's responsibility (#84): the kernel's
+[`POST /web/approvals`](../serene/adapters/web/http.py) verifies the Supabase
+session, guardianship and binding before the channel runs, and a RED request
+is refused there and again at admission. The
+[Experiments page](../app/web/app/experiments/page.tsx) offers a decision only
+to a signed-in parent for their chosen child; fixture routes are synthetic and
+are not live parent authorization.
+The [browser proof](web-e2e-proof.md) covers test-kernel decisions without
+optimistic stage changes; real Supabase Auth/Realtime acceptance remains pending.
 
 | Binding checked by policy | Effect |
 | --- | --- |

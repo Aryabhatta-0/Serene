@@ -1,11 +1,13 @@
 # Auth, Realtime and approval proof — 12 October 2026
 
-The final implementation lane adds the existing `experiments-view/1` contract
-to the production projection publisher and connects `LiveExperiments` to the
-authenticated selected child. It preserves the auth/selection work in #94 and
-the approval transport in #98. It changes no policy, eval protocol, holdout or
-frozen eval fixture. The synthetic investigation **web** fixture was regenerated
-from its unchanged generator because each append now also publishes experiments.
+The final implementation lane proves the existing `experiments-view/1` contract
+through the production projection publisher and authenticated selected child.
+PR #100 merged during this lane's CI run; its projection, migration, empty-row
+behavior and regenerated web fixture are preserved. This lane adds the shipped-page
+HTTP/PostgreSQL proof, the opt-in real-stack runner, and clears child-specific
+decision state on selection changes while disabling decisions during reconnects.
+It preserves auth/selection (#94) and approval transport (#98). It changes no
+policy, eval protocol, holdout or frozen eval fixture.
 
 ## Environment and acceptance boundary
 
@@ -57,6 +59,9 @@ fresh disposable database, and is never imported or routed by the application.
 CI runs this lane inside the existing required Web E2E check.
 
 ## Local validation
+
+These initial counts precede integration with concurrently merged #100. The
+final combined head must pass all four required CI checks again.
 
 - Full pytest: 1,425 passed, one Windows symlink-permission skip. The subsequently
   added preparer test passed separately (one additional test).

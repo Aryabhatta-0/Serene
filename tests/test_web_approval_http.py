@@ -352,11 +352,21 @@ def test_an_http_decision_reaches_the_projection_the_web_app_reads(pg_dsn: str) 
     fam = SyntheticFamily(seed="http-pg", store=PostgresEventStore(pg_dsn))
     fam.ledger = postgres_ledger(pg_dsn, fam.clock)
     exp, apr = awaiting_approval(fam)
-    assert apr in PostgresProjectionStore(pg_dsn).load(fam.child_id)["pending_approvals"]
+    store = PostgresProjectionStore(pg_dsn)
+
+    def phase() -> str:
+        view = store.load(fam.child_id)["experiments"]
+        return next(
+            e["phase"] for e in view["experiments"] if e["experiment_id"] == exp.experiment_id
+        )
+
+    assert apr in store.load(fam.child_id)["pending_approvals"]
+    assert phase() == "AWAITING_APPROVAL"
     status, answer = Rig(fam).decide(command(fam, exp, WebDecision.APPROVE, _rid(1)))
     assert (status, answer["outcome"]) == (200, "APPROVAL_GRANTED")
     # The lifecycle the web app sees moved only because the kernel recorded it.
-    assert PostgresProjectionStore(pg_dsn).load(fam.child_id)["pending_approvals"] == {}
+    assert store.load(fam.child_id)["pending_approvals"] == {}
+    assert phase() == "APPROVED"
 
 
 def test_a_bound_principal_is_resolved_only_with_registry_agreement() -> None:

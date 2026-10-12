@@ -146,9 +146,16 @@ these commands.
   stage, outcomes and promotion result for each. `DecisionPanel` asks for
   confirmation, sends the command through an injected transport and shows
   only the kernel's answer; the stage changes only when the projection does.
-  `LiveExperiments` passes the real transport once a parent is signed in
-  with a child chosen, and subscribes to that child's private `experiments`
-  projection. [Real Supabase acceptance](../../docs/web-e2e-proof.md) remains pending.
+  `LiveExperiments` reads the kernel's `experiments` projection over the #33
+  sync path for the signed-in parent's chosen child and passes the real
+  transport; the stage changes only when that projection does. With nobody
+  signed in it shows the unconnected state and offers no decision.
+  `/fixtures/live-experiments` (test builds only) drives it in Playwright,
+  answering `/api/approvals` in place of the kernel and then delivering the
+  kernel's projection publish.
+  `npm run test:e2e:approvals` separately proves the shipped page through HTTP
+  and a PostgreSQL test kernel. [Real Supabase acceptance](../../docs/web-e2e-proof.md)
+  remains pending.
 - `fixtures/synthetic-experiments.json` and `approval-command.example.json`:
   kernel output (`uv run python -m tests.experiments_view_fixture`), pinned by
   `tests/test_experiments_view.py` and `tests/test_web_approvals.py`. Drawn

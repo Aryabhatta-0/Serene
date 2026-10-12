@@ -125,4 +125,18 @@ describe("LiveExperiments", () => {
     expect(screen.getByText("Experiments couldn’t be shown")).toBeInTheDocument();
     expect(article(green.experiment_id)).toBeNull();
   });
+
+  it("shows an empty published row as no experiments proposed", async () => {
+    const { backend, feed } = setup();
+    feed.table = [row("experiments", 1, {})];
+    await connect(backend, feed);
+    expect(screen.getByText("No experiments proposed yet")).toBeInTheDocument();
+  });
+
+  it("treats a missing projection row as an error", async () => {
+    const { backend, feed } = setup();
+    feed.table = [row("investigations", 1, {})];
+    await connect(backend, feed);
+    expect(screen.getByText("Experiments couldn’t be shown")).toBeInTheDocument();
+  });
 });

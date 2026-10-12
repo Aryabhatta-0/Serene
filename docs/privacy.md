@@ -122,10 +122,13 @@ real family data. This audit does not certify third-party logging behavior.
   intervention/outcome text and reasons, while omitting child/actor IDs. It is
   private application data, not safe telemetry. Its
   [web approval adapter](../serene/adapters/web/approvals.py) trusts a parent
-  principal supplied by the kernel's session-authenticated transport. The shipped
-  page uses the selected child's parent-only projection and same-origin approval
-  relay. [Real Supabase acceptance remains pending](web-e2e-proof.md). Synthetic
+  principal supplied by authenticated transport. That transport (#84) verifies
+  the Supabase session with Supabase Auth, keeps only the opaque user id,
+  resolves the bound `act_` PARENT actor (never writing Supabase ids to the
+  ledger) and logs no user or child id. The `experiments` projection carries
+  the same read view, parent-only under RLS. Synthetic
   Experiments fixture routes do not establish deployed family authorization.
+  [Real Supabase acceptance remains pending](web-e2e-proof.md).
 - Model provenance stores provider/model/prompt-version identifiers, not full
   prompts or private reasoning. This does not mean runtime tasks contain no
   private content: [context retrieval](../serene/investigation/context.py) and

@@ -226,7 +226,7 @@ class KernelState:
     child_id: str | None = None
     last_sequence: int = 0
     last_event_hash: str = GENESIS_HASH
-    last_recorded_at: datetime | None = None
+    last_recorded_at: datetime | None = None  # ledger time of the head event
     event_ids: dict[str, EventType] = field(default_factory=dict)
     entities: dict[str, EntityRecord] = field(default_factory=dict)
     hypothesis_levels: dict[str, EpistemicLevel] = field(default_factory=dict)

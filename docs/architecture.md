@@ -138,14 +138,18 @@ Main also includes #37's [Experiments view](../serene/experiments/view.py),
 [WebApprovalChannel](../serene/adapters/web/approvals.py). Commands quote the
 shown intervention digest/safety class and a single-use request ID; channel and
 ledger admission reject RED and recheck parent, expiry, replay and deliberation.
-The channel trusts a principal resolved by the authenticated kernel HTTP transport,
-which verifies the Supabase session, guardianship and web binding. The shipped
-[page](../app/web/app/experiments/page.tsx) subscribes to the selected child's
-parent-only `experiments` projection and sends decisions through the same-origin
-relay. It changes stage only when the projection changes. The
-[browser proof](web-e2e-proof.md) exercises the production transport with a test
-kernel and PostgreSQL; real Supabase Auth/Realtime acceptance remains pending. Tests:
-[web approvals](../tests/test_web_approvals.py), [read view](../tests/test_experiments_view.py).
+The channel trusts a principal resolved by an authenticated transport; it does
+not authenticate sessions itself: the [HTTP boundary](../serene/adapters/web/http.py)
+(#84) does, behind the web app's same-origin `/api/approvals` relay. The
+[page](../app/web/app/experiments/page.tsx) reads the `experiments` projection
+(the same view, as of the head event; the kernel re-checks expiry on every
+decision) for the signed-in parent's chosen child (#87), and shows a new stage
+only when that projection changes. A scripted fixture response is not a real
+parent approval. Tests: [web approvals](../tests/test_web_approvals.py),
+[HTTP boundary](../tests/test_web_approval_http.py), [read view](../tests/test_experiments_view.py).
+The [shipped-page browser proof](web-e2e-proof.md) exercises the production
+transport with a test kernel and PostgreSQL; real Supabase Auth/Realtime
+acceptance remains pending.
 
 ## Causal Twin, Supabase and projections
 

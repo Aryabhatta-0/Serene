@@ -109,7 +109,9 @@ the hosting environment.
    `WebApprovalChannel` and ledger admission.
 8. **Backfill existing ledgers once** (and after any projection definition
    change, with `--replace` while the kernel is quiet):
-   `uv run python scripts/rebuild_projections.py`. It verifies each child's
+   `uv run python scripts/rebuild_projections.py` (after applying a migration
+   that adds a projection, such as `experiments`, run it so existing children
+   get the new row). It verifies each child's
    hash chain first, refuses a child whose chain does not verify, only reads
    the ledger, and prints counts only.
 
@@ -118,7 +120,7 @@ view: intervention, safety/reasons, reversibility, lifecycle, approval binding,
 outcomes and promotion result. No actor or child ids are in its view payload.
 It uses the last event's recorded time so replay and backfill are identical;
 the kernel checks the current clock on every decision. After deploying
-`20261012170000_experiments_projection.sql`, backfill existing children before
+`20261012180000_experiments_projection.sql`, backfill existing children before
 expecting experiments to appear. The UI updates stages only from this
 projection, and offers no decisions while reconnecting.
 
