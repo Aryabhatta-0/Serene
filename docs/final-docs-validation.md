@@ -1,8 +1,10 @@
 # Final documentation validation (#60 → #61 → #62)
 
-Audit baseline: `42c82b58c8966f0aada9c382575c811cd93176d1`, fresh main on
-2026-10-12. This includes the final controlled-dev/1 evidence in PR #89 and
-completed core documentation in PR #90. This lane changes documentation and
+Initial baseline: `42c82b58c8966f0aada9c382575c811cd93176d1`. Final refreshed
+main: `6b8207300271620e775d33879add3533d59ad992` on 2026-10-12. This includes
+the final controlled-dev/1 evidence in PR #89, completed core docs in PR #90,
+the #37 Experiments/Approval surface and concurrently merged README
+[PR #91](https://github.com/Sathvikar01/morrow/pull/91). This lane changes documentation and
 its reference checks only; no runtime, product, evaluation behavior, frozen
 artifact or holdout execution is changed.
 
@@ -15,6 +17,7 @@ artifact or holdout execution is changed.
 | Evaluation limitations | Historical DEV FAIL, replay INCONCLUSIVE, live-gate/3–5 INVALID retained; #67 unmerged; holdout not run; DEV does not establish baseline superiority, general resolution or statistical significance |
 | Authority | Parent identity/exact approval, independent external verifier, adjacent promotion, Dream/Critic/single committer, retained refutations, no cost override; structured checks do not semantically certify arbitrary prose or prove causal truth |
 | Integration vs deployment | Maya runs real domain services with scripted model/browser/Telegram I/O; Twin/Memory UI sources remain UNCONNECTED, projection transport exists but no page subscribes; no live/deployed demo claim |
+| New #37 surface | Experiments view, decision panel and WebApprovalChannel are implemented; exact shown digest/class and single-use receipt go through admission. The adapter trusts a transport-authenticated principal; shipped page passes no transport. All five docs rechecked; no live approval UI claim |
 | Privacy / economics | #59 merged; safe telemetry differs from inference-provider context; synthetic public artifacts; genuine cfo.ai readback with assumed rates/usage/cash/revenue, not measured production dollars; default runtime costs unknown |
 | Entire | #54 open, verified milestone Git/PR references do not establish complete ordered native checkpoint coverage; separate index branch is not silently incorporated into main |
 | README (#61) | Thesis/problem/diagram/trust boundary/Maya/setup/reset/NeatLogs/DEV/economics/Entire/privacy/methodology/evidence links present; stale foundation-only status and planned-feature list removed; keep #61 open for #53/#54 strict dependencies |
@@ -52,7 +55,7 @@ Executed on Windows with Python 3.11.9:
   The skip is Windows symlink permission; Linux CI exercises that path.
   Focused documentation/Maya/reset/controlled-decision suite in the primary
   checkout: **27 passed, 1 skipped** in 79.75s (same host-permission skip).
-- Default checker: **8 documents, 343 link/path references, 72 GitHub issue/PR
+- Default checker at initial smoke: **8 documents, 343 link/path references, 72 GitHub issue/PR
   numbers, two pinned remote files, zero failures**. Supporting setup/web/Telegram
   notes: **3 documents, 21 references, nine issue/PR numbers, zero failures**.
 - Archived `decide()` over all 36 saved pairs reproduces the exact PASS summary
@@ -62,8 +65,25 @@ Executed on Windows with Python 3.11.9:
 - Ledger self-check: 25 events, hash chain OK, replay identical, tamper detected.
   Economics report reproduction: identical. Ruff lint/format and strict mypy
   (97 product files): pass. Secret/history scan and env audit: zero findings;
-  synthetic audit: all 87 reviewed assets unchanged. Final diff passes whitespace
+  synthetic audit at initial baseline: all 87 reviewed assets unchanged. Final diff passes whitespace
   checks and contains documentation/reference tests only.
+
+After rebasing onto the newly merged #37/#91 main, the documentation plus
+web-approval/Experiments-view tests passed **24/24**. Maya was run again on the
+new runtime baseline: all 18 beats passed with the identical domain hash above.
+The current synthetic inventory is **89 reviewed assets**, with zero findings;
+the two new reviewed assets came from main's #37 work, not this documentation PR.
+The main runtime baseline's [four green jobs](https://github.com/Sathvikar01/morrow/actions/runs/38191229609)
+are separate from the final docs PR checks. PR #91's historical auto-close of
+#61 is corrected: this lane keeps it open under the user's stricter #53/#54
+dependency condition. The historical fresh-clone receipt above remains labeled
+with the exact commit it tested.
+
+Final reference recheck: **8 documents, 360 link/path references, 74 GitHub
+issue/PR numbers, two pinned files, zero failures**. Supporting setup/app notes:
+**3 documents, 25 references, ten issue/PR numbers, zero failures**. Ruff passes
+for 262 formatted files; strict mypy passes for 100 product source files on the
+refreshed main. These supersede the earlier baseline's inventory/type counts.
 
 Four required PR checks must all pass before merge; their final run is linked
 from the PR and issue completion evidence. A green docs merge does not change

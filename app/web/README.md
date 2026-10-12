@@ -2,7 +2,7 @@
 
 The Next.js application shell for Serene (Issue #34): a landing page with the
 bloom, five primary surfaces (Today, Memory, Investigations, Experiments,
-Causal Twin), responsive navigation, read-only Twin/Memory review views, and
+Causal Twin), responsive navigation, Twin/Memory review views, an Experiments/Approval surface, and
 shared layout primitives. The #33 projection transport is implemented, but no
 page subscribes: web sign-in (#84) and full Twin provenance projection (#75)
 remain unfinished. Normal pages render no connected family data; fixture routes

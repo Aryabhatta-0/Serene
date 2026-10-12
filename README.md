@@ -135,6 +135,18 @@ Plain Hermes and Hermes + ordinary memory/RAG are implemented comparators, but
 this DEV result does not establish superiority over them.
 [Methodology and historical reports](docs/evaluation.md).
 
+The separate [historical six-run comparison](docs/live-eval-2026-10-11.md) is:
+
+| System | Strict task success | Model calls | Tokens |
+| --- | ---: | ---: | ---: |
+| Serene | 0/6 | 83 | 988,176 |
+| Baseline A: plain Hermes | 0/6 | 6 | 47,959 |
+| Baseline B: Hermes + ordinary memory/RAG | 0/6 | 6 | 50,157 |
+
+Consumption differs substantially. These historical scorer-version results do
+not establish equal-consumption superiority or task success; they are distinct
+from controlled-dev/1's two Serene revision arms.
+
 ## Economics and development provenance
 
 **cfo.ai:** a genuine Scenario and saved readback support an **assumed** operating

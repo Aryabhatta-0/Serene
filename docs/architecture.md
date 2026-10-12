@@ -1,6 +1,6 @@
 # Serene architecture
 
-Audited against merged `main` at `7dffc95b453a1e0995175024c5c55a963397e938`
+Audited against merged `main` at `6b8207300271620e775d33879add3533d59ad992`
 on 2026-10-12 for [#60](https://github.com/Sathvikar01/morrow/issues/60).
 Implementation, synthetic integration, live evaluation and production readiness
 are different claims. The [Maya demo](maya-demo.md) exercises real services with

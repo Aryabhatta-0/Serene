@@ -1,7 +1,7 @@
 # Serene Evaluation
 
 > **Status:** Inspect tasks, deterministic scorers, replay/rescore tooling and
-> regression-gate code are implemented. Audited `main`: `7dffc95` (2026-10-12).
+> regression-gate code are implemented. Audited `main`: `6b82073` (2026-10-12).
 > **controlled-dev/1 = PASS**, merged in PR #89. This is a conditional paired
 > DEV result for #67, not a holdout pass or superiority over the two baselines.
 > #53 remains open; #44's ten-scenario coverage is not claimed complete.

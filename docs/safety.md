@@ -1,6 +1,6 @@
 # Serene safety
 
-Audited against merged `main` at `7dffc95` on 2026-10-12.
+Audited against merged `main` at `6b82073` on 2026-10-12.
 **LLM proposes; deterministic code decides.** Models may propose explanations
 and experiments; they cannot change policy, verify their own evidence, grant
 parent approval, promote beliefs or publish durable memory.
