@@ -34,6 +34,9 @@ export function SignInForm({ next, onSignedIn }: { next?: string | null; onSigne
       </p>
     );
   }
+  if (record.status === "loading") {
+    return <p className={styles.message} role="status">Checking sign-in…</p>;
+  }
   if (record.status === "signed-in") {
     return (
       <p className={styles.message} role="status">
@@ -72,7 +75,7 @@ export function SignInForm({ next, onSignedIn }: { next?: string | null; onSigne
           {MESSAGES[step.kind]}
         </p>
       ) : null}
-      <button type="submit" className="button button-solid" disabled={step.kind === "sending" || record.status === "loading"}>
+      <button type="submit" className="button button-solid" disabled={step.kind === "sending"}>
         {step.kind === "sending" ? "Signing in…" : "Sign in"}
       </button>
     </form>

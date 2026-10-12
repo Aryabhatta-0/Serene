@@ -65,6 +65,33 @@ describe("ProjectionSync: propagation", () => {
 });
 
 describe("ProjectionSync: reconnect and resync", () => {
+  it("a delayed row cannot restore live status after disconnect", async () => {
+    const feed = new FakeFeed();
+    feed.write(row("pending_approvals", 3, { pending: true }), { deliver: false });
+    const { last, live } = started(feed);
+    feed.setStatus("subscribed");
+    await flush();
+    feed.setStatus("closed");
+    feed.write(row("pending_approvals", 4, { pending: false }));
+    expect(last()).toMatchObject({ status: "reconnecting" });
+    feed.setStatus("subscribed");
+    await flush();
+    expect(live().pending_approvals?.last_sequence).toBe(4);
+  });
+
+  it("a stale reconnect snapshot cannot replace newer displayed rows", async () => {
+    const feed = new FakeFeed();
+    feed.write(row("pending_approvals", 3, { pending: true }), { deliver: false });
+    const { live } = started(feed);
+    feed.setStatus("subscribed");
+    await flush();
+    feed.emit(row("pending_approvals", 5, { pending: false }));
+    feed.setStatus("closed");
+    feed.setStatus("subscribed");
+    await flush();
+    expect(live().pending_approvals?.last_sequence).toBe(5);
+  });
+
   it("keeps but flags the last state while disconnected, then resyncs to the current state", async () => {
     const feed = new FakeFeed();
     feed.write(row("active_investigations", 3, inv([])), { deliver: false });

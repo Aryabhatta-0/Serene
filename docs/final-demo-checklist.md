@@ -1,7 +1,8 @@
 # Final demo acceptance checklist (#62)
 
-Source: refreshed `main` at `6b8207300271620e775d33879add3533d59ad992`
-(2026-10-12, including #89, #90, #91 and the #37 Experiments/Approval surface).
+Source: final audit of `main` at `cc7d0afb5c0adf377003d9a3290ad700c0488347`
+(2026-10-12, including #104–#107 and the final hardening changes described in
+[the release audit](final-release-audit.md)).
 **Release verdict: BLOCKED.**
 This is a release checklist, not permission to run holdout or deploy a family service.
 
@@ -39,9 +40,9 @@ files remain ignored and contain only synthetic data.
 | Entire: native ordered retrievable checkpoints for all eight milestones | BLOCKED | [#54](https://github.com/Sathvikar01/morrow/issues/54), [audited reference index and limitations](architecture.md#observability-economics-and-development-provenance), [#60 audit](documentation-review.md) | Show verified Git/PR evolution references and disclose incomplete genuine checkpoint coverage; local branch index is not a main artifact or a native checkpoint; never publish transcripts to fill gaps |
 | cfo.ai: genuine Scenario, assumed inputs, constrained decision | PASS | [cfo.ai readback](economics/cfo-readback.json), [acceptance audit](economics/acceptance-audit.json), [decision tests](../tests/test_cfoai_economics.py) | Open [economics report](economics.md): assumed $2.725256/family-month, 77.28% margin, 524-day runway; optional estimates 9,038 vs 14,452 micro-USD only after policy equivalence; no measured production dollars |
 | Reset/reproducibility: same seed and canonical report bytes | PASS | [reset tests](../tests/test_demo_reset.py), [Maya E2E](../tests/test_maya_demo.py), [reset command](../scripts/demo_reset.py) | Run reset→demo twice: identical baseline and domain SHA-256; fresh in-memory ledger/temp Git per run; unknown files preserved |
-| CI: all four required jobs for the runtime baseline | PASS | [runtime baseline CI](https://github.com/Sathvikar01/morrow/actions/runs/38191229609), [workflow](../.github/workflows/ci.yml), [ruleset contract](setup.md#5-merge-gates-58) | Open four green jobs for runtime main 7dffc95; 6b82073 adds README/docs only. This final docs PR must separately pass the same four before merge; CI is not a live-model/holdout result |
+| CI: all four required jobs for the runtime baseline | PASS | [workflow](../.github/workflows/ci.yml), [final audit](final-release-audit.md), [ruleset contract](setup.md#5-merge-gates-58) | Refreshed main cc7d0af has four green jobs. The final hardening PR must separately pass the same four before merge; CI is not a live-model/holdout result. |
 | Privacy: public artifacts synthetic, secrets absent, scoped reads | PASS | [#59 / PR #80](https://github.com/Sathvikar01/morrow/pull/80), [privacy tests](../tests/test_privacy_audit.py), [RLS tests](../tests/test_rls.py), [secret scanner](../scripts/secret_scan.py) | Show zero scan findings and synthetic Maya label; explain HMAC/token-filtered metadata, backend ledger writes, inference-provider boundary and no production privacy certification |
-| Connected live presentation: signed-in child → Twin/Memory/Experiments UI | BLOCKED | [#87](https://github.com/Sathvikar01/morrow/issues/87), [#84](https://github.com/Sathvikar01/morrow/issues/84), [#99](https://github.com/Sathvikar01/morrow/issues/99), [#75](https://github.com/Sathvikar01/morrow/issues/75), [activation steps](setup.md#activating-the-live-web-app-87), [Twin source](../app/web/lib/causal-twin/source.ts), [Memory source](../app/web/lib/memory/source.ts), [Experiments page](../app/web/app/experiments/page.tsx), [web channel tests](../tests/test_web_approvals.py), [known hosting advisories](privacy.md#6-non-goals) | Updated after #94/#98/#100: Today, Investigations and Experiments connect after Supabase sign-in and child selection, and Experiments sends decisions through the authenticated transport, but none of it has been run against a real Supabase stack (#87). Memory (#99) and the Twin (#75) still show UNCONNECTED; fixture routes are scripted build-gated previews. Show Maya HTML/JSON as the domain demo, not a deployed dashboard; known Next.js/PostCSS advisories also require remediation before public hosting |
+| Connected live presentation: signed-in child → Twin/Memory/Experiments UI | PASS | [hosted proof](real-supabase-proof.md), [final audit](final-release-audit.md), [hosted browser tests](../app/web/e2e-supabase/final-audit.spec.ts) | All five production routes run locally against real hosted Auth/Postgres/Realtime. Approval/decline and offline resync pass; a separate synthetic Maya family displays pinned Memory/Dream and supported Twin provenance. No public deployment or live model/browser I/O claim. |
 
 ## Dry-run using this checklist only
 
@@ -62,11 +63,14 @@ files remain ignored and contain only synthetic data.
    `uv run python scripts/economics_report.py --check`; require identical modeled
    results. Label assumptions before showing money or runway.
 6. Run `uv run python scripts/docs_check.py --github` and
-   `uv run python scripts/secret_scan.py --history`; require zero failures.
-   Open the current PR's four checks before merging. State all four BLOCKED rows
+   `uv run python scripts/secret_scan.py`; require zero current-tree failures.
+   Also inspect `--history`: the four known fake historical verifier-token matches
+   are documented in [the final audit](final-release-audit.md); do not rewrite history.
+   Open the current PR's four checks before merging. State all three BLOCKED rows
    aloud; keep release verdict BLOCKED. No missing evidence is filled by narration.
 
-The execution receipt is [final documentation validation](final-docs-validation.md).
+The earlier documentation receipt is [final documentation validation](final-docs-validation.md);
+current runtime evidence is in [the final release audit](final-release-audit.md).
 A completed checklist document can satisfy #62 while its demo release gate is
 BLOCKED. README #61 remains open while #53/#54 strict dependencies are incomplete;
 #60's completed core-documentation acceptance remains closed. This lane changes
@@ -85,6 +89,6 @@ no product/runtime/evaluation behavior, frozen reports, thresholds or holdout st
 > All 72 runs still parked unresolved; #67 is unmerged and holdout was not run.
 > NeatLogs has privacy-safe trace receipts, cfo.ai supplies an assumed economics
 > analysis, and Entire checkpoint coverage remains incomplete. The offline demo
-> is reproducible; the full release gate and connected live presentation remain
-> blocked. We claim bounded integration and measured DEV evidence, not production
+> is reproducible; the connected local web presentation is proven with hosted synthetic records,
+> while the holdout/improvement and Entire release requirements remain blocked. We claim bounded integration and measured DEV evidence, not production
 > readiness, general causal truth or a holdout pass.

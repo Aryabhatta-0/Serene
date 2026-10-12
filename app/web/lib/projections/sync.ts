@@ -50,6 +50,7 @@ export class ProjectionSync {
   private generation = 0;
   private unsubscribe: (() => void) | null = null;
   private stopped = false;
+  private connected = false;
 
   constructor(
     private readonly feed: ProjectionFeed,
@@ -75,11 +76,13 @@ export class ProjectionSync {
   private status(status: FeedStatus): void {
     if (this.stopped) return;
     if (status === "subscribed") {
+      this.connected = true;
       void this.resync();
       return;
     }
     // Not live any more: keep what was shown, say plainly it may be out of date.
     this.syncing = false;
+    this.connected = false;
     this.generation += 1;
     this.onState(
       this.projections ? { status: "reconnecting", projections: this.projections } : { status: "connecting" },
@@ -95,7 +98,7 @@ export class ProjectionSync {
       return this.fail("a change from Serene did not pass its checks");
     }
     if (row.child_id !== this.childId) return; // not this child's: never shown
-    if (this.syncing || this.projections === null) {
+    if (!this.connected || this.syncing || this.projections === null) {
       this.buffer.push(row);
       return;
     }
@@ -121,7 +124,14 @@ export class ProjectionSync {
     if (rows.some((row) => row.child_id !== this.childId)) return this.fail("the snapshot was for another child");
     // The snapshot replaces what was held; buffered changes fold in by sequence.
     let next: Projections = {};
-    for (const row of [...rows, ...this.buffer]) {
+    for (const row of rows) {
+      // A lagging snapshot must not undo a newer Realtime row. An omitted
+      // projection is still removed, so changed access/empty state is respected.
+      next = applyRow(next, row);
+      const current = this.projections?.[row.projection];
+      if (current) next = applyRow(next, current);
+    }
+    for (const row of this.buffer) {
       if (row.child_id === this.childId) next = applyRow(next, row);
     }
     this.buffer = [];
@@ -132,6 +142,7 @@ export class ProjectionSync {
 
   private fail(reason: string): void {
     this.syncing = false;
+    this.connected = false;
     this.generation += 1;
     this.projections = null;
     this.buffer = [];

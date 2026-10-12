@@ -57,6 +57,7 @@ export function FamilyRecordProvider({ backend: given, children }: Props) {
   const [backend, setBackend] = useState<FamilyBackend | null>(given ?? null);
   const [session, setSession] = useState<SessionState>(configured ? { status: "loading" } : { status: "unconfigured" });
   const [kids, setKids] = useState<ChildList>({ status: "loading" });
+  const [childrenFor, setChildrenFor] = useState<string | null>(null);
   const [childId, setChildId] = useState<string | null>(null);
   const signingOut = useRef(false);
 
@@ -80,6 +81,7 @@ export function FamilyRecordProvider({ backend: given, children }: Props) {
     // A new user (or nobody) never inherits the previous list or choice.
     setKids({ status: "loading" });
     setChildId(null);
+    setChildrenFor(userId);
     if (!backend || !userId) return;
     let current = true;
     backend.listChildren(userId).then(
@@ -127,15 +129,18 @@ export function FamilyRecordProvider({ backend: given, children }: Props) {
   const value = useMemo<FamilyRecord>(() => {
     const actions = { signIn, signOut, selectChild, accessToken };
     if (session.status !== "signed-in") return { ...session, live: null, ...actions };
-    const chosen = kids.status === "ready" && childId !== null && kids.ids.includes(childId) ? childId : null;
+    // Auth can change before the child lookup effect runs. Never expose the
+    // previous account's choice during that first committed render.
+    const ownKids: ChildList = childrenFor === userId ? kids : { status: "loading" };
+    const chosen = ownKids.status === "ready" && childId !== null && ownKids.ids.includes(childId) ? childId : null;
     return {
       status: "signed-in",
-      children: kids,
+      children: ownKids,
       childId: chosen,
       live: backend && chosen ? { feed: backend.feed, childId: chosen } : null,
       ...actions,
     };
-  }, [session, kids, childId, backend, signIn, signOut, selectChild, accessToken]);
+  }, [session, kids, childrenFor, userId, childId, backend, signIn, signOut, selectChild, accessToken]);
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }

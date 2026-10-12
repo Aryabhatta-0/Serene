@@ -6,8 +6,9 @@ export const metadata: Metadata = { title: "Sign in", robots: { index: false, fo
 
 // Supabase Auth sign-in for parents (Issue #87). After it, Today and
 // Investigations read the signed-in parent's child's record live.
-export default function SignInPage({ searchParams }: { searchParams: { next?: string | string[] } }) {
-  const next = typeof searchParams.next === "string" ? searchParams.next : null;
+export default async function SignInPage({ searchParams }: { searchParams: Promise<{ next?: string | string[] }> }) {
+  const params = await searchParams;
+  const next = typeof params.next === "string" ? params.next : null;
   return (
     <Page
       title="Sign in"

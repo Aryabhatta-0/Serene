@@ -294,8 +294,9 @@ No extra memory/analytics/database stack is adopted to collect more child data;
 the [recorded exclusions](architecture.md#non-goals-and-excluded-technologies)
 explain the MVP choices.
 
-On 2026-10-12, `npm audit --omit=dev` against the pinned web lockfile reports
-Next.js 14.2.35 **critical** and PostCSS **high** advisory groups. Their reachability
-needs separate review and remediation before public hosting; dependency versions
-are unchanged by this secrets/logging audit. The offline Maya demo needs no web
-server. The audit's passing privacy checks do not establish production readiness.
+The [final release audit](final-release-audit.md) supersedes the earlier dependency
+finding: Next.js 15.5.27, PostCSS 8.5.29 and Vitest 4.1.11 pass `npm audit` with
+zero findings. The new browser-ledger boundary revokes authenticated and anon
+ledger SELECT even for a child's guardian; browsers read permitted projections.
+Underlying ledger RLS remains independently tested for backend/operator use.
+Passing these checks does not establish production readiness.

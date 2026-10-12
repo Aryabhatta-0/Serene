@@ -1,11 +1,13 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useLayoutEffect } from "react";
+import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it } from "vitest";
 import { LiveInvestigations } from "@/components/investigations/LiveInvestigations";
 import recorded from "@/fixtures/synthetic-investigation.json";
 import { FakeBackend } from "@/lib/auth/testing";
 import { FakeFeed, type Row } from "@/lib/projections/testing";
-import { FamilyRecordProvider } from "./FamilyRecord";
+import { FamilyRecordProvider, useFamilyRecord } from "./FamilyRecord";
 import { childLabel, RecordControl } from "./RecordControl";
 import { SignInForm } from "./SignInForm";
 
@@ -63,6 +65,14 @@ const phase = () => document.querySelector("article[data-investigation-id]")?.ge
 afterEach(() => sessionStorage.clear());
 
 describe("signed out", () => {
+  it("does not server-render credential fields before the stored session is known", () => {
+    const backend = new FakeBackend(new FakeFeed(), [PARENT], {});
+    const html = renderToString(<FamilyRecordProvider backend={backend}><SignInForm /></FamilyRecordProvider>);
+    expect(html).toContain("Checking sign-in");
+    expect(html).not.toContain('name="email"');
+    expect(html).not.toContain('name="password"');
+  });
+
   it("shows the honest unconnected state, subscribes to nothing, and offers sign-in", async () => {
     const { feed, backend } = setup();
     expect(await screen.findByText("Not signed in")).toBeInTheDocument();
@@ -181,6 +191,26 @@ describe("signed in", () => {
 });
 
 describe("leaving", () => {
+  it("never commits the old child's feed under a newly signed-in user", async () => {
+    const feed = new FakeFeed();
+    const backend = new FakeBackend(feed, [PARENT, OTHER_PARENT], {
+      [PARENT.userId]: [CHILD], [OTHER_PARENT.userId]: [STRANGER],
+    });
+    const committed: Array<{ user: string | null; child: string | null }> = [];
+    function Witness() {
+      const record = useFamilyRecord();
+      useLayoutEffect(() => {
+        committed.push({ user: backend.session?.userId ?? null, child: record.live?.childId ?? null });
+      });
+      return null;
+    }
+    render(<FamilyRecordProvider backend={backend}><Witness /></FamilyRecordProvider>);
+    await act(async () => { await backend.signIn(PARENT.email, PARENT.password); });
+    expect(committed.some((r) => r.child === CHILD)).toBe(true);
+    await act(async () => backend.switchUser(OTHER_PARENT.userId));
+    expect(committed.filter((r) => r.user === OTHER_PARENT.userId).every((r) => r.child !== CHILD)).toBe(true);
+  });
+
   it("an expired session removes the record at once and says so", async () => {
     const { feed, backend } = setup({ guardians: { [PARENT.userId]: [CHILD] } });
     await signIn();

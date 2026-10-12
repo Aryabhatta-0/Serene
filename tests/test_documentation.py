@@ -20,9 +20,16 @@ def test_demo_release_checklist_has_evidence_and_visible_proof_for_every_beat() 
         assert beat.strip() and status.strip() in {"PASS", "BLOCKED"}
         assert docs_check.LINK.search(evidence), f"No evidence for {beat}"
         assert visible.strip(), f"No visible proof for {beat}"
-    for required in ("Holdout:", "Entire:", "Full before/after", "Connected live"):
+    for required in ("Holdout:", "Entire:", "Full before/after"):
         matches = [row for row in data if required in row[0]]
         assert len(matches) == 1 and matches[0][1].strip() == "BLOCKED"
+    # The real hosted proof supersedes the former #87 blocked status. Require
+    # both the service receipt and the production-route regression evidence;
+    # the independent holdout/Entire gates above remain blocked.
+    connected = [row for row in data if "Connected live" in row[0]]
+    assert len(connected) == 1 and connected[0][1].strip() == "PASS"
+    assert "real-supabase-proof.md" in connected[0][2]
+    assert "e2e-supabase/final-audit.spec.ts" in connected[0][2]
 
 
 def test_missing_document_is_reported(tmp_path: Path) -> None:
