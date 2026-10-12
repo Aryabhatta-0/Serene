@@ -1,5 +1,12 @@
 # Final demo acceptance checklist (#62)
 
+> Historical internal gate snapshot. The release owner subsequently clarified
+> hackathon acceptance: holdout and complete historical Entire coverage are not
+> submission requirements. [Final release acceptance](release-acceptance.md)
+> supersedes the release verdict below. Frozen evaluation gates/results and the
+> original checklist assertions remain unchanged; the BLOCKED rows record the
+> earlier scope, not current submission blockers.
+
 Source: final audit of `main` at `cc7d0afb5c0adf377003d9a3290ad700c0488347`
 (2026-10-12, including #104–#107 and the final hardening changes described in
 [the release audit](final-release-audit.md)).
