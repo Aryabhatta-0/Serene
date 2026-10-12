@@ -65,6 +65,11 @@ def rls_db(pg_admin_dsn: str) -> Iterator[dict[str, Any]]:
         with psycopg.connect(dsn, autocommit=True) as conn:
             for migration in MIGRATIONS:
                 conn.execute(migration.read_text(encoding="utf-8"))
+            # Exercise the underlying row policies independently of the browser
+            # grant boundary, in this disposable policy-test database only.
+            # The separate current-migration test below requires direct browser
+            # ledger reads to be denied even for an owning parent.
+            conn.execute("grant select on serene.domain_events to authenticated")
         store = PostgresEventStore(dsn)
         a, b, s = _LADDERS
         for fam in _LADDERS:
@@ -338,3 +343,28 @@ def test_every_serene_table_has_rls_enabled() -> None:
     assert "to authenticated" in RLS_SQL and "insert" not in re.findall(
         r"grant (\w+)[^;]*serene\.domain_events", RLS_SQL
     )
+
+
+@pytest.mark.parametrize("user", [P1, P2, C_OBS, C_NONE])
+def test_browser_sessions_cannot_query_ledger_even_with_guardianship(
+    pg_dsn: str, user: uuid.UUID
+) -> None:
+    fam = _LADDERS[0]
+    store = PostgresEventStore(pg_dsn)
+    for event in fam.store.read_stream(fam.child_id):
+        store.append(event, expected_prev_hash=event.prev_event_hash)
+    with psycopg.connect(pg_dsn) as conn:
+        conn.execute(
+            "insert into serene.children (child_id, data_class) values (%s, 'SYNTHETIC')",
+            (fam.child_id,),
+        )
+        conn.execute(
+            "insert into serene.child_guardians (child_id, user_id, role) "
+            "values (%s, %s, 'PARENT')",
+            (fam.child_id, P1),
+        )
+    with (
+        session(pg_dsn, "authenticated", user) as conn,
+        pytest.raises(psycopg.errors.InsufficientPrivilege),
+    ):
+        conn.execute("select * from serene.domain_events")

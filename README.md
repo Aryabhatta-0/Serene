@@ -59,8 +59,9 @@ completion; [the architecture records that limitation](docs/architecture.md#tele
 Web approval decisions have an authenticated transport (#84): the same-origin `/api/approvals`
 relay and the kernel's `POST /web/approvals` (Supabase session, guardianship, rate limit, replay-safe
 `request_id`, then ledger admission). Experiments reads the private parent-only projection and changes
-stage only after a projection update. [The test-kernel proof and remaining real
-Supabase acceptance](docs/web-e2e-proof.md) distinguish #84/#37 coverage from blocked #87.
+stage only after a projection update. [The hosted Supabase proof](docs/real-supabase-proof.md)
+and [final audit](docs/final-release-audit.md) distinguish real Auth/Realtime transport
+from scripted model/browser I/O and a public deployment.
 [Implemented UI boundary](docs/architecture.md#experiments-promotion-and-dream).
 
 ## See the canonical Maya story
@@ -185,12 +186,14 @@ change a decision. Inference context is separate private provider processing.
 Supabase RLS scopes reads; ledger writes stay backend-only. Hash chains detect
 tampering but do not notarize history against a host administrator.
 [Privacy and #59 audit](docs/privacy.md), [safety and non-goals](docs/safety.md).
-Known Next.js/PostCSS advisories recorded in that audit require remediation before public hosting.
+The final hardening audit updates Next.js/PostCSS and the test runner; the current
+lockfile passes `npm audit` with zero findings.
 
 Four required CI checks cover kernel/types/tests/secrets, deterministic Inspect
 gates, web build/unit tests and Playwright. **The final release gate remains BLOCKED**
 by incomplete Entire checkpoints and the unrun holdout/full improvement gate;
-the connected live UI is also not demonstrated. The offline Maya path is available.
+the connected UI is now proven locally against hosted Supabase with synthetic data.
+The offline Maya path is also available. There is no public deployment.
 [Checklist and exact submission narrative](docs/final-demo-checklist.md).
 
 Canonical references: [architecture](docs/architecture.md),

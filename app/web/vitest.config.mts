@@ -4,7 +4,7 @@ import { defineConfig } from "vitest/config";
 // Unit and component tests (jsdom). Browser behaviour, layout and the real
 // production build are covered by the Playwright suite in e2e/.
 export default defineConfig({
-  esbuild: { jsx: "automatic" },
+  oxc: { jsx: { runtime: "automatic" } },
   resolve: {
     alias: [{ find: /^@\//, replacement: fileURLToPath(new URL("./", import.meta.url)) }],
   },
