@@ -1,8 +1,10 @@
 import styles from "./RecordStatus.module.css";
 
-// The shell is not connected to any family record yet (projection streaming
-// arrives with Issue #33). Saying so plainly is part of the product: Serene
-// never implies it knows something it has not recorded.
+// Shown wherever no family record is connected: when sign-in is not
+// configured, and on surfaces whose data is not streamed yet (Memory #99,
+// Causal Twin #75). Signed-in surfaces use RecordControl instead (#87).
+// Saying so plainly is part of the product: Serene never implies it knows
+// something it has not recorded.
 export function RecordStatus() {
   return (
     <p className={styles.status}>

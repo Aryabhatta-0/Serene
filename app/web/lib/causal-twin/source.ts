@@ -1,9 +1,9 @@
 import { parseCausalTwin, TwinValidationError, type CausalTwin } from "./model";
 
 // Where the Causal Twin surface gets its twin from, as a state the view can
-// draw honestly. There is no backend connection yet: the twin projection will
-// be streamed in with Issue #33, and until then the surface says so instead
-// of drawing anything.
+// draw honestly. The Realtime projection transport (#33) is implemented, but
+// no complete Twin provenance projection is published yet (#75); until it
+// is, the surface says so instead of drawing anything.
 export type TwinSource =
   | { status: "unconnected" }
   | { status: "loading" }

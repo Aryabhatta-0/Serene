@@ -1,9 +1,9 @@
 import { MemoryValidationError, parseMemoryDreamView, type MemoryDreamView } from "./model";
 
 // Where the Memory surface gets its view from, as a state it can draw
-// honestly. There is no backend connection yet: projection state is streamed
-// in with Issue #33, and until then the surface says so instead of drawing
-// anything.
+// honestly. The Realtime projection transport (#33) is implemented, but the
+// memory view is not a published projection yet (#99); until it is, the
+// surface says so instead of drawing anything.
 export type MemorySource =
   | { status: "unconnected" }
   | { status: "loading" }
