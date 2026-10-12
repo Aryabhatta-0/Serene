@@ -20,7 +20,10 @@ from serene.testing import SyntheticFamily, build_full_ladder
 
 ROOT = Path(__file__).resolve().parents[1]
 # Every process that appends to the production ledger.
-ENTRY_POINTS = (ROOT / "app" / "telegram" / "webhook_server.py",)
+ENTRY_POINTS = (
+    ROOT / "app" / "telegram" / "webhook_server.py",
+    ROOT / "app" / "approvals" / "approvals_server.py",
+)
 
 
 def _calls(path: Path) -> set[str]:
