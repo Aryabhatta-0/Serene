@@ -4,7 +4,7 @@ Initial baseline: `42c82b58c8966f0aada9c382575c811cd93176d1`. Final refreshed
 main: `6b8207300271620e775d33879add3533d59ad992` on 2026-10-12. This includes
 the final controlled-dev/1 evidence in PR #89, completed core docs in PR #90,
 the #37 Experiments/Approval surface and concurrently merged README
-[PR #91](https://github.com/Sathvikar01/morrow/pull/91). This lane changes documentation and
+[PR #91](https://github.com/Sathvikar01/Serene/pull/91). This lane changes documentation and
 its reference checks only; no runtime, product, evaluation behavior, frozen
 artifact or holdout execution is changed.
 
@@ -13,7 +13,7 @@ artifact or holdout execution is changed.
 | Requirement | Finding / evidence |
 | --- | --- |
 | Five canonical documents (#60) | [architecture](architecture.md), [evidence](evidence-model.md), [safety](safety.md), [privacy](privacy.md), [evaluation](evaluation.md) remain consistent with current main; [previous detailed audit](documentation-review.md) maps authority, non-goals and excluded technologies to implementation/history |
-| Exact DEV result | [PR #89](https://github.com/Sathvikar01/morrow/pull/89), [report](controlled-dev-1.md), [summary](../eval/reports/archive/2026-10-12-controlled-dev-1/summary.json): PASS, A62/62 vs B3/39 unsupported, VERIFIED 0/22, attempts 305/275, tokens 4,187,529/3,863,797; no declared safety/provenance regressions; all 72 arm runs PARKED_UNRESOLVED |
+| Exact DEV result | [PR #89](https://github.com/Sathvikar01/Serene/pull/89), [report](controlled-dev-1.md), [summary](../eval/reports/archive/2026-10-12-controlled-dev-1/summary.json): PASS, A62/62 vs B3/39 unsupported, VERIFIED 0/22, attempts 305/275, tokens 4,187,529/3,863,797; no declared safety/provenance regressions; all 72 arm runs PARKED_UNRESOLVED |
 | Evaluation limitations | Historical DEV FAIL, replay INCONCLUSIVE, live-gate/3–5 INVALID retained; #67 unmerged; holdout not run; DEV does not establish baseline superiority, general resolution or statistical significance |
 | Authority | Parent identity/exact approval, independent external verifier, adjacent promotion, Dream/Critic/single committer, retained refutations, no cost override; structured checks do not semantically certify arbitrary prose or prove causal truth |
 | Integration vs deployment | Maya runs real domain services with scripted model/browser/Telegram I/O; Twin/Memory UI sources remain UNCONNECTED, projection transport exists but no page subscribes; no live/deployed demo claim |
@@ -77,7 +77,7 @@ web-approval/Experiments-view tests passed **24/24**. Maya was run again on the
 new runtime baseline: all 18 beats passed with the identical domain hash above.
 The current synthetic inventory is **89 reviewed assets**, with zero findings;
 the two new reviewed assets came from main's #37 work, not this documentation PR.
-The main runtime baseline's [four green jobs](https://github.com/Sathvikar01/morrow/actions/runs/38191229609)
+The main runtime baseline's [four green jobs](https://github.com/Sathvikar01/Serene/actions/runs/38191229609)
 are separate from the final docs PR checks. PR #91's historical auto-close of
 #61 is corrected: this lane keeps it open under the user's stricter #53/#54
 dependency condition. The historical fresh-clone receipt above remains labeled

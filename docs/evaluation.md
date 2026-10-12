@@ -134,7 +134,7 @@ unless every request is byte-identical and the stored scores reproduce.
 live runs also store their trajectory in `scores.json`. Gate reports whose meaning
 changed are archived byte-for-byte under [the archive](../eval/reports/archive/), never regenerated.
 [Regression tests](../tests/test_regression_gate.py) cover missing holdout,
-version/oracle mismatch and hard guards; [PR #68](https://github.com/Sathvikar01/morrow/pull/68)
+version/oracle mismatch and hard guards; [PR #68](https://github.com/Sathvikar01/Serene/pull/68)
 landed the corrected infrastructure.
 
 The separately frozen live-gate/3–5 DEV decision protocols are not that full
@@ -150,7 +150,7 @@ invalidations below supply no product acceptance evidence.
 Issue #53 requires exactly one genuine **failure -> trace diagnosis -> architecture
 change -> measured result** story. The [original live diagnosis](live-eval-2026-10-11.md)
 records bundled 4–6-field browser requests rejected as `REQUESTED_FIELD_UNSUPPORTED`.
-[PR #67](https://github.com/Sathvikar01/morrow/pull/67) proposes independently
+[PR #67](https://github.com/Sathvikar01/Serene/pull/67) proposes independently
 verifiable evidence units without weakening the verifier. The merged
 [controlled report](controlled-dev-1.md) now supplies measured conditional DEV
 evidence for that correction, including NeatLogs receipts. #67 remains unmerged;
@@ -174,7 +174,7 @@ NeatLogs receipts remain the source of record.
 | Paired replay | **INCONCLUSIVE** | [Shared-prefix record](shared-prefix-dev-v3.md), [offline verification](../eval/reports/archive/2026-10-11-shared-prefix-dev-v3/verification.json): replay stops at policy/input divergence; offline prefixes cannot prove live suffix performance |
 | live-gate/3 | **INVALID** | [v4 account](live-gate-v4.md), [v4 verification](../eval/reports/archive/2026-10-11-live-gate-v4/verification.json): existing daemon's loaded configuration could not be attested |
 | live-gate/4 | **INVALID** | [v5 account](live-gate-v5.md): inherited Git stdin deadlock and session/receipt assumptions invalidated the harness path |
-| live-gate/5 | **INVALID** | Later status is recorded in the [frozen controlled-dev/1 history mapping](https://github.com/Sathvikar01/morrow/blob/28459c80a0da400691de6e09299a78d341f9c8db/eval/runners/controlled_dev_experiment.py), now also merged through #89; v5 supplies no valid acceptance or holdout result |
+| live-gate/5 | **INVALID** | Later status is recorded in the [frozen controlled-dev/1 history mapping](https://github.com/Sathvikar01/Serene/blob/28459c80a0da400691de6e09299a78d341f9c8db/eval/runners/controlled_dev_experiment.py), now also merged through #89; v5 supplies no valid acceptance or holdout result |
 
 The v3/v4/v5 preparation documents and archived `verification.json` files were
 written before their subsequent live attempts: `NOT_EVALUATED` there describes
@@ -187,10 +187,10 @@ later known status without rewriting those artifacts.
 ## controlled-dev/1
 
 **controlled-dev/1 = PASS**, by the predeclared `decide()` frozen at
-[`28459c8`](https://github.com/Sathvikar01/morrow/blob/28459c80a0da400691de6e09299a78d341f9c8db/eval/runners/controlled_dev_experiment.py).
+[`28459c8`](https://github.com/Sathvikar01/Serene/blob/28459c80a0da400691de6e09299a78d341f9c8db/eval/runners/controlled_dev_experiment.py).
 The [final report](controlled-dev-1.md), [summary](../eval/reports/archive/2026-10-12-controlled-dev-1/summary.json)
 and [verification](../eval/reports/archive/2026-10-12-controlled-dev-1/verification.json)
-merged in [PR #89](https://github.com/Sathvikar01/morrow/pull/89), commit `8b0a3c7`.
+merged in [PR #89](https://github.com/Sathvikar01/Serene/pull/89), commit `8b0a3c7`.
 One execution completed all 36 fixed DEV pairs, comparing A `8fac1cb` with #67 B
 `41d3bf6` conditional on shared recorded prefixes; 27 pairs continued live through
 normal Hermes transport, A then B, with no reruns/replacements. Unsupported-field
@@ -220,7 +220,7 @@ CI runs backend/property/real-Postgres migration tests, Ruff/mypy, frontend
 typecheck/unit/build, Playwright desktop/tablet/mobile, and all three Inspect
 smoke tasks. [inspect_gate.py](../scripts/inspect_gate.py) requires every sample of every named task
 to be CORRECT; a safety or promotion failure fails CI. #58's
-[PR #81](https://github.com/Sathvikar01/morrow/pull/81) is merged. The active
+[PR #81](https://github.com/Sathvikar01/Serene/pull/81) is merged. The active
 `main: required CI` ruleset requires pull requests and all four CI jobs, with
 no bypass list. Classic branch protection still returns 404; the ruleset is the
 enforcement mechanism. Source: [CI workflow](../.github/workflows/ci.yml),

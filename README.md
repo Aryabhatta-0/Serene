@@ -2,9 +2,9 @@
 
 **An evidence-bound family intelligence agent that helps parents investigate what may be happening with their child, and learn only within tested scope.**
 
-LLM proposes; deterministic code decides. The repository is named `morrow`.
+LLM proposes; deterministic code decides.
 
-[▶ Watch the landing page animation](docs/videos/hero-landing.webm)
+![Animated preview of the Serene landing page](docs/videos/hero-landing.gif)
 
 ## The problem
 
@@ -119,8 +119,8 @@ external I/O and full 18-beat scenario remain scripted/deterministic.
 Use Python 3.11–3.13, Git and uv. From a fresh clone:
 
 ```sh
-git clone https://github.com/Sathvikar01/morrow.git
-cd morrow
+git clone https://github.com/Sathvikar01/Serene.git
+cd Serene
 uv sync --locked --all-extras --group dev
 uv run python scripts/demo_reset.py
 uv run python scripts/maya_demo.py
@@ -165,9 +165,9 @@ the separate frozen handcrafted safety scenarios pass **10/10**.
 ## Measured evaluation and the NeatLogs correction story
 
 NeatLogs traces exposed bundled evidence requests being rejected as
-`REQUESTED_FIELD_UNSUPPORTED`. Proposed [#67](https://github.com/Sathvikar01/morrow/pull/67)
+`REQUESTED_FIELD_UNSUPPORTED`. Proposed [#67](https://github.com/Sathvikar01/Serene/pull/67)
 splits acquisitions into bounded evidence units. **controlled-dev/1 = PASS** under
-its frozen decision function, archived in [merged PR #89](https://github.com/Sathvikar01/morrow/pull/89).
+its frozen decision function, archived in [merged PR #89](https://github.com/Sathvikar01/Serene/pull/89).
 Here A/B mean two Serene revisions, not the plain-Hermes/RAG baselines.
 
 | Measured DEV result | A: prior revision | B: unmerged #67 |
@@ -245,12 +245,12 @@ not a claim that missing remote records can be retrieved.
 Entire was genuinely used during development. Retrievable historical checkpoint coverage is incomplete; no missing checkpoints were fabricated or retroactively reconstructed.
 
 The evolution runs through ledger/projections
-([#63](https://github.com/Sathvikar01/morrow/pull/63)), policy/Dream/Twin
-([#64](https://github.com/Sathvikar01/morrow/pull/64)), investigation/verifier
-([#65](https://github.com/Sathvikar01/morrow/pull/65)) and evaluation correction
-([#68](https://github.com/Sathvikar01/morrow/pull/68)). An eight-milestone reference
+([#63](https://github.com/Sathvikar01/Serene/pull/63)), policy/Dream/Twin
+([#64](https://github.com/Sathvikar01/Serene/pull/64)), investigation/verifier
+([#65](https://github.com/Sathvikar01/Serene/pull/65)) and evaluation correction
+([#68](https://github.com/Sathvikar01/Serene/pull/68)). An eight-milestone reference
 index was verified on the separate #54 branch. Genuine historical checkpoint
-coverage is incomplete; **[#54](https://github.com/Sathvikar01/morrow/issues/54)
+coverage is incomplete; **[#54](https://github.com/Sathvikar01/Serene/issues/54)
 remains open**. Git references are not native checkpoint coverage. Session pushing
 is disabled; no private transcript publication is needed to judge the work.
 [Exact provenance limitation](docs/architecture.md#observability-economics-and-development-provenance).
@@ -267,7 +267,7 @@ tampering but do not notarize history against a host administrator.
 The final hardening audit updates Next.js/PostCSS and the test runner; the current
 lockfile passes `npm audit` with zero findings.
 
-Merged [#108](https://github.com/Sathvikar01/morrow/pull/108) also denies browser
+Merged [#108](https://github.com/Sathvikar01/Serene/pull/108) also denies browser
 SELECT on canonical ledger payloads, protects cross-account/child state and
 rejects stale/out-of-order Realtime state. Current secret/PII gates are clean.
 These are tested boundaries, not security certification.

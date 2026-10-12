@@ -50,7 +50,7 @@ outdated information.
 
 ## Brand Commitments
 
-- Name: Serene (the repository is still named `morrow`).
+- Name: Serene (the repository is still named `Serene`).
 - The bloom flower is the logo and favicon.
 
 ## Evidence on Hand

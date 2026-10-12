@@ -73,7 +73,7 @@ def test_valid_anchors_encoded_paths_and_fenced_examples(
 def test_issue_ranges_and_url_numbers_are_validated(tmp_path: Path) -> None:
     source = tmp_path / "source.md"
     source.write_text(
-        "#17\u2013#19, #52; [issue](https://github.com/Sathvikar01/morrow/issues/60)\n"
+        "#17\u2013#19, #52; [issue](https://github.com/Sathvikar01/Serene/issues/60)\n"
         "[heading](privacy.md#404-unrelated)\n",
         encoding="utf-8",
     )
@@ -86,7 +86,7 @@ def test_issue_ranges_and_url_numbers_are_validated(tmp_path: Path) -> None:
 def test_pr_number_cannot_validate_wrong_issue_url(tmp_path: Path) -> None:
     source = tmp_path / "source.md"
     source.write_text(
-        "[wrong](https://github.com/Sathvikar01/morrow/issues/80)\n", encoding="utf-8"
+        "[wrong](https://github.com/Sathvikar01/Serene/issues/80)\n", encoding="utf-8"
     )
     failures = docs_check.validate_github_refs((source,), {80: "pull"})
     assert len(failures) == 1
@@ -94,5 +94,5 @@ def test_pr_number_cannot_validate_wrong_issue_url(tmp_path: Path) -> None:
 
 
 def test_blob_reference_stops_at_markdown_boundary() -> None:
-    text = "[source](https://github.com/Sathvikar01/morrow/blob/abcdef/docs/source.md). More\n"
+    text = "[source](https://github.com/Sathvikar01/Serene/blob/abcdef/docs/source.md). More\n"
     assert docs_check.GITHUB_BLOB.findall(text) == [("abcdef", "docs/source.md")]
