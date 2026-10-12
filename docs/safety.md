@@ -1,6 +1,6 @@
 # Serene safety
 
-Audited against merged `main` at `f2423be` on 2026-10-12.
+Audited against merged `main` at `8b0a3c7` on 2026-10-12.
 **LLM proposes; deterministic code decides.** Models may propose explanations
 and experiments; they cannot change policy, verify their own evidence, grant
 parent approval, promote beliefs or publish durable memory.
@@ -137,7 +137,8 @@ services. It proves an integrated fictional trajectory; negative/adversarial tes
 prove the listed refusals. The [trust Inspect task](../eval/tasks/trust_invariants.py)
 and [scorers](../serene/policies/scorers.py) test authority deterministically.
 They do not establish a live-model improvement; [evaluation.md](evaluation.md)
-preserves FAIL/INCONCLUSIVE/INVALID results and the pending controlled result.
+preserves FAIL/INCONCLUSIVE/INVALID history and the separate controlled-dev/1
+PASS with its unresolved-terminal and unrun-holdout limitations.
 
 Kernel policy and Supabase RLS are the chosen small authority boundary; adding
 OPA/OpenFGA/SpiceDB or a workflow engine would not replace those checks.

@@ -1,8 +1,9 @@
 # Core documentation review (#60)
 
 Audit date: 2026-10-12. Source baseline:
-`f2423bed751ffa8017aec1da085d5164947357f3` (merged #59 privacy, #55 economics,
-#58 required-CI, #33 projection feed and #36 Memory/Dream review work). The five canonical documents are
+`8b0a3c766f04a6fe953819cbb188069baa633743` (merged #59 privacy, #55 economics,
+#58 required-CI, #33 projection feed, #36 Memory/Dream review and #89 controlled
+DEV evidence). The five canonical documents are
 [architecture](architecture.md), [evidence](evidence-model.md), [safety](safety.md),
 [privacy](privacy.md) and [evaluation](evaluation.md).
 
@@ -19,7 +20,7 @@ Audit date: 2026-10-12. Source baseline:
 | NeatLogs / privacy #59 | Merged #80 redaction, fixed error boundaries and scans described; token filters are not a universal PII detector; inference context is private external processing |
 | Economics #55 | Genuine cfo.ai Scenario/readback, assumed input economics, measured historical tokens, unknown prices and exact optional confirmation boundary distinguished |
 | Entire #54 | Eight verified repository-reference milestones are distinct from incomplete native checkpoints; index is on local #54 branch, not audited main; no completion claimed |
-| Evaluation history | Original DEV FAIL; paired replay INCONCLUSIVE; live-gate/3, /4, /5 INVALID; preparation NOT_EVALUATED is not a later live verdict |
+| Evaluation history | Original DEV FAIL; paired replay INCONCLUSIVE; live-gate/3, /4, /5 INVALID; preparation NOT_EVALUATED is not a later live verdict; separate controlled-dev/1 PASS is now merged, with no holdout or resolved terminals |
 | CI #58 | Merged #81 and active ruleset 24892907 require PR + four Actions checks; classic-protection 404 does not imply absent enforcement |
 | Non-goals / excluded technology | All six required prohibitions explicit; technology exclusions traced to original committed architecture rationale, with current ownership clarified |
 | Scope | README, product/eval behavior, frozen manifests/tapes/scorers/oracles/reports and holdout unchanged; no live evaluation or provider calls |
@@ -55,26 +56,31 @@ parser, arbitrary external-site crawler or automatic proof of prose accuracy.
 
 Recorded local results:
 
-- Five canonical docs: 230 link/path references checked, zero failures;
-  67 referenced GitHub issue/PR numbers and two pinned remote source files validated.
-- Supporting review document also passes (six docs, 238 references;
-  68 issue/PR numbers, zero failures).
+- Five canonical docs: 238 link/path references checked, zero failures;
+  68 referenced GitHub issue/PR numbers and two pinned remote source files validated.
+- Supporting review document also passes (six docs, 246 references;
+  69 issue/PR numbers, zero failures).
 - Documentation regression tests: seven passed, including missing paths/anchors,
   wrong issue-versus-PR URL kinds and numeric-heading fragments.
+- With the 14 merged controlled-decision tests: 21 targeted tests passed.
+  Calling frozen `decide()` on the 36 archived pairs reproduces PASS and the
+  identical summary, excluding only the manifest digest added by `run()`.
 - Repository Ruff lint/format and strict mypy: passed (97 product source files).
 - Secret/history scan, environment coverage and synthetic-data audit: zero
-  findings; all 77 reviewed synthetic assets/generators retain their bytes.
+  findings; all 87 reviewed synthetic assets/generators retain their bytes.
 - Economics report reproduction and ledger replay/hash/tamper self-check: passed.
 - Full backend-suite and required CI results are reported in the documentation PR.
 
-## Exact remaining #60 item
+## Completion status and independent limits
 
-**controlled-dev/1 — final result pending.** Its final result is not in audited
-main. Keep #60 open and the documentation PR unmerged. Once final evidence is
-merged, replace the single paragraph in [evaluation.md](evaluation.md#controlled-dev1)
-with the exact verdict, final report/commit, safety/provenance findings,
-unsupported/VERIFIED counts, paired investigation result, actual tokens/attempts
-(unknown remains unknown), infrastructure limits and holdout eligibility.
-Retain all historical statuses and assess #53 against the final evidence.
-No pending work is described as PASS; #54's independent limitation does not
-prevent accurately documenting its status. Do not start README #61 here.
+The only pending #60 paragraph was updated after #89 merged into main:
+[controlled-dev/1](evaluation.md#controlled-dev1) now records its final PASS,
+report/commit, safety/provenance findings, unsupported/VERIFIED counts, paired
+investigation result, measured usage, infrastructure limits and holdout eligibility.
+The archived decision is reproduced read-only; no raw private artifact is
+recounted or rewritten here. Historical FAIL/INCONCLUSIVE/INVALID statuses remain.
+There is no remaining documentation blocker once PR CI passes. #54's incomplete
+checkpoint coverage, #53's open improvement-story acceptance, #67's unmerged
+product change, its unrun holdout, #75's full Twin projection and the unconnected
+web pages are explicitly documented limitations, not claims of completion.
+This task does not close those issues or begin README #61.

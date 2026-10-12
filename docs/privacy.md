@@ -1,6 +1,6 @@
 # Serene Privacy
 
-> **Status:** audited against merged `main` at `f2423be` on 2026-10-12.
+> **Status:** audited against merged `main` at `8b0a3c7` on 2026-10-12.
 > [#59](https://github.com/Sathvikar01/morrow/issues/59) is closed by merged
 > [PR #80](https://github.com/Sathvikar01/morrow/pull/80). Telemetry redaction,
 > synthetic-data provenance, secret/env scans and scoped RLS are implemented;

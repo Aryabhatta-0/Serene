@@ -1,6 +1,6 @@
 # Serene architecture
 
-Audited against merged `main` at `f2423bed751ffa8017aec1da085d5164947357f3`
+Audited against merged `main` at `8b0a3c766f04a6fe953819cbb188069baa633743`
 on 2026-10-12 for [#60](https://github.com/Sathvikar01/morrow/issues/60).
 Implementation, synthetic integration, live evaluation and production readiness
 are different claims. The [Maya demo](maya-demo.md) exercises real services with
@@ -96,7 +96,9 @@ can conversely keep requesting until budget exhaustion. Draft
 [PR #69](https://github.com/Sathvikar01/morrow/pull/69) proposes stronger sufficiency
 but is unmerged and unjudged. Do not describe that fix, or
 [PR #67](https://github.com/Sathvikar01/morrow/pull/67)'s single-field acquisition
-change, as current `main` behavior. COMPLETE does not itself promote a hypothesis.
+change, as current `main` behavior. #67's conditional DEV evaluation is now PASS
+([merged report](controlled-dev-1.md)); its holdout has not run and the product
+change remains unmerged. COMPLETE does not itself promote a hypothesis.
 
 ## Experiments, promotion and Dream
 

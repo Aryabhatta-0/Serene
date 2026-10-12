@@ -1,9 +1,9 @@
 # Serene Evaluation
 
 > **Status:** Inspect tasks, deterministic scorers, replay/rescore tooling and
-> regression-gate code are implemented. Audited `main`: `f2423be` (2026-10-12).
-> Historical measurements do not establish a controlled win. **controlled-dev/1 —
-> final result pending.** No final controlled result is merged into this `main`.
+> regression-gate code are implemented. Audited `main`: `8b0a3c7` (2026-10-12).
+> **controlled-dev/1 = PASS**, merged in PR #89. This is a conditional paired
+> DEV result for #67, not a holdout pass or superiority over the two baselines.
 > #53 remains open; #44's ten-scenario coverage is not claimed complete.
 > #59 privacy, #55 economics and #58 required-CI work are merged.
 
@@ -147,9 +147,15 @@ invalidations below supply no product acceptance evidence.
 ## 7. Measured improvement story (#53)
 
 Issue #53 requires exactly one genuine **failure -> trace diagnosis -> architecture
-change -> measured result** story. Assess it only after controlled-dev/1 finishes.
-Incomplete runs, invalid harnesses, a new scorer, or a deterministic scripted
-success cannot supply that result. Leave #53 open if the evidence does not qualify.
+change -> measured result** story. The [original live diagnosis](live-eval-2026-10-11.md)
+records bundled 4–6-field browser requests rejected as `REQUESTED_FIELD_UNSUPPORTED`.
+[PR #67](https://github.com/Sathvikar01/morrow/pull/67) proposes independently
+verifiable evidence units without weakening the verifier. The merged
+[controlled report](controlled-dev-1.md) now supplies measured conditional DEV
+evidence for that correction, including NeatLogs receipts. #67 remains unmerged;
+the full #51 regression gate still lacks a holdout. #53 remains open and is not
+declared complete by this documentation audit. Incomplete runs, invalid harnesses,
+a changed scorer or scripted success cannot substitute for the measured result.
 
 ## 8. Published results and their limits
 
@@ -167,7 +173,7 @@ NeatLogs receipts remain the source of record.
 | Paired replay | **INCONCLUSIVE** | [Shared-prefix record](shared-prefix-dev-v3.md), [offline verification](../eval/reports/archive/2026-10-11-shared-prefix-dev-v3/verification.json): replay stops at policy/input divergence; offline prefixes cannot prove live suffix performance |
 | live-gate/3 | **INVALID** | [v4 account](live-gate-v4.md), [v4 verification](../eval/reports/archive/2026-10-11-live-gate-v4/verification.json): existing daemon's loaded configuration could not be attested |
 | live-gate/4 | **INVALID** | [v5 account](live-gate-v5.md): inherited Git stdin deadlock and session/receipt assumptions invalidated the harness path |
-| live-gate/5 | **INVALID** | Later status is recorded in the [frozen controlled-dev/1 history mapping](https://github.com/Sathvikar01/morrow/blob/28459c80a0da400691de6e09299a78d341f9c8db/eval/runners/controlled_dev_experiment.py), outside audited `main`; no valid acceptance or holdout result |
+| live-gate/5 | **INVALID** | Later status is recorded in the [frozen controlled-dev/1 history mapping](https://github.com/Sathvikar01/morrow/blob/28459c80a0da400691de6e09299a78d341f9c8db/eval/runners/controlled_dev_experiment.py), now also merged through #89; v5 supplies no valid acceptance or holdout result |
 
 The v3/v4/v5 preparation documents and archived `verification.json` files were
 written before their subsequent live attempts: `NOT_EVALUATED` there describes
@@ -179,16 +185,33 @@ later known status without rewriting those artifacts.
 
 ## controlled-dev/1
 
-**controlled-dev/1 — final result pending.** The separately frozen
-[protocol at `28459c8`](https://github.com/Sathvikar01/morrow/blob/28459c80a0da400691de6e09299a78d341f9c8db/eval/runners/controlled_dev_experiment.py)
-compares Serene A `8fac1cb` with PR #67 B `41d3bf6` using the fixed 36 DEV
-tapes and shared-prefix primitives, then the normal Hermes transport. Its final
-report/result is not in audited `main`; partial progress is not PASS. When the
-final evidence is merged, replace **this paragraph only** with its exact verdict,
-report/commit links, safety/provenance findings, unsupported/VERIFIED counts,
-paired investigation result, actual token/attempt usage (unknown stays unknown),
-infrastructure limits and holdout eligibility. Retain every historical verdict
-above and assess #53 against that final evidence; no result is invented here.
+**controlled-dev/1 = PASS**, by the predeclared `decide()` frozen at
+[`28459c8`](https://github.com/Sathvikar01/morrow/blob/28459c80a0da400691de6e09299a78d341f9c8db/eval/runners/controlled_dev_experiment.py).
+The [final report](controlled-dev-1.md), [summary](../eval/reports/archive/2026-10-12-controlled-dev-1/summary.json)
+and [verification](../eval/reports/archive/2026-10-12-controlled-dev-1/verification.json)
+merged in [PR #89](https://github.com/Sathvikar01/morrow/pull/89), commit `8b0a3c7`.
+One execution completed all 36 fixed DEV pairs, comparing A `8fac1cb` with #67 B
+`41d3bf6` conditional on shared recorded prefixes; 27 pairs continued live through
+normal Hermes transport, A then B, with no reruns/replacements. Unsupported-field
+rejections fell from 62/62 to 3/39 (92.3% relative rate improvement); VERIFIED
+captures rose from 0 to 22. Both arms recorded zero false completions, authority
+violations, epistemic errors or rejected/off-allowlist evidence use; provenance
+dimensions stayed 1.0. No scenario met the paired investigation regression rule
+(0/6); one `browse_unsupported_page` pair lost 0.25, so this does not mean every
+pair improved. All 72 arms ended PARKED_UNRESOLVED; task success was A 0/36,
+B 2/36, not resolved COMPLETE scenarios. Measured live attempts were 305 versus
+275 and Hermes-reported live tokens 4,187,529 versus 3,863,797; unknown-usage
+attempts were zero. Replayed prefix tokens are separate, not live consumption;
+monetary cost is uncomputed because no provider price is configured. The archive
+records zero Serene-visible transport failures, identical before/after Hermes
+configuration, 54/54 accepted NeatLogs suffix exports and zero recount mismatches.
+One Hermes-internal retry was logged but not attested or counted in Serene
+attempts; remote sampling remains nondeterministic. Raw worker states/gateway
+logs remain local, with hashes and recount receipts archived; this audit rechecks
+the committed decision over archived pairs, not the private raw states.
+#67 is eligible for the one-time holdout, which was **not run**; the product PR
+remains unmerged. This conditional DEV result makes no significance, holdout,
+baseline-superiority or production-readiness claim and changes no historical verdict.
 
 ## 9. CI, authority and non-goals
 
