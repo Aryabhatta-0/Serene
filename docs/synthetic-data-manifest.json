@@ -13,7 +13,7 @@
     "controlled_dev_1": "eval/fixtures/controlled-dev-1.json and eval/reports/archive/2026-10-12-controlled-dev-1/ hold protocol parameters, tape digests, scorer/trust-scorer metrics, reason codes, token counts and NeatLogs receipt ids from the synthetic DEV scenarios; no model prose, parent text or family records (reviewed 2026-10-12).",
     "core_scenarios": "Issue #44: eval/fixtures/core-scenarios-v1.json is hand-authored synthetic prose (no names, contact details or records; URLs are RFC 2606 example domains). eval/scenarios/core_scenarios.py builds every family with SyntheticFamily/build_full_ladder (seeds 'core-*', fixed clock) or the scripted runtime rig. eval/reports/archive/2026-10-12-core-scenarios-v1/results.json is kernel/runtime output of that code under mockllm/model. eval/reports/archive/2026-10-12-core-scenarios-v1-after/results.json is the same unchanged suite re-run under mockllm/model after the policy-authority fix (BEFORE archive kept as is).",
     "web_approval_proof": "Browser-kernel tests use seed browser-http-kernel, synthetic Auth and disposable PostgreSQL. scripts/web_supabase_e2e.py allocates unique synthetic Auth accounts and marks every child SYNTHETIC; runtime credentials/bindings stay only in ignored .demo/web-e2e.json. No eval or holdout fixture was changed.",
-    "maya_web_demo_storyline": "This demo documentation and UI describe fictional daycare pickup reports. The investigation projection fixture was updated to include phase_history emitted by the existing synthetic kernel fixture runner; tests/investigation_view_fixture.py and tests/test_investigation_view.py pin its schema and bytes. Other pages reuse already reviewed synthetic fixtures, and the app labels all demo surfaces as fictional. No live family, evaluation or holdout data was added."
+    "maya_web_demo_storyline": "This demo documentation and UI describe fictional daycare pickup reports. The investigation projection fixture was updated to include phase_history emitted by the existing synthetic kernel fixture runner; tests/investigation_view_fixture.py and tests/test_investigation_view.py pin its schema and bytes. Other pages reuse already reviewed synthetic fixtures, and the app labels all demo surfaces as fictional. No live family, evaluation or holdout data was added. The documentation media update removes the workflow and trial screenshots and retains only the fictional family-story screenshot; scenario facts and runtime behavior are unchanged."
   },
   "sha256": {
     "app/web/fixtures/approval-command.example.json": "257bc3605c83d03f94e17b82df85870ab0ad3c683bb207a4ad3d90bec94df0cf",
@@ -23,7 +23,7 @@
     "app/web/fixtures/synthetic-investigation.json": "f39f0e92c69b8ecf36b796db865e6f9aa9739beb040d2422c381043d0b0bfbf7",
     "app/web/fixtures/synthetic-twin-provenance.json": "bb9468848b278147578d31911edabd8e99e6bdd8a85e0da8fa460be1b5237fa2",
     "app/web/fixtures/synthetic-memory-dream.json": "3a256a0fa489850c4b9c90ffece6442bbaf613f6076fc2f51b40581706440f53",
-    "docs/maya-demo.md": "68c1de34dd9199b89117d84d58208c39f4ece296a8d852c65ee0c411924b0929",
+    "docs/maya-demo.md": "744333da75299c7ece6dc52715b360899dcec156a23442edd2f19f4269f7e362",
     "eval/fixtures/cfoai_acquisition_decision.json": "22ce43a5f4308d28dff69da4981f30704053ade74877cdfb3995ecbec22bdc6a",
     "eval/fixtures/controlled-dev-1.json": "31e343b5f31dea0a7e3b0f7d870731cfa29e5d8ae10952441affeb822c2562f0",
     "eval/fixtures/core-scenarios-v1.json": "bdbbc1ad63c727ecf0f17ebe98d33ce5b5ae85d4ac46e7adb489ddf9c335225b",

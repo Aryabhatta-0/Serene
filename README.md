@@ -4,6 +4,8 @@
 
 LLM proposes; deterministic code decides. The repository is named `morrow`.
 
+[▶ Watch the landing page animation](docs/videos/hero-landing.webm)
+
 ## The problem
 
 A difficult daycare pickup could reflect fatigue, hunger or transition difficulty.
@@ -32,8 +34,6 @@ The investigation view also shows the saved workflow, with its order, times and
 reasons, so readers can follow how the system reached its current view.
 
 ![Maya’s fictional story opens with a plain-language summary and four chapters.](docs/images/maya-story.png)
-
-![The investigation shows the saved steps in order, including repeated evidence checks.](docs/images/maya-recorded-workflow.png)
 
 ## How the parts fit together
 
