@@ -1,8 +1,10 @@
 # Serene Privacy
 
-> **Status:** telemetry redaction, synthetic-only test data, secret/PII scanning,
-> the database deny-by-default boundary and parent/caregiver-scoped RLS (#8,
-> `supabase/migrations/20261011120000_serene_rls_access.sql`) are implemented.
+> **Status:** audited against merged `main` at `8b0a3c7` on 2026-10-12.
+> [#59](https://github.com/Sathvikar01/morrow/issues/59) is closed by merged
+> [PR #80](https://github.com/Sathvikar01/morrow/pull/80). Telemetry redaction,
+> synthetic-data provenance, secret/env scans and scoped RLS are implemented;
+> this is a repository audit, not production readiness or compliance certification.
 
 ## 1. Data ownership
 
@@ -17,10 +19,14 @@ A child's data belongs to the **parent**. Access is explicit and scoped.
 
 ## 2. Database boundary (implemented)
 
-- The ledger and projections live in a dedicated `serene` schema that is not
-  exposed through PostgREST.
-- RLS is **enabled with no end-user policies** on both tables: `anon` and
-  `authenticated` are denied by default and have all privileges revoked.
+- The ledger and projections live in a dedicated `serene` schema. Merged #33's
+  [API configuration](../supabase/config.toml) exposes that schema through
+  PostgREST for projection snapshots; RLS and grants still govern access.
+- The foundation migration enables RLS and revokes end-user privileges.
+  The later [#8 migration](../supabase/migrations/20261011120000_serene_rls_access.sql)
+  adds explicit scoped SELECT policies/privileges for `authenticated` and
+  synthetic-only `serene_eval`; `anon` remains denied. It is stale to describe
+  current `main` as having no end-user read policies.
 - `service_role` may `SELECT`/`INSERT` the ledger; `UPDATE`/`DELETE`/`TRUNCATE`
   are revoked and also blocked by triggers.
 
@@ -32,11 +38,31 @@ ledger rows, claim guardianship or change a child's data class. Approvals,
 evidence, hypotheses, promotions and memory events are parent-only. A parent can
 grant or revoke a caregiver scope for their own child only; a caregiver cannot
 grant themselves or widen a scope. Adversarial cross-child / caregiver /
-service-role / evaluation tests: `tests/test_rls.py`.
+service-role / evaluation tests: [RLS tests](../tests/test_rls.py).
+Caregivers can read only scoped event families; only `learnings:read` exposes
+the `active_learnings` projection. A grant does not permit approvals, evidence,
+hypotheses, promotion or memory reads. Backend service credentials bypass RLS
+and must remain private; RLS does not replace backend identity verification.
+
+[PostgresProjectionStore](../serene/adapters/postgres.py) can replace projection
+rows, while ledger writes remain backend-only and append-only. The five
+[read views](../serene/projections/views.py) are disposable outputs of replay,
+never authorization inputs. Merged #33's
+[Realtime migration](../supabase/migrations/20261012150000_projection_realtime.sql)
+publishes only `serene.projection_state`, not the ledger. The
+[web feed](../app/web/lib/projections/supabase.ts) uses a child-filtered snapshot
+and subscription under the signed-in user's RLS, not a browser service key.
+Its optional backend publisher cannot undo a durable ledger append on failure;
+read state can lag and be rebuilt. No page creates the feed yet;
+[Causal Twin](../app/web/lib/causal-twin/source.ts) and
+[Memory](../app/web/lib/memory/source.ts) sources remain UNCONNECTED.
+#75 complete Causal Twin provenance projection remains open. No deployed
+family-data service is established by these tests.
 
 ## 3. Privacy-safe observability (#52, audited by #59)
 
-All telemetry passes through `serene.observability.SafeTelemetry`:
+All application telemetry passes through
+[SafeTelemetry](../serene/observability/telemetry.py):
 
 - **Allow-listed keys only** (event type, ids, sequence, actor/source kind,
   decision, reason codes, policy version, …).
@@ -52,7 +78,7 @@ All telemetry passes through `serene.observability.SafeTelemetry`:
 - Redaction is applied centrally in `SafeTelemetry.emit`; kernel code never
   talks to a sink directly, so callers cannot bypass it.
 
-The neatlogs adapter (`serene/adapters/neatlogs_sink.py`) only receives these
+The [NeatLogs adapter](../serene/adapters/neatlogs_sink.py) only receives these
 redacted attributes, re-applies the same `redact` (so a direct caller cannot bypass
 it), sets them as `serene.*` span attributes and is a no-op without
 `NEATLOGS_API_KEY`. It posts over HTTPS with the standard library (no SDK), never
@@ -80,13 +106,35 @@ never dump them, stack locals, transport bodies or `exc_info` into logs. Hermes
 is a separately configured runtime; do not enable its prompt/debug capture for
 real family data. This audit does not certify third-party logging behavior.
 
-## 4. Data minimisation in the domain
+## 4. Data minimisation and external processing
 
-- Actors are opaque ids (`act_…`); no names or contact details in any schema.
-- Raw evidence content is stored once, in the ledger payload, with a content
-  digest; projections never copy raw text (tested).
-- Model provenance records provider/model/prompt version, never prompts or
-  private reasoning.
+- Actor identity uses opaque IDs. Raw reports and other free-text application
+  fields can contain personal information; the schema is not a PII detector.
+- Raw evidence and structured interpretations are private ledger payloads.
+  The five presentation projections omit raw content, but in-process
+  `KernelState` retains entities for policy decisions. Replaying or serializing
+  internal state is not a privacy-safe export.
+- The merged #36 [Memory/Dream view](../serene/memory/view.py) omits child/actor
+  identifiers and evidence content, but includes memory text, patch rationale
+  and diffs. It is private review data, not safe telemetry or a public export;
+  a read-only UI does not remove its confidentiality requirements.
+- Model provenance stores provider/model/prompt-version identifiers, not full
+  prompts or private reasoning. This does not mean runtime tasks contain no
+  private content: [context retrieval](../serene/investigation/context.py) and
+  [Hermes transport](../serene/adapters/hermes/transport.py) send task context to
+  the configured runtime/provider. Redacted NeatLogs exports do not redact that
+  application inference channel. Provider retention/deletion is not certified.
+- Telegram bindings map private platform identities to opaque actors outside
+  the ledger. The [channel](../serene/adapters/telegram/channel.py) and its
+  current in-memory binding/prompt registries are trusted infrastructure, not
+  a complete production identity/session store.
+
+**LLM proposes; deterministic code decides.** Parent approval authorizes an exact
+experiment; it is not blanket consent to export family data. Evidence verification
+confirms bounded source checks; it is not a privacy/legal review of arbitrary
+pages. Telemetry and cfo.ai cannot authorize collection, widen access or alter
+safety/quality. #55's saved [cfo.ai requests/readback](economics.md) contain the
+synthetic assumed operating model only, not family records or measured bills.
 
 ## 5. Operational audit (#59)
 
@@ -109,9 +157,17 @@ real family data. This audit does not certify third-party logging behavior.
   cannot establish server-side credential validity or recognize every possible
   secret. Review any candidate privately; never paste it into an issue or PR.
 - Hermes keeps its own secrets in `HERMES_HOME/.env`; cfo.ai uses browser OAuth;
-  Entire uses `entire login`. None of these credentials touch the repository.
+  optional Entire cloud features use `entire login`. Local checkpoint inspection
+  does not require cloud login. Credentials must remain outside tracked files.
 - Entire is configured with `push_sessions: false` because this repository is
   public: agent session transcripts are not pushed unless a human opts in.
+
+Checks and receipts are in [PR #80](https://github.com/Sathvikar01/morrow/pull/80);
+the reviewed inventory is [synthetic-data-manifest.json](synthetic-data-manifest.json).
+Executable evidence: [secret scan](../scripts/secret_scan.py),
+[environment audit](../scripts/env_audit.py), [synthetic audit](../scripts/synthetic_audit.py),
+[privacy tests](../tests/test_privacy_audit.py), [telemetry tests](../tests/test_observability.py)
+and [sink tests](../tests/test_neatlogs_sink.py).
 
 All demo/eval/test child and family data must be authored fiction or produced by
 `SyntheticFamily` (seed-derived ids, fixed clock). `docs/synthetic-data-manifest.json`
@@ -121,8 +177,9 @@ provenance before updating the manifest. Never regenerate frozen eval results
 to pass this check. Historical names such as **Maya** are fictional scenario
 labels; the evidence is their synthetic source, not the spelling of a name.
 Technical provider error fixtures contain sanitized runtime responses, not real
-child input. The web shell connects no family record; its build-gated causal-twin
-fixture has synthetic model provenance. The merged #56/#57 Maya demo uses a fixed
+child input. The web shell connects no family record; its build-gated Causal Twin
+and kernel-generated Memory/Dream fixtures have reviewed synthetic provenance.
+The merged #56/#57 Maya demo uses a fixed
 fictional seed, scripted model/browser I/O and a temporary synthetic memory repo;
 its report is explicitly marked synthetic and its reset accepts only the canonical
 seed. Their implementations are unchanged by this audit. Hashes attest reviewed
@@ -162,6 +219,24 @@ shallow local clones need `git fetch --unshallow` before the full historical sui
 
 Serene is not a clinical or diagnostic product, and the MVP is not built for
 production child data at scale.
+
+There is no implemented user-facing retention/deletion workflow, automated
+credential rotation, third-party logging certification or general PII classifier.
+Append-only history and reviewed memory deprecation preserve refuted beliefs;
+they do not establish a legal erasure process. No silent uncertainty, hidden
+deletion of refuted beliefs, autonomous parent approval, model policy authority,
+unverified promotion or cost overriding safety/quality is permitted. The current
+investigation-completion limitation is disclosed in [architecture.md](architecture.md).
+
+Entire uses [local Git-ref settings](../.entire/settings.json) with session
+pushing and telemetry disabled. #54 has a verified milestone reference index,
+but genuine historical checkpoint coverage/retrieval is incomplete; the index
+is not merged into this audited `main`. Keep #54 open; never publish private
+transcripts to manufacture checkpoint coverage. See
+[provenance status](architecture.md#observability-economics-and-development-provenance).
+No extra memory/analytics/database stack is adopted to collect more child data;
+the [recorded exclusions](architecture.md#non-goals-and-excluded-technologies)
+explain the MVP choices.
 
 On 2026-10-12, `npm audit --omit=dev` against the pinned web lockfile reports
 Next.js 14.2.35 **critical** and PostCSS **high** advisory groups. Their reachability
