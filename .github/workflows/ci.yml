@@ -83,6 +83,14 @@ jobs:
         run: >-
           uv run python scripts/inspect_gate.py "$INSPECT_LOGS"
           kernel_invariants trust_invariants runtime_investigation
+      # Core failure-mode scenarios (#44): reported, not gated on PASS. A FAIL is a recorded
+      # finding (docs/core-scenarios.md); an incomplete or errored run still fails this job.
+      - name: Run the ten frozen core failure-mode scenarios (reported)
+        run: >-
+          uv run inspect eval eval/tasks/core_scenarios.py --model mockllm/model
+          --log-dir "$INSPECT_LOGS" --display plain
+      - name: Report core scenarios - all ten must run to completion
+        run: uv run python eval/runners/core_scenarios_report.py "$INSPECT_LOGS"
 
   web:
     name: Web (next.js typecheck + unit tests + build)
