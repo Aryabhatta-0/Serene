@@ -28,10 +28,6 @@ recorded moment to see what was available then.
 
 ![The story page summarizes what was reported, tried and learned, with its four chapters below.](images/maya-story.png)
 
-![The recorded workflow shows the saved order, timestamps and reasons for the investigation steps.](images/maya-recorded-workflow.png)
-
-![The trial record shows the parent-approved change, its safeguards and the reported outcome.](images/maya-trial.png)
-
 This example demonstrates domain integration, not a live family service,
 clinical advice or a general result. The [architecture guide](architecture.md)
 shows which parts suggest, which parts decide, and what the UI reads.
